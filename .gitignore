@@ -6,6 +6,7 @@ build/
 *.kt~
 .kotlin
 local.properties
+.dependencies
 
 ### IntelliJ IDEA ###
 .idea

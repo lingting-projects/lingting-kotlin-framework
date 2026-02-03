@@ -5,11 +5,12 @@ agp = "8.11.2"
 kotlin = "2.2.21"
 kotlin-ksp = "2.2.21-2.0.4"
 kotlin-coroutines = "1.10.2"
-kotlin-ktor = "3.3.3"
+kotlin-ktor = "3.4.0"
 kotlin-io = "0.8.2"
 kotlin-atomic = "0.30.0-beta"
-kotlin-logging = "7.0.3"
 kotlin-datetime = "0.7.1"
+kotlin-serialization = "1.10.0"
+kotlin-logging = "7.0.3"
 
 [libraries]
 logback = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
@@ -20,7 +21,11 @@ kotlin-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coro
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-io-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-io-core", version.ref = "kotlin-io" }
 kotlin-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlin-datetime" }
+kotlin-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlin-serialization" }
+kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlin-serialization" }
 kotlin-logging = { group = "io.github.oshai", name = "kotlin-logging", version.ref = "kotlin-logging" }
+kotlin-ktor-client = { group = "io.ktor", name = "ktor-client-cio", version.ref = "kotlin-ktor" }
+kotlin-ktor-server = { group = "io.ktor", name = "ktor-server-cio", version.ref = "kotlin-ktor" }
 
 [bundles]
 annotation = []
@@ -35,3 +40,4 @@ kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-atomic = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "kotlin-atomic" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

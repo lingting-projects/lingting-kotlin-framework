@@ -11,6 +11,7 @@ kotlin {
             api(libs.kotlin.coroutines.core)
             api(libs.kotlin.datetime)
             api(libs.kotlin.logging)
+            api(libs.kotlin.reflect)
         }
     }
 }

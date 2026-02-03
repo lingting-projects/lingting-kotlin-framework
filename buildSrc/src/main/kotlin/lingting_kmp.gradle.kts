@@ -15,6 +15,8 @@ kotlin {
             "kotlinx.coroutines.DelicateCoroutinesApi",
             "kotlin.time.ExperimentalTime",
             "kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "kotlinx.serialization.InternalSerializationApi",
+            "io.ktor.utils.io.InternalAPI",
         )
     }
 
