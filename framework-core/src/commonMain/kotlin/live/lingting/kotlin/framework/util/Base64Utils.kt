@@ -12,7 +12,7 @@ object Base64Utils {
      * 字节码转base64字符串
      */
     @JvmStatic
-    fun ByteArray.base64(): String {
+    fun ByteArray.toBase64String(): String {
         return Base64.encode(this)
     }
 
@@ -20,7 +20,7 @@ object Base64Utils {
      * base64字符串转字节码
      */
     @JvmStatic
-    fun String.base64(): ByteArray {
+    fun String.toBase64Bytes(): ByteArray {
         return Base64.decode(this)
     }
 

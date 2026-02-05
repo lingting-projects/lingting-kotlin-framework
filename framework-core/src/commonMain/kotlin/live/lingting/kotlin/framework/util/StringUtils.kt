@@ -165,8 +165,11 @@ object StringUtils {
         return buffer.readByteArray().decodeToString()
     }
 
+    /**
+     * 字节转 16进制字符串
+     */
     @JvmStatic
-    fun ByteArray.hex(): String {
+    fun ByteArray.toHexString(): String {
         val buffer = Buffer()
         val hexChars = "0123456789abcdef"
         for (b in this) {
@@ -177,8 +180,11 @@ object StringUtils {
         return buffer.readByteArray().decodeToString()
     }
 
+    /**
+     * 16进制字符串转字节
+     */
     @JvmStatic
-    fun String.hex(): ByteArray {
+    fun String.toHexBytes(): ByteArray {
         val length = length
         require(length % 2 == 0) { "Invalid hexadecimal string" }
 

@@ -18,7 +18,7 @@ object DateTimePattern {
     val UTC8_ZONE: TimeZone = FixedOffsetTimeZone(UtcOffset(8))
 
     @JvmField
-    val GMT_ZONE: TimeZone = FixedOffsetTimeZone(UtcOffset(0))
+    val GMT_ZONE: TimeZone = TimeZone.UTC
 
     @JvmField
     val SYSTEM_ZONE: TimeZone = TimeZone.currentSystemDefault()
