@@ -11,6 +11,7 @@ kotlin-atomic = "0.30.0-beta"
 kotlin-datetime = "0.7.1"
 kotlin-serialization = "1.10.0"
 kotlin-logging = "7.0.3"
+kotlin-crypto = "0.8.0"
 
 [libraries]
 logback = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
