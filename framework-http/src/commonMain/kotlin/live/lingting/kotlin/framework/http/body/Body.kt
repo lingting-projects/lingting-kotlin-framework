@@ -12,6 +12,8 @@ abstract class Body<T : Any> {
 
     abstract fun source(): T
 
+    abstract fun string(): String
+
     val isEmpty
         get() = length() < 1
 

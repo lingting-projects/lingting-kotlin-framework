@@ -1,13 +1,15 @@
 package live.lingting.kotlin.framework.http.body
 
 import kotlinx.io.RawSource
+import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
+import kotlinx.io.readByteArray
 
 /**
  * @author lingting 2026/1/31 17:41
  */
-class StreamBody : Body<RawSource> {
+open class StreamBody : Body<RawSource> {
 
     val size: Long
 
@@ -34,8 +36,11 @@ class StreamBody : Body<RawSource> {
         this.supplier = { SystemFileSystem.source(path) }
     }
 
+    open val string by lazy { source().buffered().use { it.readByteArray().decodeToString() } }
+
     override fun length(): Long = size
 
     override fun source(): RawSource = supplier()
 
+    override fun string(): String = string
 }

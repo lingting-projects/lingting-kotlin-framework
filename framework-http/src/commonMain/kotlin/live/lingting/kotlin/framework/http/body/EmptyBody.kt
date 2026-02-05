@@ -9,4 +9,6 @@ object EmptyBody : Body<ByteArray>() {
 
     override fun source(): ByteArray = byteArrayOf()
 
+    override fun string(): String = ""
+
 }

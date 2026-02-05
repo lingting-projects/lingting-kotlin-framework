@@ -8,7 +8,7 @@ import kotlinx.io.readByteArray
 /**
  * @author lingting 2026/1/31 17:41
  */
-class MemoryBody : Body<ByteArray> {
+open class MemoryBody : Body<ByteArray> {
 
     val size: Long
 
@@ -31,8 +31,12 @@ class MemoryBody : Body<ByteArray> {
         }
     }
 
+    open val string by lazy { source.decodeToString() }
+
     override fun length(): Long = size
 
     override fun source(): ByteArray = source
+
+    override fun string(): String = string
 
 }

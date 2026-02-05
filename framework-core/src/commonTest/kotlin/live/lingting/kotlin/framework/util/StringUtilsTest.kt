@@ -3,7 +3,8 @@ package live.lingting.kotlin.framework.util
 import kotlinx.coroutines.test.runTest
 import live.lingting.kotlin.framework.util.StringUtils.firstLower
 import live.lingting.kotlin.framework.util.StringUtils.firstUpper
-import live.lingting.kotlin.framework.util.StringUtils.hex
+import live.lingting.kotlin.framework.util.StringUtils.toHexBytes
+import live.lingting.kotlin.framework.util.StringUtils.toHexString
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -56,11 +57,11 @@ class StringUtilsTest {
     @Test
     fun `test hex conversions`() {
         val original = "hello".encodeToByteArray()
-        val hexString = original.hex()
+        val hexString = original.toHexString()
 
         // "hello" -> 68656c6c6f
         assertEquals("68656c6c6f", hexString)
-        assertContentEquals(original, hexString.hex())
+        assertContentEquals(original, hexString.toHexBytes())
     }
 
     @Test
