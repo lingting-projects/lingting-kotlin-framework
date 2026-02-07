@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val projectGroup = "live.lingting.framework"
+val projectGroup = "live.lingting.kotlin.framework"
 val projectVersion = "2026.01.30-Beta-1"
 
 val catalogLibs = libs

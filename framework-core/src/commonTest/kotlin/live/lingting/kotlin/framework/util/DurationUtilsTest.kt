@@ -2,12 +2,18 @@ package live.lingting.kotlin.framework.util
 
 import kotlinx.coroutines.test.runTest
 import live.lingting.kotlin.framework.util.DurationUtils.hours
+import live.lingting.kotlin.framework.util.DurationUtils.isNegative
+import live.lingting.kotlin.framework.util.DurationUtils.isPositive
+import live.lingting.kotlin.framework.util.DurationUtils.isZero
 import live.lingting.kotlin.framework.util.DurationUtils.millis
 import live.lingting.kotlin.framework.util.DurationUtils.months
 import live.lingting.kotlin.framework.util.DurationUtils.weeks
 import live.lingting.kotlin.framework.util.DurationUtils.years
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
@@ -71,4 +77,18 @@ class DurationUtilsTest {
         val i: Int = 2
         assertEquals(48.hours, i.days)
     }
+
+    @Test
+    fun `test other`() = runTest {
+        assertTrue { Duration.ZERO.isZero }
+        assertFalse { (-1).seconds.isZero }
+        assertFalse { 11.seconds.isZero }
+        assertFalse { Duration.ZERO.isNegative }
+        assertTrue { (-1).seconds.isNegative }
+        assertFalse { 11.seconds.isNegative }
+        assertFalse { Duration.ZERO.isPositive }
+        assertFalse { (-1).seconds.isPositive }
+        assertTrue { 11.seconds.isPositive }
+    }
+
 }
