@@ -10,13 +10,13 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.Url
 import io.ktor.http.appendPathSegments
 import io.ktor.http.takeFrom
-import io.ktor.util.appendAll
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.core.Closeable
 import kotlinx.io.RawSource
 import kotlinx.io.Source
 import kotlinx.io.buffered
 import live.lingting.kotlin.framework.http.HttpClient.default
+import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.appendAll
 import kotlin.jvm.JvmField
 
 /**
@@ -51,7 +51,9 @@ abstract class ApiClient<R : ApiRequest>(@JvmField protected val host: String) {
         builder.takeFrom(hostUrl)
         val path = r.path()
         builder.appendPathSegments(path.split("/"))
-        builder.parameters.appendAll(r.params)
+        r.params.forEach { name, vs ->
+            builder.parameters.appendAll(name, vs)
+        }
     }
 
     protected open fun buildHeaders(r: R, headers: HeadersBuilder) {

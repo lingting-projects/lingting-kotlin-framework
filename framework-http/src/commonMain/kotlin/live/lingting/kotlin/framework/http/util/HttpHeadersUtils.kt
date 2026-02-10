@@ -23,4 +23,11 @@ object HttpHeadersUtils {
         }
     }
 
+    @JvmStatic
+    fun HeadersBuilder.appendAll(source: live.lingting.kotlin.framework.http.header.HttpHeaders) {
+        source.forEach { name, vs ->
+            appendAll(name, vs)
+        }
+    }
+
 }

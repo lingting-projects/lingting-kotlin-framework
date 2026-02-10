@@ -3,36 +3,38 @@ package live.lingting.kotlin.framework.http
 import io.ktor.http.ParametersBuilder
 import io.ktor.http.encodeURLParameter
 import io.ktor.util.StringValues
-import io.ktor.util.appendAll
-import live.lingting.kotlin.framework.http.util.ParametersUtils.copy
-import live.lingting.kotlin.framework.http.util.ParametersUtils.setAll
+import live.lingting.kotlin.framework.http.util.HttpUrlUtils
 import live.lingting.kotlin.framework.util.CollectionUtils
 import live.lingting.kotlin.framework.util.StringUtils
+import live.lingting.kotlin.framework.value.MultiValue
+import live.lingting.kotlin.framework.value.multi.StringMultiValue
+import kotlin.jvm.JvmOverloads
 
 
 /**
  * @author lingting 2025/5/28 15:59
  */
-class QueryBuilder {
+class QueryBuilder @JvmOverloads constructor(
+    private val source: StringMultiValue = StringMultiValue()
+) : MultiValue<String, String, MutableCollection<String>> by source {
 
-    constructor()
 
-    constructor(s: Map<String, Any?>?) {
-        val values = s?.mapValues { (_, v) -> CollectionUtils.multiToList(v).mapNotNull { it?.toString() } }
+    constructor(map: Map<String, Any?>?) : this() {
+        val values = map?.mapValues { (_, v) -> CollectionUtils.multiToList(v).mapNotNull { it?.toString() } }
         values?.run { source.appendAll(this) }
     }
 
-    constructor(s: StringValues?) {
-        s?.run { source.appendAll(this) }
+    constructor(v: MultiValue<String, String, out Collection<String>>?) : this() {
+        v?.run { source.appendAll(this) }
     }
 
-    constructor(s: ParametersBuilder?) {
-        s?.run { source.appendAll(this) }
+    constructor(v: StringValues?) : this() {
+        v?.run { source.appendAll(this) }
     }
 
-    private val source = ParametersBuilder()
-
-    fun source() = ParametersBuilder().apply { appendAll(source) }
+    constructor(v: ParametersBuilder?) : this() {
+        v?.run { source.appendAll(this) }
+    }
 
     var encode = true
 
@@ -78,40 +80,43 @@ class QueryBuilder {
      */
     var indexStart = 1
 
-    fun add(name: String, v: String) = source.append(name, v)
-
-    fun addAll(map: Map<String, Any?>?) {
+    fun addAllAny(map: Map<String, Any?>?) {
         val values = map?.mapValues { (_, v) -> CollectionUtils.multiToList(v).mapNotNull { it?.toString() } }
         values?.run { source.appendAll(this) }
     }
 
-    fun addAll(m: StringValues?) {
+    fun addAllAny(m: StringValues?) {
         m?.run { source.appendAll(this) }
     }
 
-    fun put(name: String, v: String) = source.set(name, v)
-
-    fun putAll(map: Map<String, Any?>?) {
+    fun putAllAny(map: Map<String, Any?>?) {
         val values = map?.mapValues { (_, v) -> CollectionUtils.multiToList(v).mapNotNull { it?.toString() } }
         values?.run { source.setAll(this) }
     }
 
-    fun putAll(m: StringValues?) {
+    fun putAllAny(m: StringValues?) {
         m?.run { source.setAll(this) }
     }
 
-    fun build(): String {
-        if (source.isEmpty()) {
-            return ""
+    fun setAllAny(map: Map<String, Any?>?) = putAllAny(map)
+
+    fun setAllAny(m: StringValues?) = putAllAny(m)
+
+    private fun sort(c: Collection<String>?): List<String> {
+        if (c == null) {
+            return emptyList()
         }
+        if (!sort) {
+            return c.toList()
+        }
+        val r = comparator ?: return c.sorted()
+        return c.sortedWith(r)
+    }
 
-        val copy = source.copy()
+    fun build(): String {
         return buildString {
-            val keys = sort(copy.names())
-            for (k in keys) {
-                val vs = sort(copy.getAll(k))
+            forEach() { k, vs ->
                 val name = if (encode) k.encodeURLParameter() else k
-
                 if (vs.isEmpty()) {
                     append(name)
                     if (indexSuffix && indexSuffixEmpty) {
@@ -128,7 +133,7 @@ class QueryBuilder {
                             append(indexSuffixSeparation).append(indexStart + i)
                         }
 
-                        val value = if (encode) v.encodeURLParameter() else v
+                        val value = if (encode) HttpUrlUtils.encode(v) else v
                         append("=").append(value).append("&")
                     }
                 }
@@ -138,17 +143,6 @@ class QueryBuilder {
                 StringUtils.deleteLast(this)
             }
         }
-    }
-
-    private fun sort(c: Collection<String>?): List<String> {
-        if (c == null) {
-            return emptyList()
-        }
-        if (!sort) {
-            return c.toList()
-        }
-        val r = comparator ?: return c.sorted()
-        return c.sortedWith(r)
     }
 
 }

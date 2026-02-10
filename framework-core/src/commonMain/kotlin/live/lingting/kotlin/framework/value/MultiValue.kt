@@ -65,6 +65,8 @@ interface MultiValue<K, V, C : Collection<V>> {
 
     fun hasKey(key: K): Boolean
 
+    fun hasValue(key: K): Boolean = !isEmpty(key)
+
     operator fun get(key: K): C
 
     fun iterator(key: K): Iterator<V>

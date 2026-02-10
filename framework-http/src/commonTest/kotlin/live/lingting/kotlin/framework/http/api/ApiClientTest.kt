@@ -134,7 +134,7 @@ class ApiClientTest {
         }
 
         override fun onHeadersAfter(r: ApiSimpleRequest, headers: HeadersBuilder) {
-            if (!r.params.contains(noAuthKey)) {
+            if (!r.params.hasKey(noAuthKey)) {
                 headers["Authorization"] = authValue
             }
         }
