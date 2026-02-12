@@ -17,6 +17,7 @@ kotlin {
             "kotlinx.coroutines.ExperimentalCoroutinesApi",
             "kotlinx.serialization.InternalSerializationApi",
             "io.ktor.utils.io.InternalAPI",
+            "kotlinx.serialization.ExperimentalSerializationApi",
         )
     }
 
@@ -52,95 +53,18 @@ kotlin {
         }
     }
 
+    applyDefaultHierarchyTemplate()
+
     sourceSets {
-
-        commonMain.dependencies {
-            // common
-        }
-        commonTest.dependencies {
-            // test
-        }
-
-        val commonMain by getting
-
-        val jvmMain by getting {
-            dependsOn(commonMain)
-        }
-
         val nonJvmMain by creating {
-            dependsOn(commonMain)
+            dependsOn(commonMain.get())
         }
 
-        val androidMain by getting {
-            // dependsOn(nonJvmMain)
-        }
+        val targetSourceSets = listOf("nativeMain", "webMain")
 
-        val webMain by creating {
+        configure(targetSourceSets.mapNotNull { findByName(it) }) {
             dependsOn(nonJvmMain)
         }
-        val jsMain by getting { dependsOn(webMain) }
-        val wasmJsMain by getting { dependsOn(webMain) }
-
-        val nativeMain by creating {
-            dependsOn(nonJvmMain)
-        }
-
-        val appleMain by creating {
-            dependsOn(nativeMain)
-        }
-
-        val macosMain by creating {
-            dependsOn(appleMain)
-        }
-        val macosX64Main by getting { dependsOn(macosMain) }
-        val macosArm64Main by getting { dependsOn(macosMain) }
-
-        val iosMain by creating {
-            dependsOn(appleMain)
-        }
-        val iosArm64Main by getting { dependsOn(iosMain) }
-        val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
-
-
-        val commonTest by getting
-
-        val jvmTest by getting {
-            dependsOn(commonTest)
-        }
-
-        val nonJvmTest by creating {
-            dependsOn(commonTest)
-        }
-
-        val androidUnitTest by getting {
-            dependsOn(nonJvmTest)
-        }
-
-        val webTest by creating {
-            dependsOn(nonJvmTest)
-        }
-        val jsTest by getting { dependsOn(webTest) }
-        val wasmJsTest by getting { dependsOn(webTest) }
-
-        val nativeTest by creating {
-            dependsOn(nonJvmTest)
-        }
-
-        val appleTest by creating {
-            dependsOn(nativeTest)
-        }
-
-        val macosTest by creating {
-            dependsOn(appleTest)
-        }
-        val macosX64Test by getting { dependsOn(macosTest) }
-        val macosArm64Test by getting { dependsOn(macosTest) }
-
-        val iosTest by creating {
-            dependsOn(appleTest)
-        }
-        val iosArm64Test by getting { dependsOn(iosTest) }
-        val iosSimulatorArm64Test by getting { dependsOn(iosTest) }
     }
 
 }
@@ -166,5 +90,4 @@ android {
             withJavadocJar()
         }
     }
-
 }
