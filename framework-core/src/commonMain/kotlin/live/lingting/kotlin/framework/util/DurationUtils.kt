@@ -1,5 +1,8 @@
 package live.lingting.kotlin.framework.util
 
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.toInstant
+import live.lingting.kotlin.framework.time.DateTime
 import kotlin.jvm.JvmStatic
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
@@ -95,5 +98,12 @@ object DurationUtils {
 
     @JvmStatic
     inline val Duration.isPositive get() = isPositive()
+
+    @JvmStatic
+    fun Duration.Companion.between(start: LocalDateTime, end: LocalDateTime): Duration {
+        val s = start.toInstant(DateTime.zone).toEpochMilliseconds()
+        val e = end.toInstant(DateTime.zone).toEpochMilliseconds()
+        return (e - s).millis
+    }
 
 }
