@@ -109,16 +109,8 @@ interface MultiValue<K, V, C : Collection<V>> {
         forEach { k, c -> c.forEach { v -> consumer(k, v) } }
     }
 
-    fun <K : Comparable<K>, V, C : Collection<V>> MultiValue<K, V, C>.forEachSorted(consumer: (K, C) -> Unit) {
-        keys().sorted().forEach { key -> consumer(key, get(key)) }
-    }
-
     fun forEachSorted(consumer: (K, C) -> Unit, comparator: Comparator<K>) {
         keys().sortedWith(comparator).forEach { key -> consumer(key, get(key)) }
-    }
-
-    fun <K : Comparable<K>, V, C : Collection<V>> MultiValue<K, V, C>.eachSorted(consumer: (K, V) -> Unit) {
-        forEachSorted { k, c -> c.forEach { v -> consumer(k, v) } }
     }
 
     fun eachSorted(consumer: (K, V) -> Unit, comparator: Comparator<K>) {
@@ -135,3 +127,4 @@ interface MultiValue<K, V, C : Collection<V>> {
     }
 
 }
+

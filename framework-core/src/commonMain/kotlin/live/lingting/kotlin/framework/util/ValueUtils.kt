@@ -2,6 +2,7 @@ package live.lingting.kotlin.framework.util
 
 import live.lingting.kotlin.framework.util.ArrayUtils.isArray
 import live.lingting.kotlin.framework.util.ArrayUtils.isEmpty
+import live.lingting.kotlin.framework.value.MultiValue
 import kotlin.jvm.JvmStatic
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -48,6 +49,16 @@ object ValueUtils {
     fun simpleUuid(): String {
         val uuid = Uuid.random()
         return uuid.toHexString()
+    }
+
+    @JvmStatic
+    fun <K : Comparable<K>, V, C : Collection<V>> MultiValue<K, V, C>.forEachSorted(consumer: (K, C) -> Unit) {
+        keys().sorted().forEach { key -> consumer(key, get(key)) }
+    }
+
+    @JvmStatic
+    fun <K : Comparable<K>, V, C : Collection<V>> MultiValue<K, V, C>.eachSorted(consumer: (K, V) -> Unit) {
+        forEachSorted { k, c -> c.forEach { v -> consumer(k, v) } }
     }
 
 }
