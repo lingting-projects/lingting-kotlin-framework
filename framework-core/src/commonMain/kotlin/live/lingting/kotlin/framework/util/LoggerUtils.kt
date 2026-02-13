@@ -28,6 +28,11 @@ object LoggerUtils {
         return KotlinLogging.logger(name)
     }
 
+    @JvmStatic
+    fun <T : Any> logger(t: T): Logger {
+        return logger(t::class)
+    }
+
     inline val InlineLogger.log get() = logger()
 
     interface InlineLogger
