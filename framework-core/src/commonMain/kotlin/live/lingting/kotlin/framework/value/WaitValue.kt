@@ -98,7 +98,7 @@ open class WaitValue<T> @JvmOverloads constructor(v: T? = null) {
 
     @JvmOverloads
     @Throws(TimeoutException::class)
-    suspend fun await(duration: Duration? = null, predicate: (T?) -> Boolean): T? {
+    suspend fun await(duration: Duration? = null, predicate: suspend (T?) -> Boolean): T? {
         val v = value
         if (predicate(v)) {
             return v
