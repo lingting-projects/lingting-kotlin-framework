@@ -11,14 +11,15 @@ kotlin {
                 api(project(":framework-core"))
                 api(libs.kotlin.ktor.http)
                 implementation(libs.kotlin.ktor.client)
-                implementation(libs.kotlin.serialization.core)
                 implementation(libs.kotlin.serialization.json)
             }
         }
 
         commonTest {
             dependencies {
+                api(project(":framework-crypto"))
                 api(libs.kotlin.ktor.server)
+                api(libs.okio)
             }
         }
     }

@@ -1,6 +1,7 @@
 [versions]
 publish = "0.29.0"
 logback = "1.5.12"
+okio = "3.6.0"
 agp = "8.11.2"
 kotlin = "2.2.21"
 kotlin-ksp = "2.2.21-2.0.4"
@@ -10,11 +11,13 @@ kotlin-io = "0.8.2"
 kotlin-atomic = "0.30.0-beta"
 kotlin-datetime = "0.7.1"
 kotlin-serialization = "1.10.0"
+kotlin-serialization-xml = "0.91.3"
 kotlin-logging = "7.0.3"
 kotlin-crypto = "0.8.0"
 
 [libraries]
 logback = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
+okio = { group = "com.squareup.okio", name = "okio", version.ref = "okio" }
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 kotlin-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
@@ -24,6 +27,7 @@ kotlin-io-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-io-core", ve
 kotlin-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlin-datetime" }
 kotlin-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlin-serialization" }
 kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlin-serialization" }
+kotlin-serialization-xml = { group = "io.github.pdvrieze.xmlutil", name = "serialization", version.ref = "kotlin-serialization-xml" }
 kotlin-logging = { group = "io.github.oshai", name = "kotlin-logging", version.ref = "kotlin-logging" }
 kotlin-ktor-http = { group = "io.ktor", name = "ktor-http", version.ref = "kotlin-ktor" }
 kotlin-ktor-client = { group = "io.ktor", name = "ktor-client-cio", version.ref = "kotlin-ktor" }
