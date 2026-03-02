@@ -12,6 +12,7 @@ kotlin {
             api(libs.kotlin.datetime)
             api(libs.kotlin.logging)
             api(libs.kotlin.reflect)
+            api(libs.kotlin.serialization.core)
         }
     }
 }
