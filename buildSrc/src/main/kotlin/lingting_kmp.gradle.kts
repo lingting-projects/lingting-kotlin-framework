@@ -18,6 +18,8 @@ kotlin {
             "kotlinx.serialization.InternalSerializationApi",
             "io.ktor.utils.io.InternalAPI",
             "kotlinx.serialization.ExperimentalSerializationApi",
+            "kotlin.contracts.ExperimentalContracts",
+            "kotlin.uuid.ExperimentalUuidApi",
         )
     }
 
