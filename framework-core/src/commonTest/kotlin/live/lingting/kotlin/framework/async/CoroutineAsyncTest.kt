@@ -1,7 +1,6 @@
 package live.lingting.kotlin.framework.async
 
 import kotlinx.atomicfu.atomic
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -9,7 +8,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class CoroutineAsyncTest {
 
     val activeTasks = atomic(0)

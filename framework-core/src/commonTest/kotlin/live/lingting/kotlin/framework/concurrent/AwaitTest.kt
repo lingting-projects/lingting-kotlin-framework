@@ -1,6 +1,5 @@
 package live.lingting.kotlin.framework.concurrent
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
@@ -14,7 +13,6 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * @author Gemini
  */
-@OptIn(ExperimentalCoroutinesApi::class)
 class AwaitTest {
 
     @Test

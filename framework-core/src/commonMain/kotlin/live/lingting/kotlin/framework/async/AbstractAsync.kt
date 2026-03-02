@@ -4,11 +4,20 @@ import kotlinx.atomicfu.atomic
 import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.atomicfu.locks.withLock
 import live.lingting.kotlin.framework.util.LoggerUtils.logger
+import kotlin.jvm.JvmOverloads
 
 /**
  * @author lingting 2026/2/26 10:35
  */
 abstract class AbstractAsync : Async {
+
+    final override var limit: Long = Async.UNLIMITED
+        private set
+
+    @JvmOverloads
+    constructor(limit: Long = Async.UNLIMITED) {
+        this.limit = limit
+    }
 
     protected val log = logger()
 
@@ -51,7 +60,7 @@ abstract class AbstractAsync : Async {
                 toSuccess()
             }
         } catch (t: Throwable) {
-            log.error(t) { "异步任务执行异常!" }
+            log.error(t) { "[异步任务] 执行异常!" }
             toFail()
         } finally {
             lock.withLock {

@@ -8,15 +8,12 @@ import kotlin.jvm.JvmOverloads
 /**
  * @author lingting 2026/2/25 15:34
  */
-class CoroutineAsync : AbstractAsync {
-
-    override val limit: Long
+open class CoroutineAsync : AbstractAsync {
 
     private val scope: CoroutineScope
 
     @JvmOverloads
-    constructor(limit: Long = Async.UNLIMITED, scope: CoroutineScope = CoroutineUtils.defaultScope) : super() {
-        this.limit = limit
+    constructor(limit: Long = Async.UNLIMITED, scope: CoroutineScope = CoroutineUtils.defaultScope) : super(limit) {
         this.scope = scope
     }
 

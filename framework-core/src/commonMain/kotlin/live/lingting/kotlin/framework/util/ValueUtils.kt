@@ -4,7 +4,6 @@ import live.lingting.kotlin.framework.util.ArrayUtils.isArray
 import live.lingting.kotlin.framework.util.ArrayUtils.isEmpty
 import live.lingting.kotlin.framework.value.MultiValue
 import kotlin.jvm.JvmStatic
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 /**
@@ -37,14 +36,12 @@ object ValueUtils {
         return true
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     @JvmStatic
     fun uuid(): String {
         val uuid = Uuid.random()
         return uuid.toHexDashString()
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     @JvmStatic
     fun simpleUuid(): String {
         val uuid = Uuid.random()

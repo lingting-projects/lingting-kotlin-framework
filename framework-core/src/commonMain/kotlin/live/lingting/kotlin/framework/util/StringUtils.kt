@@ -6,7 +6,6 @@ import live.lingting.kotlin.framework.util.BufferUtils.write
 import live.lingting.kotlin.framework.util.BufferUtils.writeChar
 import live.lingting.kotlin.framework.util.CharUtils.isLowerLetter
 import live.lingting.kotlin.framework.util.CharUtils.isUpperLetter
-import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.jvm.JvmStatic
 import kotlin.math.max
@@ -32,7 +31,6 @@ object StringUtils {
      * @return boolean
      */
     @JvmStatic
-    @OptIn(ExperimentalContracts::class)
     fun hasText(str: CharSequence?): Boolean {
         contract {
             returns(true) implies (str != null)
