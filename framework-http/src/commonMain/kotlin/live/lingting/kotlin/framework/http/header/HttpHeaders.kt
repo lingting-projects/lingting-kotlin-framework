@@ -1,5 +1,6 @@
 package live.lingting.kotlin.framework.http.header
 
+import io.ktor.http.HeadersBuilder
 import io.ktor.http.URLBuilder
 import live.lingting.kotlin.framework.http.header.HttpHeaderKeys.ACCEPT_LANGUAGE
 import live.lingting.kotlin.framework.http.header.HttpHeaderKeys.AUTHORIZATION
@@ -55,7 +56,28 @@ interface HttpHeaders : MultiValue<String, String, MutableCollection<String>> {
 
     override fun unmodifiable(): UnmodifiableHttpHeaders
 
+    // region common
+
+    fun addAll(source: HeadersBuilder?) {
+        if (source == null) {
+            return
+        }
+        for (name in source.names()) {
+            val strings = source.getAll(name)
+            if (strings.isNullOrEmpty()) {
+                append(name)
+            } else {
+                appendAll(name, strings)
+            }
+        }
+    }
+
+    fun appendAll(source: HeadersBuilder?) = addAll(source)
+
+    // endregion
+
     // region get
+
     fun host(): String? = first(HOST)
 
     fun origin(): String? = first(ORIGIN)
@@ -99,6 +121,7 @@ interface HttpHeaders : MultiValue<String, String, MutableCollection<String>> {
     // endregion
 
     // region set
+
     fun host(host: String): HttpHeaders {
         put(HOST, host)
         return this

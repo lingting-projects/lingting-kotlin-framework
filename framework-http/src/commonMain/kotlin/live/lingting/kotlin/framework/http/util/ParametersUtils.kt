@@ -3,6 +3,7 @@ package live.lingting.kotlin.framework.http.util
 import io.ktor.http.ParametersBuilder
 import io.ktor.util.StringValues
 import io.ktor.util.appendAll
+import live.lingting.kotlin.framework.http.QueryBuilder
 import kotlin.jvm.JvmStatic
 
 /**
@@ -37,6 +38,13 @@ object ParametersUtils {
     @JvmStatic
     fun ParametersBuilder.copy(): ParametersBuilder {
         return ParametersBuilder().also { it.appendAll(this) }
+    }
+
+    @JvmStatic
+    fun ParametersBuilder.appendAll(source: QueryBuilder) {
+        source.forEach { k, vs ->
+            appendAll(k, vs)
+        }
     }
 
 }

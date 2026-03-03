@@ -17,6 +17,9 @@ import kotlinx.io.Source
 import kotlinx.io.buffered
 import live.lingting.kotlin.framework.http.HttpClient.default
 import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.appendAll
+import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.host
+import live.lingting.kotlin.framework.http.util.HttpUrlUtils.headerHost
+import live.lingting.kotlin.framework.util.LoggerUtils.logger
 import kotlin.jvm.JvmField
 
 /**
@@ -31,6 +34,8 @@ abstract class ApiClient<R : ApiRequest>(@JvmField protected val host: String) {
 
     }
 
+    protected val log = logger()
+
     @JvmField
     protected var client = defaultClient
 
@@ -39,7 +44,7 @@ abstract class ApiClient<R : ApiRequest>(@JvmField protected val host: String) {
     /**
      * 检查返回值是否符合预期, 不符合则抛出异常
      */
-    abstract suspend fun checkout(r: R, response: HttpResponse)
+    abstract suspend fun checkout(r: R, request: HttpRequestBuilder, response: HttpResponse)
 
     protected open fun onCall(r: R) {
         //
@@ -56,28 +61,38 @@ abstract class ApiClient<R : ApiRequest>(@JvmField protected val host: String) {
         }
     }
 
-    protected open fun buildHeaders(r: R, headers: HeadersBuilder) {
+    protected open fun buildHeaders(r: R, builder: HttpRequestBuilder) {
+        val headers = builder.headers
+        if (headers.host().isNullOrBlank()) {
+            headers.host(builder.url.headerHost())
+        }
+
+        val contentType = r.contentType()
+        if (contentType != null) {
+            builder.headers[HttpHeaders.ContentType] = contentType
+        }
+
         if (r.headers.isEmpty()) {
             return
         }
         headers.appendAll(r.headers)
     }
 
-    protected suspend fun call(r: R): HttpResponse {
+    protected open fun buildRequest(r: R): HttpRequestBuilder {
         r.onBuildBefore()
         onCall(r)
         val builder = HttpRequestBuilder()
 
-        r.onUrlUrlBefore()
+        r.onBuildUrlBefore()
         buildUrl(r, builder.url)
         builder.method = r.method()
-        val contentType = r.contentType()
-        if (contentType != null) {
-            builder.headers[HttpHeaders.ContentType] = contentType
-        }
-        buildHeaders(r, builder.headers)
+        buildHeaders(r, builder)
         onHeadersAfter(r, builder.headers)
-        return call(r, builder)
+        return builder
+    }
+
+    protected open suspend fun call(r: R): HttpResponse {
+        return call(r, buildRequest(r))
     }
 
     protected open suspend fun call(r: R, builder: HttpRequestBuilder): HttpResponse {
@@ -108,7 +123,7 @@ abstract class ApiClient<R : ApiRequest>(@JvmField protected val host: String) {
         } finally {
             close(source)
         }
-        checkout(r, response)
+        checkout(r, builder, response)
         return response
     }
 

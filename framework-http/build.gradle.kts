@@ -10,8 +10,8 @@ kotlin {
             dependencies {
                 api(project(":framework-core"))
                 api(libs.kotlin.ktor.http)
-                implementation(libs.kotlin.ktor.client)
-                implementation(libs.kotlin.serialization.json)
+                api(libs.kotlin.ktor.client)
+                implementation(project(":framework-json"))
             }
         }
 

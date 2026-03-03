@@ -1,5 +1,6 @@
 package live.lingting.kotlin.framework.http.api
 
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HeadersBuilder
@@ -16,9 +17,10 @@ import io.ktor.server.routing.routing
 import io.ktor.util.toMap
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import live.lingting.kotlin.framework.http.body.MemoryBody
+import live.lingting.kotlin.framework.json.JsonExtraUtils.jsonToObj
+import live.lingting.kotlin.framework.json.JsonExtraUtils.toJson
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -48,7 +50,7 @@ class ApiClientTest {
                 // 鉴权逻辑：手动判断 Header
                 val checkAuth: suspend (io.ktor.server.application.ApplicationCall) -> Boolean = { call ->
                     if (call.request.header("Authorization") != authValue) {
-                        val errorJson = Json.encodeToString(R(403, "Forbidden"))
+                        val errorJson = R(403, "Forbidden").toJson()
                         call.respondText(errorJson, io.ktor.http.ContentType.Application.Json, HttpStatusCode.Forbidden)
                         false
                     } else true
@@ -56,14 +58,14 @@ class ApiClientTest {
 
                 get("/get") {
                     if (checkAuth(call)) {
-                        call.respondText(Json.encodeToString(R(200, call.request.queryParameters.toMap())))
+                        call.respondText(R(200, call.request.queryParameters.toMap()).toJson())
                     }
                 }
 
                 post("/post") {
                     if (checkAuth(call)) {
                         val body = call.receiveText()
-                        call.respondText(Json.encodeToString(R(200, body)))
+                        call.respondText(R(200, body).toJson())
                     }
                 }
             }
@@ -83,7 +85,7 @@ class ApiClientTest {
             val getResultString = getResp.bodyAsText()
             println("Correct GET: $getResultString")
 
-            val getResult = Json.decodeFromString<R<Map<String, Array<String>>>>(getResultString)
+            val getResult = getResultString.jsonToObj<R<Map<String, Array<String>>>>()
             val getResultData = getResult.data
             assertNotNull(getResultData)
             assertFalse(getResultData.isEmpty())
@@ -98,7 +100,7 @@ class ApiClientTest {
             println("Correct POST: $postResultString")
             assertEquals(200, postResp.status.value)
 
-            val postResult = Json.decodeFromString<R<String>>(postResultString)
+            val postResult = postResultString.jsonToObj<R<String>>()
             assertEquals(postContent, postResult.data)
 
             // --- 场景 3: 异常请求 (鉴权失败) ---
@@ -120,13 +122,13 @@ class ApiClientTest {
     class TestApiClient(host: String) : ApiClient<ApiSimpleRequest>(host) {
 
         // 在这里实现校验逻辑
-        override suspend fun checkout(r: ApiSimpleRequest, response: HttpResponse) {
+        override suspend fun checkout(r: ApiSimpleRequest, request: HttpRequestBuilder, response: HttpResponse) {
             if (response.status != HttpStatusCode.OK) {
                 throw IllegalStateException("Check failed: status=${response.status}")
             }
 
             val body = response.bodyAsText()
-            val result = Json.decodeFromString<R<JsonElement>>(body)
+            val result = body.jsonToObj<R<JsonElement>>()
 
             if (result.code != 200) {
                 throw IllegalStateException("Check failed: code=${result.code}")

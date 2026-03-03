@@ -3,13 +3,13 @@ package live.lingting.kotlin.framework.http.api
 import io.ktor.http.HttpMethod
 import io.ktor.http.supportsRequestBody
 import kotlinx.serialization.Transient
-import kotlinx.serialization.json.Json
 import live.lingting.kotlin.framework.http.QueryBuilder
 import live.lingting.kotlin.framework.http.body.Body
 import live.lingting.kotlin.framework.http.body.EmptyBody
 import live.lingting.kotlin.framework.http.body.MemoryBody
 import live.lingting.kotlin.framework.http.header.CollectionHttpHeaders
 import live.lingting.kotlin.framework.http.header.HttpHeaders
+import live.lingting.kotlin.framework.json.JsonExtraUtils.toJson
 import kotlin.jvm.JvmField
 
 /**
@@ -36,7 +36,7 @@ abstract class ApiRequest {
             return EmptyBody
         }
 
-        val json = Json.encodeToString(this)
+        val json = toJson()
         return MemoryBody(json)
     }
 
@@ -50,7 +50,7 @@ abstract class ApiRequest {
     /**
      * 在构造Url前触发
      */
-    open fun onUrlUrlBefore() {
+    open fun onBuildUrlBefore() {
         //
     }
 

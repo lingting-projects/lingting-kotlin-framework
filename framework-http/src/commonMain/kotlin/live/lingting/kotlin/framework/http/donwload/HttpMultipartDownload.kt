@@ -8,13 +8,13 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.Url
 import io.ktor.http.contentLength
 import io.ktor.utils.io.readAvailable
-import kotlinx.coroutines.cancel
 import kotlinx.io.Sink
 import kotlinx.io.files.Path
 import live.lingting.kotlin.framework.async.Async
 import live.lingting.kotlin.framework.async.async
 import live.lingting.kotlin.framework.data.DataSize
 import live.lingting.kotlin.framework.http.api.ApiClient
+import live.lingting.kotlin.framework.http.util.HttpExtraUtils.use
 import live.lingting.kotlin.framework.io.multipart.FileMultipartSink
 import live.lingting.kotlin.framework.io.multipart.MemoryMultipartSink
 import live.lingting.kotlin.framework.io.multipart.MultipartSink
@@ -51,7 +51,7 @@ open class HttpMultipartDownload : SinkMultipartTask {
     var readSize = 1.mb
 
     @JvmOverloads
-    protected constructor(
+    constructor(
         url: Url,
         sink: MultipartSink,
         multipart: Multipart,
@@ -63,7 +63,7 @@ open class HttpMultipartDownload : SinkMultipartTask {
     }
 
     @JvmOverloads
-    protected constructor(
+    constructor(
         url: Url,
         path: Path,
         multipart: Multipart,
@@ -72,7 +72,7 @@ open class HttpMultipartDownload : SinkMultipartTask {
     ) : this(url, FileMultipartSink(path), multipart, async, client)
 
     @JvmOverloads
-    protected constructor(
+    constructor(
         url: Url,
         multipart: Multipart,
         async: Async = async(),
@@ -81,10 +81,9 @@ open class HttpMultipartDownload : SinkMultipartTask {
 
     override suspend fun onPart(task: PartTask, partSink: Sink) {
         val part = task.part
-        val response = client.get(url) {
+        client.get(url) {
             headers[HttpHeaders.Range] = "bytes=${part.start.bytes}-${part.end.bytes}"
-        }
-        try {
+        }.use { response ->
             val httpStatus = response.status.value
             require(httpStatus == 206) { "分片下载异常! url: $url; part: $part; httpStatus: $httpStatus" }
             val channel = response.bodyAsChannel()
@@ -96,8 +95,6 @@ open class HttpMultipartDownload : SinkMultipartTask {
                 }
             }
             partSink.flush()
-        } finally {
-            response.cancel()
         }
     }
 
