@@ -1,9 +1,6 @@
 package live.lingting.kotlin.framework.aws.signer
 
-import io.ktor.http.HeadersBuilder
 import io.ktor.http.HttpMethod
-import io.ktor.http.ParametersBuilder
-import io.ktor.util.appendAll
 import kotlinx.datetime.LocalDateTime
 import live.lingting.kotlin.framework.aws.AwsUtils
 import live.lingting.kotlin.framework.aws.AwsUtils.HEADER_MD5
@@ -12,8 +9,10 @@ import live.lingting.kotlin.framework.crypto.util.DigestUtils.toSha256Hex
 import live.lingting.kotlin.framework.http.QueryBuilder
 import live.lingting.kotlin.framework.http.api.ApiRequest
 import live.lingting.kotlin.framework.http.body.Body
-import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.forEachSorted
+import live.lingting.kotlin.framework.http.header.CollectionHttpHeaders
+import live.lingting.kotlin.framework.http.header.HttpHeaders
 import live.lingting.kotlin.framework.util.StringUtils.deleteLast
+import live.lingting.kotlin.framework.util.ValueUtils.forEachSorted
 import kotlin.jvm.JvmOverloads
 import kotlin.time.Duration
 
@@ -25,9 +24,9 @@ import kotlin.time.Duration
 open class AwsV4Signer(
     val method: HttpMethod,
     path: String,
-    headers: HeadersBuilder,
+    headers: HttpHeaders,
     val body: Body<*>?,
-    params: ParametersBuilder,
+    params: QueryBuilder,
     val region: String,
     ak: String,
     val sk: String,
@@ -72,9 +71,9 @@ open class AwsV4Signer(
 
     open val headerSecurityToken by lazy { "$headerPrefix-security-token" }
 
-    open val headers = HeadersBuilder().also { it.appendAll(headers) }
+    open val headers = CollectionHttpHeaders().also { it.appendAll(headers) }
 
-    open val params = ParametersBuilder().also { it.appendAll(params) }
+    open val params = QueryBuilder().also { it.appendAll(params) }
 
     open val path = path.let {
         if (path.startsWith("/")) path else "/$path"
@@ -99,7 +98,7 @@ open class AwsV4Signer(
     }
 
     open fun token(): String? {
-        val all = headers.getAll(headerSecurityToken)
+        val all = headers[headerSecurityToken]
         headers.remove(headerSecurityToken)
         return all?.firstOrNull()
     }
@@ -315,8 +314,8 @@ open class AwsV4Signer(
 
     open class Signed(
         signer: AwsV4Signer,
-        headers: HeadersBuilder,
-        params: ParametersBuilder?,
+        headers: HttpHeaders,
+        params: QueryBuilder?,
         bodyPayload: String,
         open val canonicalUri: String,
         open val canonicalQuery: String,

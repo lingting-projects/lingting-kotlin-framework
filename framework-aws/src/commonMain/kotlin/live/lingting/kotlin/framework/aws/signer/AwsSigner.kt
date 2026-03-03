@@ -1,13 +1,13 @@
 package live.lingting.kotlin.framework.aws.signer
 
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.http.HeadersBuilder
-import io.ktor.http.HttpHeaders
-import io.ktor.http.ParametersBuilder
 import io.ktor.http.URLBuilder
-import io.ktor.util.appendAll
 import kotlinx.datetime.LocalDateTime
+import live.lingting.kotlin.framework.http.QueryBuilder
+import live.lingting.kotlin.framework.http.header.HttpHeaders
 import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.authorization
-import live.lingting.kotlin.framework.http.util.ParametersUtils.forEach
+import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.setAll
 import live.lingting.kotlin.framework.time.DateTime
 import live.lingting.kotlin.framework.util.DurationUtils.between
 import kotlin.time.Duration
@@ -55,19 +55,19 @@ abstract class AwsSigner<S : AwsSigner<S, R>, R : AwsSigner.Signed<S, R>>(open v
 
     open class Signed<S : AwsSigner<S, R>, R : Signed<S, R>>(
         open val signer: S,
-        open val headers: HeadersBuilder,
-        open val params: ParametersBuilder?,
+        open val headers: HttpHeaders,
+        open val params: QueryBuilder?,
         open val bodyPayload: String,
         open val source: String,
         open val sign: String,
         open val authorization: String,
     ) {
 
-        open fun fill(headers: HeadersBuilder?) {
+        open fun fill(headers: HttpHeaders?) {
             if (headers == null) {
                 return
             }
-            headers.appendAll(this.headers)
+            headers.setAll(this.headers)
             if (authorization.isNotBlank() && headers.authorization().isNullOrBlank()) {
                 headers.authorization(authorization)
             }
@@ -93,6 +93,24 @@ abstract class AwsSigner<S : AwsSigner<S, R>, R : AwsSigner.Signed<S, R>>(open v
         open fun fill(headers: HttpHeaders? = null, urlBuilder: URLBuilder? = null) {
             fill(headers)
             fill(urlBuilder)
+        }
+
+        open fun fill(headers: HeadersBuilder? = null) {
+            if (headers == null) {
+                return
+            }
+            headers.setAll(this.headers)
+            if (authorization.isNotBlank() && this.headers.authorization().isNullOrBlank()) {
+                headers.authorization(authorization)
+            }
+        }
+
+        open fun fill(builder: HttpRequestBuilder? = null) {
+            if (builder == null) {
+                return
+            }
+            fill(builder.url)
+            fill(builder.headers)
         }
 
     }

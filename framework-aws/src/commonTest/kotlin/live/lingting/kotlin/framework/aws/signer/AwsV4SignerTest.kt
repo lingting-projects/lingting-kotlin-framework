@@ -1,16 +1,16 @@
 package live.lingting.kotlin.framework.aws.signer
 
-import io.ktor.http.HeadersBuilder
 import io.ktor.http.HttpMethod
-import io.ktor.http.ParametersBuilder
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.appendPathSegments
-import io.ktor.util.appendAll
 import live.lingting.kotlin.framework.aws.AwsUtils
+import live.lingting.kotlin.framework.http.QueryBuilder
+import live.lingting.kotlin.framework.http.header.CollectionHttpHeaders
 import live.lingting.kotlin.framework.http.util.HttpUrlUtils.buildPath
 import live.lingting.kotlin.framework.http.util.HttpUrlUtils.buildStringBySort
 import live.lingting.kotlin.framework.http.util.HttpUrlUtils.headerHost
+import live.lingting.kotlin.framework.http.util.ParametersUtils.appendAll
 import live.lingting.kotlin.framework.util.DurationUtils.days
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -28,7 +28,7 @@ class AwsV4SignerTest {
     }
 
     fun testParamsToken() {
-        val params = ParametersBuilder()
+        val params = QueryBuilder()
 
         val builder = URLBuilder().apply {
             protocol = URLProtocol.HTTPS
@@ -36,7 +36,7 @@ class AwsV4SignerTest {
             appendPathSegments("test.txt")
         }
 
-        val headers = HeadersBuilder()
+        val headers = CollectionHttpHeaders()
         headers["Host"] = builder.headerHost()
         headers[AwsUtils.HEADER_TOKEN] =
             "IQoJb3JpZ2luX2VjEMv//////////wEaCXVzLWVhc3QtMSJGMEQCIBSUbVdj9YGs2g0HkHsOHFdkwOozjARSKHL987NhhOC8AiBPepRU1obMvIbGU0T+WphFPgK/qpxaf5Snvm5M57XFkCqlAgjz//////////8BEAAaDDQ3MjM4NTU0NDY2MCIM83pULBe5/+Nm1GZBKvkBVslSaJVgwSef7SsoZCJlfJ56weYl3QCwEGr2F4BmCZZyFpmWEYzWnhNK1AnHMj5nkfKlKBx30XAT5PZGVrmq4Vkn9ewlXQy1Iu3QJRi9Tdod8Ef9/yajTaUGh76+F5u5a4O115jwultOQiKomVwO318CO4l8lv/3HhMOkpdanMXn+4PY8lvM8RgnzSu90jOUpGXEOAo/6G8OqlMim3+ZmaQmasn4VYRvESEd7O72QGZ3+vDnDVnss0lSYjlv8PP7IujnvhZRnj0WoeOyMe1lL0wTG/a9usH5hE52w/YUJccOn0OaZuyROuVsRV4Q70sbWQhUvYUt+0tUMKzm8vsFOp4BaNZFqobbjtb36Y92v+x5kY6i0s8QE886jJtUWMP5ldMziClGx3p0mN5dzsYlM3GyiJ/O1mWkPQDwg3mtSpOA9oeeuAMPTA7qMqy9RNuTKBDSx9EW27wvPzBum3SJhEfxv48euadKgrIX3Z79ruQFSQOc9LUrDjR+4SoWAJqK+GX8Q3vPSjsLxhqhEMWd6U4TXcM7ku3gxMbzqfT8NDg="
@@ -85,7 +85,7 @@ class AwsV4SignerTest {
     }
 
     fun testParams() {
-        val params = ParametersBuilder()
+        val params = QueryBuilder()
 
         val builder = URLBuilder().apply {
             protocol = URLProtocol.HTTPS
@@ -93,7 +93,7 @@ class AwsV4SignerTest {
             appendPathSegments("test.txt")
         }
 
-        val headers = HeadersBuilder()
+        val headers = CollectionHttpHeaders()
         headers["Host"] = builder.headerHost()
 
         val signer = AwsV4Signer(
@@ -140,9 +140,9 @@ class AwsV4SignerTest {
     }
 
     fun testHeader() {
-        val params = ParametersBuilder()
+        val params = QueryBuilder()
 
-        val headers = HeadersBuilder()
+        val headers = CollectionHttpHeaders()
         headers["Host"] = "examplebucket.s3.amazonaws.com"
         headers["Range"] = "bytes=0-9"
 

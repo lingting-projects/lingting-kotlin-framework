@@ -7,12 +7,15 @@ import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import live.lingting.kotlin.framework.crypto.util.DigestUtils.toMd5Hex
 import live.lingting.kotlin.framework.data.DataSize
+import live.lingting.kotlin.framework.multipart.Multipart
+import live.lingting.kotlin.framework.multipart.Multipart.Builder
 import live.lingting.kotlin.framework.time.DateTime
 import live.lingting.kotlin.framework.time.DateTimePattern
 import live.lingting.kotlin.framework.util.Base64Utils.toBase64String
 import live.lingting.kotlin.framework.util.StringUtils.firstUpper
 import live.lingting.kotlin.framework.util.StringUtils.toHexBytes
 import kotlin.jvm.JvmField
+import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 
 
@@ -112,6 +115,18 @@ object AwsUtils {
     fun contentMd5FromMd5(md5: String): String {
         val bytes = md5.toHexBytes()
         return bytes.toBase64String()
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun multipart(block: (Builder.() -> Unit)? = null): Multipart = Multipart.build {
+        if (block != null) {
+            block()
+        }
+        partSize(MULTIPART_DEFAULT_PART_SIZE)
+        minPartSize(MULTIPART_MIN_PART_SIZE)
+        maxPartSize(MULTIPART_MAX_PART_SIZE)
+        maxPartCount(MULTIPART_MAX_PART_COUNT)
     }
 
 }

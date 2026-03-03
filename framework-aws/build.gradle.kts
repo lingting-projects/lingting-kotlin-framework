@@ -11,6 +11,8 @@ kotlin {
                 api(project(":framework-core"))
                 api(project(":framework-http"))
                 implementation(project(":framework-crypto"))
+                implementation(project(":framework-json"))
+                implementation(project(":framework-xml"))
             }
         }
     }
