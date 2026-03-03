@@ -3,6 +3,8 @@ package live.lingting.kotlin.framework.http
 import io.ktor.http.ParametersBuilder
 import io.ktor.http.encodeURLParameter
 import io.ktor.util.StringValues
+import live.lingting.kotlin.framework.http.util.HttpExtraUtils.appendAll
+import live.lingting.kotlin.framework.http.util.HttpExtraUtils.setAll
 import live.lingting.kotlin.framework.http.util.HttpUrlUtils
 import live.lingting.kotlin.framework.util.CollectionUtils
 import live.lingting.kotlin.framework.util.StringUtils
@@ -114,8 +116,11 @@ class QueryBuilder @JvmOverloads constructor(
     }
 
     fun build(): String {
+        val keys = sort(keys())
+
         return buildString {
-            forEach() { k, vs ->
+            keys.forEach { k ->
+                val vs = this@QueryBuilder[k]
                 val name = if (encode) k.encodeURLParameter() else k
                 if (vs.isEmpty()) {
                     append(name)
