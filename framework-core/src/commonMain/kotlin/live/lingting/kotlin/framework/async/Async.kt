@@ -54,7 +54,7 @@ interface Async {
      */
     @Throws(TimeoutException::class)
     suspend fun await(duration: Duration? = null) {
-        Await.waitFalse(duration) { isFull }
+        Await.waitTrue(duration) { running == 0L }
     }
 
     @Throws(TimeoutException::class)
