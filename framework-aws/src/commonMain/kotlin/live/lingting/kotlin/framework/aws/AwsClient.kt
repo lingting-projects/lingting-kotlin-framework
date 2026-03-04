@@ -6,9 +6,8 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ParametersBuilder
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
-import io.ktor.http.Url
 import io.ktor.http.encodedPath
-import live.lingting.framework.aws.exception.AwsException
+import live.lingting.kotlin.framework.aws.exception.AwsException
 import live.lingting.kotlin.framework.aws.properties.AwsProperties
 import live.lingting.kotlin.framework.aws.signer.AwsV4Signer
 import live.lingting.kotlin.framework.http.QueryBuilder
@@ -19,11 +18,12 @@ import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.to
 import live.lingting.kotlin.framework.http.util.HttpUrlUtils.buildPath
 import live.lingting.kotlin.framework.http.util.HttpUtils.isOk
 import live.lingting.kotlin.framework.http.util.ParametersUtils.copy
+import live.lingting.kotlin.framework.value.multi.StringMultiValue
 
 /**
  * @author lingting 2025/6/3 15:41
  */
-abstract class AwsClient<R : AwsRequest>(properties: AwsProperties) : ApiClient<R>(properties.host()) {
+abstract class AwsClient<R : AwsRequest>(private val properties: AwsProperties) : ApiClient<R>(properties.host()) {
 
     protected val ak: String = properties.ak
 
@@ -33,9 +33,11 @@ abstract class AwsClient<R : AwsRequest>(properties: AwsProperties) : ApiClient<
 
     protected val region = properties.region.let { it.ifBlank { AwsProperties.REGION } }
 
-    override val hostUrl: Url = URLBuilder(host).also {
-        it.protocol = if (properties.ssl) URLProtocol.HTTPS else URLProtocol.HTTP
-    }.build()
+    override fun hostUrlBuilder(): URLBuilder {
+        return super.hostUrlBuilder().also {
+            it.protocol = if (properties.ssl) URLProtocol.HTTPS else URLProtocol.HTTP
+        }
+    }
 
     override suspend fun checkout(r: R, request: HttpRequestBuilder, response: HttpResponse) {
         if (response.isOk) {
@@ -45,10 +47,10 @@ abstract class AwsClient<R : AwsRequest>(properties: AwsProperties) : ApiClient<
         val string = response.bodyAsText()
         val headers = request.headers
         val httpCode = response.status.value
-        log.error {
-            "aws 请求异常! client: ${this::class::simpleName}; uri: ${request.url.encodedPath}; authorization: ${headers.authorization()}; httpStatus: $httpCode; body: \n${string}"
-        }
-        throw AwsException("request error! action: ${r.action()}; code: $httpCode")
+        val msg =
+            "[AWS] 请求异常! client: ${this::class.simpleName}; uri: ${request.url.encodedPath}; authorization: ${headers.authorization()}; httpStatus: $httpCode; body: \n${string}"
+        log.error { msg }
+        throw AwsException(msg)
     }
 
     fun body(value: ParametersBuilder): MemoryBody {
@@ -75,7 +77,7 @@ abstract class AwsClient<R : AwsRequest>(properties: AwsProperties) : ApiClient<
             urlBuilder.buildPath(),
             builder.headers.to(),
             body,
-            QueryBuilder(),
+            StringMultiValue(),
             region,
             ak,
             sk,

@@ -3,7 +3,8 @@ package live.lingting.kotlin.framework.aws
 
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.HttpResponse
-import io.ktor.http.Url
+import io.ktor.http.URLBuilder
+import io.ktor.http.URLProtocol
 import io.ktor.utils.io.charsets.Charset
 import io.ktor.utils.io.charsets.Charsets
 import io.ktor.utils.io.core.toByteArray
@@ -42,7 +43,11 @@ abstract class AwsS3Client protected constructor(val properties: S3Properties) :
 
     var listener: AwsS3Listener = AwsS3DefaultListener(this)
 
-    override val hostUrl: Url by lazy { properties.urlBuilder().build() }
+    override fun hostUrlBuilder(): URLBuilder {
+        return super.hostUrlBuilder().also {
+            it.protocol = if (properties.ssl) URLProtocol.HTTPS else URLProtocol.HTTP
+        }
+    }
 
     override suspend fun checkout(r: AwsS3Request, request: HttpRequestBuilder, response: HttpResponse) {
         if (!response.isOk) {

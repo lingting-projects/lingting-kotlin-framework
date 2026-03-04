@@ -1,4 +1,4 @@
-package live.lingting.framework.aws.exception
+package live.lingting.kotlin.framework.aws.exception
 
 /**
  * @author lingting 2024-09-19 15:14

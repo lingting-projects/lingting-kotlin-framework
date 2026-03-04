@@ -16,6 +16,6 @@ object HttpContentTypes {
     val JSON_UTF8 = jsonCharset("utf8")
 
     @JvmStatic
-    fun jsonCharset(charset: String) = "$JSON;charset=${charset}"
+    fun jsonCharset(charset: String) = "$JSON; charset=${charset}"
 
 }

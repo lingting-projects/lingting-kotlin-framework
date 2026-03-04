@@ -2,9 +2,9 @@ package live.lingting.kotlin.framework.aws.s3.request
 
 import io.ktor.http.HttpMethod
 import live.lingting.kotlin.framework.aws.s3.AwsS3Request
-import live.lingting.kotlin.framework.http.QueryBuilder
 import live.lingting.kotlin.framework.http.body.Body
 import live.lingting.kotlin.framework.multipart.Part
+import live.lingting.kotlin.framework.value.MultiValue
 import kotlin.jvm.JvmStatic
 
 /**
@@ -15,7 +15,11 @@ open class AwsS3ObjectPutRequest(val body: Body<*>) : AwsS3Request() {
     companion object {
 
         @JvmStatic
-        fun addMultipartParams(params: QueryBuilder, uploadId: String?, part: Part?) {
+        fun <C : Collection<String>> addMultipartParams(
+            params: MultiValue<String, String, C>,
+            uploadId: String?,
+            part: Part?
+        ) {
             checkNotNull(part) { "content part must be not null!" }
             val u = uploadId
             params.add("partNumber", (part.index + 1).toString())

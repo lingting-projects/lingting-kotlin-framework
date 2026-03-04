@@ -1,7 +1,10 @@
 package live.lingting.kotlin.framework.aws.sts
 
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import live.lingting.kotlin.framework.aws.policy.Statement
 import live.lingting.kotlin.framework.json.JsonExtraUtils.toJson
+import live.lingting.kotlin.framework.json.JsonExtraUtils.toJsonNode
 import live.lingting.kotlin.framework.util.DurationUtils.isPositive
 import kotlin.time.Duration
 
@@ -39,9 +42,9 @@ class AwsStsCredentialRequest : AwsStsRequest() {
         if (sourceIdentity.isNotBlank()) {
             params.add("SourceIdentity", sourceIdentity)
         }
-        val policy = buildMap {
+        val policy = buildJsonObject {
             put("Version", "2012-10-17")
-            put("Statement", statements.map { it.map() })
+            put("Statement", statements.toJsonNode())
         }
         params.add("Policy", policy.toJson())
     }

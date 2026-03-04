@@ -5,14 +5,14 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.encodedPath
-import live.lingting.framework.aws.exception.AwsS3Exception
 import live.lingting.kotlin.framework.aws.AwsS3Client
+import live.lingting.kotlin.framework.aws.exception.AwsS3Exception
 import live.lingting.kotlin.framework.aws.s3.AwsS3Request
 import live.lingting.kotlin.framework.aws.s3.interfaces.AwsS3Listener
 import live.lingting.kotlin.framework.aws.signer.AwsSigner
 import live.lingting.kotlin.framework.aws.signer.AwsV4Signer
-import live.lingting.kotlin.framework.http.QueryBuilder
 import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.to
+import live.lingting.kotlin.framework.http.util.ParametersUtils.to
 import live.lingting.kotlin.framework.util.LoggerUtils.logger
 import kotlin.jvm.JvmField
 
@@ -27,7 +27,7 @@ open class AwsS3DefaultListener(@JvmField protected val client: AwsS3Client) : A
     override suspend fun onFailed(r: AwsS3Request, request: HttpRequestBuilder, response: HttpResponse) {
         val httpStatus = response.status.value
         val string = response.bodyAsText()
-        val msg = "S3请求异常! uri: ${request.url.encodedPath}; httpStatus: $httpStatus;"
+        val msg = "[S3] S3请求异常! uri: ${request.url.encodedPath}; httpStatus: $httpStatus;"
         log.error {
             "$msg body: \n$string"
         }
@@ -43,7 +43,7 @@ open class AwsS3DefaultListener(@JvmField protected val client: AwsS3Client) : A
             builder.url.encodedPath,
             builder.headers.to(),
             null,
-            QueryBuilder(builder.url.parameters),
+            builder.url.parameters.to(),
             properties.region,
             properties.ak,
             properties.sk,

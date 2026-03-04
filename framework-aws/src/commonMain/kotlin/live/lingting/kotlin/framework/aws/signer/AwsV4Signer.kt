@@ -13,6 +13,7 @@ import live.lingting.kotlin.framework.http.header.CollectionHttpHeaders
 import live.lingting.kotlin.framework.http.header.HttpHeaders
 import live.lingting.kotlin.framework.util.StringUtils.deleteLast
 import live.lingting.kotlin.framework.util.ValueUtils.forEachSorted
+import live.lingting.kotlin.framework.value.multi.StringMultiValue
 import kotlin.jvm.JvmOverloads
 import kotlin.time.Duration
 
@@ -26,7 +27,7 @@ open class AwsV4Signer(
     path: String,
     headers: HttpHeaders,
     val body: Body<*>?,
-    params: QueryBuilder,
+    params: StringMultiValue,
     val region: String,
     ak: String,
     val sk: String,
@@ -73,7 +74,7 @@ open class AwsV4Signer(
 
     open val headers = CollectionHttpHeaders().also { it.appendAll(headers) }
 
-    open val params = QueryBuilder().also { it.appendAll(params) }
+    open val params = StringMultiValue().also { it.appendAll(params) }
 
     open val path = path.let {
         if (path.startsWith("/")) path else "/$path"
@@ -315,7 +316,7 @@ open class AwsV4Signer(
     open class Signed(
         signer: AwsV4Signer,
         headers: HttpHeaders,
-        params: QueryBuilder?,
+        params: StringMultiValue?,
         bodyPayload: String,
         open val canonicalUri: String,
         open val canonicalQuery: String,

@@ -5,13 +5,13 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.appendPathSegments
 import live.lingting.kotlin.framework.aws.AwsUtils
-import live.lingting.kotlin.framework.http.QueryBuilder
 import live.lingting.kotlin.framework.http.header.CollectionHttpHeaders
 import live.lingting.kotlin.framework.http.util.HttpUrlUtils.buildPath
 import live.lingting.kotlin.framework.http.util.HttpUrlUtils.buildStringBySort
 import live.lingting.kotlin.framework.http.util.HttpUrlUtils.headerHost
 import live.lingting.kotlin.framework.http.util.ParametersUtils.appendAll
 import live.lingting.kotlin.framework.util.DurationUtils.days
+import live.lingting.kotlin.framework.value.multi.StringMultiValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -28,7 +28,7 @@ class AwsV4SignerTest {
     }
 
     fun testParamsToken() {
-        val params = QueryBuilder()
+        val params = StringMultiValue()
 
         val builder = URLBuilder().apply {
             protocol = URLProtocol.HTTPS
@@ -85,7 +85,7 @@ class AwsV4SignerTest {
     }
 
     fun testParams() {
-        val params = QueryBuilder()
+        val params = StringMultiValue()
 
         val builder = URLBuilder().apply {
             protocol = URLProtocol.HTTPS
@@ -140,7 +140,7 @@ class AwsV4SignerTest {
     }
 
     fun testHeader() {
-        val params = QueryBuilder()
+        val params = StringMultiValue()
 
         val headers = CollectionHttpHeaders()
         headers["Host"] = "examplebucket.s3.amazonaws.com"

@@ -20,6 +20,7 @@ kotlin {
             "kotlinx.serialization.ExperimentalSerializationApi",
             "kotlin.contracts.ExperimentalContracts",
             "kotlin.uuid.ExperimentalUuidApi",
+            "kotlin.concurrent.atomics.ExperimentalAtomicApi",
         )
     }
 

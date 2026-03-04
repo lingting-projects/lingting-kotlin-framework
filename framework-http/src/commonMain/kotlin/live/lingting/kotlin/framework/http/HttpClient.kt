@@ -7,6 +7,7 @@ import io.ktor.client.engine.cio.CIOEngineConfig
 import io.ktor.client.plugins.HttpRedirect
 import io.ktor.client.plugins.HttpTimeout
 import kotlin.jvm.JvmField
+import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 import kotlin.time.Duration
 import io.ktor.client.HttpClient as KtorClient
@@ -21,6 +22,17 @@ object HttpClient {
 
     @JvmStatic
     fun default(): KtorClient = buildDefault()
+
+    @JvmStatic
+    fun builder(): Builder = Builder()
+
+    @JvmStatic
+    @JvmOverloads
+    fun build(block: (Builder.() -> Unit)? = null): KtorClient = Builder().also {
+        if (block != null) {
+            block(it)
+        }
+    }.build()
 
     @Suppress("UNCHECKED_CAST")
     open class Builder {

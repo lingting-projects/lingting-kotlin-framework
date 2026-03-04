@@ -4,12 +4,12 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.http.HeadersBuilder
 import io.ktor.http.URLBuilder
 import kotlinx.datetime.LocalDateTime
-import live.lingting.kotlin.framework.http.QueryBuilder
 import live.lingting.kotlin.framework.http.header.HttpHeaders
 import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.authorization
 import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.setAll
 import live.lingting.kotlin.framework.time.DateTime
 import live.lingting.kotlin.framework.util.DurationUtils.between
+import live.lingting.kotlin.framework.value.multi.StringMultiValue
 import kotlin.time.Duration
 
 
@@ -56,7 +56,7 @@ abstract class AwsSigner<S : AwsSigner<S, R>, R : AwsSigner.Signed<S, R>>(open v
     open class Signed<S : AwsSigner<S, R>, R : Signed<S, R>>(
         open val signer: S,
         open val headers: HttpHeaders,
-        open val params: QueryBuilder?,
+        open val params: StringMultiValue?,
         open val bodyPayload: String,
         open val source: String,
         open val sign: String,

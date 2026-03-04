@@ -3,7 +3,8 @@ package live.lingting.kotlin.framework.http.util
 import io.ktor.http.ParametersBuilder
 import io.ktor.util.StringValues
 import io.ktor.util.appendAll
-import live.lingting.kotlin.framework.http.QueryBuilder
+import live.lingting.kotlin.framework.value.MultiValue
+import live.lingting.kotlin.framework.value.multi.StringMultiValue
 import kotlin.jvm.JvmStatic
 
 /**
@@ -41,7 +42,16 @@ object ParametersUtils {
     }
 
     @JvmStatic
-    fun ParametersBuilder.appendAll(source: QueryBuilder) {
+    fun ParametersBuilder.to(): StringMultiValue {
+        val value = StringMultiValue()
+        forEach { k, vs ->
+            value.appendAll(k, vs)
+        }
+        return value
+    }
+
+    @JvmStatic
+    fun <C : Collection<String>> ParametersBuilder.appendAll(source: MultiValue<String, String, C>) {
         source.forEach { k, vs ->
             appendAll(k, vs)
         }

@@ -29,7 +29,6 @@ import live.lingting.kotlin.framework.util.IoUtils.source
 import live.lingting.kotlin.framework.util.LoggerUtils.logger
 import live.lingting.kotlin.framework.util.SystemUtils
 import kotlin.concurrent.atomics.AtomicLong
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -73,7 +72,6 @@ abstract class S3BasicTest {
         }
     }
 
-    @OptIn(ExperimentalAtomicApi::class)
     protected open suspend fun doTest() {
         val async = async()
         val atomic = AtomicLong(0L)

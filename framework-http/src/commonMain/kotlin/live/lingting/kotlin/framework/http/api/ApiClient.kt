@@ -39,7 +39,11 @@ abstract class ApiClient<R : ApiRequest>(@JvmField protected val host: String) {
     @JvmField
     protected var client = defaultClient
 
-    protected open val hostUrl = Url(host)
+    protected val hostUrl: Url by lazy { hostUrlBuilder().build() }
+
+    protected open fun hostUrlBuilder(): URLBuilder {
+        return URLBuilder(host = host)
+    }
 
     /**
      * 检查返回值是否符合预期, 不符合则抛出异常

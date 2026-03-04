@@ -18,7 +18,7 @@ import kotlin.time.Duration
 /**
  * @author lingting 2025/6/3 15:58
  */
-class AwsStsClient(val properties: AwsStsProperties) : AwsClient<AwsStsRequest>(properties), AwsStsInterface {
+class AwsStsClient(protected val properties: AwsStsProperties) : AwsClient<AwsStsRequest>(properties), AwsStsInterface {
 
     override fun service(): String = "sts"
 

@@ -3,13 +3,13 @@ package live.lingting.kotlin.framework.http.api
 import io.ktor.http.HttpMethod
 import io.ktor.http.supportsRequestBody
 import kotlinx.serialization.Transient
-import live.lingting.kotlin.framework.http.QueryBuilder
 import live.lingting.kotlin.framework.http.body.Body
 import live.lingting.kotlin.framework.http.body.EmptyBody
 import live.lingting.kotlin.framework.http.body.MemoryBody
 import live.lingting.kotlin.framework.http.header.CollectionHttpHeaders
 import live.lingting.kotlin.framework.http.header.HttpHeaders
 import live.lingting.kotlin.framework.json.JsonExtraUtils.toJson
+import live.lingting.kotlin.framework.value.multi.StringMultiValue
 import kotlin.jvm.JvmField
 
 /**
@@ -23,7 +23,7 @@ abstract class ApiRequest {
 
     @JvmField
     @Transient
-    val params: QueryBuilder = QueryBuilder()
+    val params: StringMultiValue = StringMultiValue()
 
     abstract fun method(): HttpMethod
 

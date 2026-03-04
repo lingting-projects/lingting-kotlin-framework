@@ -3,6 +3,7 @@ package live.lingting.kotlin.framework.json
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonBuilder
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
@@ -14,7 +15,14 @@ import kotlin.jvm.JvmStatic
  */
 object JsonUtils {
 
-    var instance: Json = Json
+    var instance: Json = Json {
+        fillConfig(this)
+    }
+
+    @JvmStatic
+    fun fillConfig(builder: JsonBuilder) {
+        builder.ignoreUnknownKeys = true
+    }
 
     @JvmStatic
     inline fun <reified F, reified T> convert(f: F): T {

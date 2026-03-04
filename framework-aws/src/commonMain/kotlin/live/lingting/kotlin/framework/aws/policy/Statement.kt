@@ -1,11 +1,24 @@
 package live.lingting.kotlin.framework.aws.policy
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 
 /**
  * @author lingting 2024-09-12 20:31
  */
-open class Statement(val isAllow: Boolean) {
+@Serializable
+open class Statement @JvmOverloads constructor(
+    @SerialName("Effect")
+    protected val effect: String,
+    @SerialName("Action")
+    protected val actions: LinkedHashSet<String> = LinkedHashSet(),
+    @SerialName("Resource")
+    protected val resources: LinkedHashSet<String> = LinkedHashSet(),
+    @SerialName("Condition")
+    protected val conditions: LinkedHashMap<String, LinkedHashMap<String, LinkedHashSet<String>>> = LinkedHashMap(),
+) {
 
     companion object {
 
@@ -21,11 +34,7 @@ open class Statement(val isAllow: Boolean) {
 
     }
 
-    protected val actions: LinkedHashSet<String> = LinkedHashSet()
-
-    protected val resources: LinkedHashSet<String> = LinkedHashSet()
-
-    protected val conditions: LinkedHashMap<String, LinkedHashMap<String, LinkedHashSet<String>>> = LinkedHashMap()
+    constructor(allow: Boolean) : this(if (allow) "Allow" else "Deny")
 
     open fun addAction(action: String) {
         actions.add(action)
@@ -65,7 +74,7 @@ open class Statement(val isAllow: Boolean) {
 
     open fun map(): MutableMap<String, Any> {
         val map: MutableMap<String, Any> = HashMap(4)
-        map["Effect"] = if (isAllow) "Allow" else "Deny"
+        map["Effect"] = effect
         map["Action"] = LinkedHashSet(actions)
         map["Resource"] = LinkedHashSet(resources)
         if (conditions.isNotEmpty()) {

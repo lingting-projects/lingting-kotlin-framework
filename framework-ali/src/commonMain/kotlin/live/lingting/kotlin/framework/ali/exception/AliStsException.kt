@@ -1,12 +1,10 @@
-package live.lingting.kotlin.framework.aws.exception
+package live.lingting.kotlin.framework.ali.exception
 
 /**
- * @author lingting 2024-09-19 15:14
+ * @author lingting 2024-09-12 21:41
  */
-open class AwsException : RuntimeException {
-
+class AliStsException : AliException {
     constructor(message: String) : super(message)
 
     constructor(message: String, cause: Throwable) : super(message, cause)
-
 }
