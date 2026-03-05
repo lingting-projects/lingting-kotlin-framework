@@ -75,7 +75,7 @@ object HttpHeadersUtils {
     fun Headers.etag() = get(HttpHeaders.ETag)
 
     @JvmStatic
-    fun Headers?.toHttpHeaders(): live.lingting.kotlin.framework.http.header.HttpHeaders {
+    fun Headers?.to(): live.lingting.kotlin.framework.http.header.HttpHeaders {
         val target = CollectionHttpHeaders()
         if (this == null) return target
         forEach { k, vs ->

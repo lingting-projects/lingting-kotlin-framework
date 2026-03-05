@@ -12,7 +12,7 @@ class HttpClientTest {
 
     @Test
     fun test() = runTest {
-        val client = HttpClient.default()
+        val client = HttpClients.default()
         val response = client.get("https://www.baidu.com")
         assertEquals(200, response.status.value)
     }

@@ -15,10 +15,11 @@ import io.ktor.utils.io.core.Closeable
 import kotlinx.io.RawSource
 import kotlinx.io.Source
 import kotlinx.io.buffered
-import live.lingting.kotlin.framework.http.HttpClient.default
+import live.lingting.kotlin.framework.http.HttpClients
 import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.appendAll
 import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.host
 import live.lingting.kotlin.framework.http.util.HttpUrlUtils.headerHost
+import live.lingting.kotlin.framework.util.DurationUtils.seconds
 import live.lingting.kotlin.framework.util.LoggerUtils.logger
 import kotlin.jvm.JvmField
 
@@ -30,14 +31,19 @@ abstract class ApiClient<R : ApiRequest>(@JvmField protected val host: String) {
     companion object {
 
         @JvmField
-        var defaultClient: HttpClient = default()
+        var defaultClient: HttpClient = HttpClients.build {
+            disableSsl()
+            callTimeout(10.seconds)
+            connectTimeout(15.seconds)
+            readTimeout(30.seconds)
+        }
 
     }
 
     protected val log = logger()
 
     @JvmField
-    protected var client = defaultClient
+    var client = defaultClient
 
     protected val hostUrl: Url by lazy { hostUrlBuilder().build() }
 
@@ -101,24 +107,27 @@ abstract class ApiClient<R : ApiRequest>(@JvmField protected val host: String) {
 
     protected open suspend fun call(r: R, builder: HttpRequestBuilder): HttpResponse {
         val body = r.body()
-        var source = body.source()
-        when (source) {
-            is ByteArray -> {
-                builder.body = ByteReadChannel(source)
-            }
+        var source: Any? = null
+        if (body.length() > 0) {
+            source = body.source()
+            when (source) {
+                is ByteArray -> {
+                    builder.body = ByteReadChannel(source)
+                }
 
-            is Source -> {
-                builder.body = ByteReadChannel(source)
-            }
+                is Source -> {
+                    builder.body = ByteReadChannel(source)
+                }
 
-            is RawSource -> {
-                val buffered = source.buffered()
-                source = buffered
-                builder.body = ByteReadChannel(buffered)
-            }
+                is RawSource -> {
+                    val buffered = source.buffered()
+                    source = buffered
+                    builder.body = ByteReadChannel(buffered)
+                }
 
-            else -> {
-                builder.body = body
+                else -> {
+                    builder.body = body
+                }
             }
         }
 

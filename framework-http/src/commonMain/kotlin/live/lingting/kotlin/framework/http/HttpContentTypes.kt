@@ -12,6 +12,10 @@ object HttpContentTypes {
 
     const val JSON = "application/json"
 
+    const val XML = "application/xml"
+
+    const val STREAM = "application/octet-stream"
+
     @JvmField
     val JSON_UTF8 = jsonCharset("utf8")
 

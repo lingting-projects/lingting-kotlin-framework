@@ -15,10 +15,14 @@ import io.ktor.client.HttpClient as KtorClient
 /**
  * @author lingting 2026/1/31 16:39
  */
-object HttpClient {
+object HttpClients {
 
     @JvmField
-    var buildDefault: () -> KtorClient = { Builder().build() }
+    var buildDefault: () -> KtorClient = {
+        Builder().apply {
+        }.build {
+        }
+    }
 
     @JvmStatic
     fun default(): KtorClient = buildDefault()
@@ -52,6 +56,8 @@ object HttpClient {
 
         protected var proxy: ProxyConfig? = null
 
+        protected var ssl: Boolean = true
+
         fun followRedirect(v: Boolean): Builder {
             this.followRedirect = v
             return this
@@ -82,6 +88,16 @@ object HttpClient {
             return this
         }
 
+        fun enableSsl(): Builder {
+            ssl = true
+            return this
+        }
+
+        fun disableSsl(): Builder {
+            ssl = false
+            return this
+        }
+
         open fun build(): KtorClient {
             return build { }
         }
@@ -94,6 +110,9 @@ object HttpClient {
         }
 
         open fun config(config: HttpClientConfig<CIOEngineConfig>) {
+            if (!ssl) {
+                internalDisableSsl(config)
+            }
             config.apply {
                 if (followRedirect) {
                     install(HttpRedirect) {
@@ -128,3 +147,5 @@ object HttpClient {
     }
 
 }
+
+internal expect fun HttpClients.Builder.internalDisableSsl(config: HttpClientConfig<CIOEngineConfig>)

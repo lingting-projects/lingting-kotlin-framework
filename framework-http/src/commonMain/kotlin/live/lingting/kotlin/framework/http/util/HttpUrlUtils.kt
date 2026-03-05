@@ -5,7 +5,6 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.Url
 import io.ktor.http.appendPathSegments
-import io.ktor.http.fullPath
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
 import live.lingting.kotlin.framework.util.BufferUtils.writeChar
@@ -39,7 +38,7 @@ object HttpUrlUtils {
 
     @JvmStatic
     fun URLBuilder.buildPath(): String {
-        return build().fullPath
+        return pathSegments.joinToString("/", prefix = "/")
     }
 
     @JvmStatic

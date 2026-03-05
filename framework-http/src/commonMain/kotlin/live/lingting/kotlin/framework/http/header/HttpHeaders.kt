@@ -2,9 +2,11 @@ package live.lingting.kotlin.framework.http.header
 
 import io.ktor.http.HeadersBuilder
 import io.ktor.http.URLBuilder
+import live.lingting.kotlin.framework.data.DataSize
 import live.lingting.kotlin.framework.http.header.HttpHeaderKeys.ACCEPT_LANGUAGE
 import live.lingting.kotlin.framework.http.header.HttpHeaderKeys.AUTHORIZATION
 import live.lingting.kotlin.framework.http.header.HttpHeaderKeys.CONTENT_LENGTH
+import live.lingting.kotlin.framework.http.header.HttpHeaderKeys.CONTENT_RANGE
 import live.lingting.kotlin.framework.http.header.HttpHeaderKeys.CONTENT_TYPE
 import live.lingting.kotlin.framework.http.header.HttpHeaderKeys.ETAG
 import live.lingting.kotlin.framework.http.header.HttpHeaderKeys.FORWARDED_BY
@@ -22,6 +24,8 @@ import live.lingting.kotlin.framework.http.header.HttpHeaderKeys.X_FORWARDED_POR
 import live.lingting.kotlin.framework.http.header.HttpHeaderKeys.X_FORWARDED_PROTO
 import live.lingting.kotlin.framework.http.header.HttpHeaderKeys.X_FORWARDED_SERVER
 import live.lingting.kotlin.framework.http.util.HttpUrlUtils.headerHost
+import live.lingting.kotlin.framework.util.DataSizeUtils.bytes
+import live.lingting.kotlin.framework.util.NumberUtils
 import live.lingting.kotlin.framework.util.StringUtils
 import live.lingting.kotlin.framework.value.MultiValue
 import kotlin.jvm.JvmOverloads
@@ -94,6 +98,16 @@ interface HttpHeaders : MultiValue<String, String, MutableCollection<String>> {
 
     fun contentLength(): Long = first(CONTENT_LENGTH, "0").toLong()
 
+    fun contentRange(): Long = first(CONTENT_RANGE, "0").toLong()
+
+    fun contentSize(): DataSize {
+        val range = first(CONTENT_RANGE)
+        if (!range.isNullOrBlank()) {
+            return range.substringAfter("/").toLong().bytes
+        }
+        return contentLength().bytes
+    }
+
     fun etag(): String? = first(ETAG)
 
     fun charset(): String? {
@@ -141,8 +155,8 @@ interface HttpHeaders : MultiValue<String, String, MutableCollection<String>> {
         return this
     }
 
-    fun contentLength(contentLength: Number): HttpHeaders {
-        put(CONTENT_LENGTH, contentLength.toLong().toString())
+    fun contentLength(v: Number): HttpHeaders {
+        put(CONTENT_LENGTH, NumberUtils.toString(v))
         return this
     }
 

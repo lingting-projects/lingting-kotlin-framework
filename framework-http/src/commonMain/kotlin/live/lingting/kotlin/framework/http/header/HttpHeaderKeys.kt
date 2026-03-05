@@ -9,6 +9,8 @@ object HttpHeaderKeys {
 
     const val CONTENT_LENGTH = "Content-Length"
 
+    const val CONTENT_RANGE = "Content-Range"
+
     const val ETAG = "ETag"
 
     const val HOST = "Host"
