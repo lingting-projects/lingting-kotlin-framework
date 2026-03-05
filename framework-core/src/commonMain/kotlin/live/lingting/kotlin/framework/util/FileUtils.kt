@@ -1,6 +1,8 @@
 package live.lingting.kotlin.framework.util
 
 import kotlinx.io.files.Path
+import kotlinx.io.files.SystemFileSystem
+import live.lingting.kotlin.framework.util.DataSizeUtils.bytes
 import kotlin.jvm.JvmStatic
 
 /**
@@ -10,5 +12,8 @@ object FileUtils {
 
     @JvmStatic
     fun String.toPath() = Path(this)
+
+    @JvmStatic
+    fun Path.size() = SystemFileSystem.metadataOrNull(this)?.size?.bytes
 
 }

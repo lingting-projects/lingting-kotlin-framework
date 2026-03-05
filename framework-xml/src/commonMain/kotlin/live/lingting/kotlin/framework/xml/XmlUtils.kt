@@ -20,6 +20,7 @@ object XmlUtils {
     var instance: XML = XML {
         policy = DefaultXmlSerializationPolicy.Builder().apply {
             formatCache = runCatching { defaultSharedFormatCache() }.getOrElse { FormatCache.Dummy }
+            ignoreUnknownChildren()
         }.build()
         autoPolymorphic = true
     }

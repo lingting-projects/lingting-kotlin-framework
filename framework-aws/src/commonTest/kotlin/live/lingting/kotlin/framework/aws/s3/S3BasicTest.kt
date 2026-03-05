@@ -1,8 +1,9 @@
 package live.lingting.kotlin.framework.aws.s3
 
+import io.ktor.client.engine.ProxyBuilder
+import io.ktor.client.engine.http
 import io.ktor.client.request.get
 import io.ktor.client.request.put
-import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.util.appendAll
 import io.ktor.utils.io.core.toByteArray
@@ -16,7 +17,9 @@ import live.lingting.kotlin.framework.aws.s3.interfaces.AwsS3BucketDelegation
 import live.lingting.kotlin.framework.aws.s3.interfaces.AwsS3ObjectDelegation
 import live.lingting.kotlin.framework.concurrent.Await
 import live.lingting.kotlin.framework.crypto.util.DigestUtils.toMd5Hex
-import live.lingting.kotlin.framework.http.HttpClient
+import live.lingting.kotlin.framework.http.HttpClients
+import live.lingting.kotlin.framework.http.api.ApiClient
+import live.lingting.kotlin.framework.http.body.MemoryBody
 import live.lingting.kotlin.framework.http.util.HttpExtraUtils.use
 import live.lingting.kotlin.framework.http.util.HttpUtils.isOk
 import live.lingting.kotlin.framework.io.multipart.MemoryMultipartSource
@@ -25,7 +28,6 @@ import live.lingting.kotlin.framework.time.DateTime
 import live.lingting.kotlin.framework.util.CoroutineUtils
 import live.lingting.kotlin.framework.util.DataSizeUtils.bytes
 import live.lingting.kotlin.framework.util.DurationUtils.millis
-import live.lingting.kotlin.framework.util.IoUtils.source
 import live.lingting.kotlin.framework.util.LoggerUtils.logger
 import live.lingting.kotlin.framework.util.SystemUtils
 import kotlin.concurrent.atomics.AtomicLong
@@ -34,7 +36,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 
@@ -47,6 +48,8 @@ abstract class S3BasicTest {
 
     private val snowflake = Snowflake(0, 0)
 
+    protected open val useProxy: Boolean = true
+
     abstract suspend fun buildObj(key: String): AwsS3ObjectDelegation
 
     abstract suspend fun buildBucket(): AwsS3BucketDelegation
@@ -55,9 +58,20 @@ abstract class S3BasicTest {
 
     protected val properties = properties()
 
-    protected var client = HttpClient.default()
+    protected var client: io.ktor.client.HttpClient = ApiClient.defaultClient
+
+    private fun before() {
+        if (useProxy) {
+            client = HttpClients.build {
+                disableSsl()
+                proxy(ProxyBuilder.http("http://127.0.0.1:9999"))
+            }
+        }
+    }
 
     suspend fun CoroutineScope.run() {
+        before()
+        ApiClient.defaultClient = client
         CoroutineUtils.switchScope(this)
         doTest()
         val domain = SystemUtils.getEnv("DOMAIN")
@@ -73,7 +87,7 @@ abstract class S3BasicTest {
     }
 
     protected open suspend fun doTest() {
-        val async = async()
+        val async = async(1)
         val atomic = AtomicLong(0L)
 
         async.submit {
@@ -122,10 +136,10 @@ abstract class S3BasicTest {
             val source = "hello world oss"
             val bytes = source.toByteArray()
             val hex = bytes.toMd5Hex()
-            obj.put(bytes.source(), Acl.PUBLIC_READ)
+            obj.put(MemoryBody(bytes), Acl.PUBLIC_READ)
             val head = obj.head()
             assertNotNull(head)
-            assertEquals(bytes.size.toLong(), head.contentLength())
+            assertEquals(bytes.size.toLong(), head.contentSize().bytes)
             assertTrue("\"$hex\"".equals(head.etag(), ignoreCase = true))
             val string = client.get(obj.publicUrl()).bodyAsText()
             assertEquals(source, string)
@@ -177,7 +191,7 @@ abstract class S3BasicTest {
             assertTrue(multipart.partSize >= AwsUtils.MULTIPART_MIN_PART_SIZE)
             val head = obj.head()
             assertNotNull(head)
-            assertEquals(bytes.size.toLong(), head.contentLength())
+            assertEquals(bytes.size.toLong(), head.contentSize().bytes)
             val string = client.get(obj.publicUrl()).bodyAsText()
             assertEquals(source, string)
             assertEquals(hex, string.toMd5Hex())
@@ -197,20 +211,20 @@ abstract class S3BasicTest {
             val meta = AwsS3Meta()
             meta.add("md5", md5)
             meta.add("timestamp", DateTime.millis().toString())
-            obj.put(bytes.source(), Acl.PUBLIC_READ, meta)
+            obj.put(MemoryBody(bytes), Acl.PUBLIC_READ, meta)
 
-            val lo = ossBucket.listObjects(key.substring(0, 4))
+            val lo = ossBucket.listObjects(key.substring(0, key.length - 3))
             assertTrue { lo.keyCount > 0 }
             val o = lo.contents.any { it.key == key }
-            assertNotNull(o)
-            val lo2 = ossBucket.listObjects(key + "_21")
+            assertTrue(o)
+            val lo2 = ossBucket.listObjects(key + "_222")
             assertTrue { lo2.keyCount == 0 }
             val o2 = lo2.contents.any { it.key == key }
-            assertNull(o2)
+            assertFalse(o2)
 
             val head = obj.head()
             assertNotNull(head)
-            assertEquals(bytes.size.toLong(), head.contentLength())
+            assertEquals(bytes.size.toLong(), head.contentSize().bytes)
             assertEquals(md5, head.first("md5"))
             assertEquals(meta.first("timestamp"), head.first("timestamp"))
             val string = client.get(obj.publicUrl()).bodyAsText()
@@ -244,7 +258,7 @@ abstract class S3BasicTest {
 
             client.put(prePutR.url) {
                 headers.appendAll(prePutR.headers)
-                setBody(source)
+                body = source
             }.use { putR ->
                 if (!putR.isOk) {
                     println(putR.bodyAsText())

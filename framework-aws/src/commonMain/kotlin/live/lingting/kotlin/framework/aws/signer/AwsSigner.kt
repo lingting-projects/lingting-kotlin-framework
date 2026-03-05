@@ -7,6 +7,7 @@ import kotlinx.datetime.LocalDateTime
 import live.lingting.kotlin.framework.http.header.HttpHeaders
 import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.authorization
 import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.setAll
+import live.lingting.kotlin.framework.http.util.ParametersUtils.appendAll
 import live.lingting.kotlin.framework.time.DateTime
 import live.lingting.kotlin.framework.util.DurationUtils.between
 import live.lingting.kotlin.framework.value.multi.StringMultiValue
@@ -63,54 +64,48 @@ abstract class AwsSigner<S : AwsSigner<S, R>, R : AwsSigner.Signed<S, R>>(open v
         open val authorization: String,
     ) {
 
-        open fun fill(headers: HttpHeaders?) {
+        open fun replace(headers: HttpHeaders?) {
             if (headers == null) {
                 return
             }
+            headers.clear()
             headers.setAll(this.headers)
-            if (authorization.isNotBlank() && headers.authorization().isNullOrBlank()) {
+            if (authorization.isNotBlank()) {
                 headers.authorization(authorization)
             }
         }
 
-        open fun fill(urlBuilder: URLBuilder? = null) {
+        open fun replace(urlBuilder: URLBuilder? = null) {
             if (params == null || urlBuilder == null) {
                 return
             }
             val up = urlBuilder.parameters
-            params?.forEach { k, vs ->
-                val uvs = up.getAll(k)
-
-                vs.forEach { v ->
-                    if (uvs?.contains(v) != true) {
-                        up.append(k, v)
-                    }
-                }
-
-            }
+            up.clear()
+            params?.run { up.appendAll(this) }
         }
 
-        open fun fill(headers: HttpHeaders? = null, urlBuilder: URLBuilder? = null) {
-            fill(headers)
-            fill(urlBuilder)
+        open fun replace(headers: HttpHeaders? = null, urlBuilder: URLBuilder? = null) {
+            replace(headers)
+            replace(urlBuilder)
         }
 
-        open fun fill(headers: HeadersBuilder? = null) {
+        open fun replace(headers: HeadersBuilder? = null) {
             if (headers == null) {
                 return
             }
+            headers.clear()
             headers.setAll(this.headers)
-            if (authorization.isNotBlank() && this.headers.authorization().isNullOrBlank()) {
+            if (authorization.isNotBlank()) {
                 headers.authorization(authorization)
             }
         }
 
-        open fun fill(builder: HttpRequestBuilder? = null) {
+        open fun replace(builder: HttpRequestBuilder? = null) {
             if (builder == null) {
                 return
             }
-            fill(builder.url)
-            fill(builder.headers)
+            replace(builder.url)
+            replace(builder.headers)
         }
 
     }

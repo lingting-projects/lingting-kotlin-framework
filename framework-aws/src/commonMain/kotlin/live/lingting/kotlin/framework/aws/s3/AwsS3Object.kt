@@ -10,7 +10,6 @@ import kotlinx.io.RawSource
 import kotlinx.io.Source
 import kotlinx.io.files.Path
 import live.lingting.kotlin.framework.async.Async
-import live.lingting.kotlin.framework.aws.AwsS3Client
 import live.lingting.kotlin.framework.aws.AwsUtils
 import live.lingting.kotlin.framework.aws.policy.Acl
 import live.lingting.kotlin.framework.aws.properties.S3Properties
@@ -26,6 +25,7 @@ import live.lingting.kotlin.framework.http.body.SourceBody
 import live.lingting.kotlin.framework.http.donwload.HttpMultipartDownload
 import live.lingting.kotlin.framework.http.util.HttpExtraUtils.convert
 import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.etag
+import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.to
 import live.lingting.kotlin.framework.io.multipart.MultipartSource
 import live.lingting.kotlin.framework.multipart.Multipart
 import live.lingting.kotlin.framework.multipart.Part
@@ -53,9 +53,13 @@ class AwsS3Object(properties: S3Properties, override val key: String) : AwsS3Cli
     }
 
     override suspend fun head(): AwsS3Meta {
-        val request = AwsS3SimpleRequest(HttpMethod.Head)
+        val request = AwsS3SimpleRequest(HttpMethod.Get)
+        request.headers.range(0, 0)
         val response = call(request)
-        val headers = response.headers
+        val headers = response.headers.to()
+        // 当前实现 content-length 返回有问题, ktor cio 引擎的原因, 先手动适配
+        val size = headers.contentSize()
+        headers.contentLength(size.bytes)
         return AwsS3Meta(headers)
     }
 
@@ -99,6 +103,7 @@ class AwsS3Object(properties: S3Properties, override val key: String) : AwsS3Cli
 
         val multipart = AwsUtils.multipart {
             id(uploadId)
+            size(source.size)
             partSize(parSize)
         }
 
@@ -112,7 +117,7 @@ class AwsS3Object(properties: S3Properties, override val key: String) : AwsS3Cli
      * @return 合并用的 etag
      */
     override suspend fun multipartUpload(uploadId: String, part: Part, input: RawSource): String {
-        val body = SourceBody(1) { input }
+        val body = SourceBody(part.size.bytes) { input }
         val request = AwsS3ObjectPutRequest(body)
         request.multipart(uploadId, part)
         val response = call(request)

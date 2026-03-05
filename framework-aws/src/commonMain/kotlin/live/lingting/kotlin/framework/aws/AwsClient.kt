@@ -85,7 +85,7 @@ abstract class AwsClient<R : AwsRequest>(private val properties: AwsProperties) 
         )
 
         val signed = signer.signed()
-        signed.fill(builder)
+        signed.replace(builder)
         return super.call(r, builder)
     }
 

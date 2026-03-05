@@ -101,7 +101,7 @@ open class AwsV4Signer(
     open fun token(): String? {
         val all = headers[headerSecurityToken]
         headers.remove(headerSecurityToken)
-        return all?.firstOrNull()
+        return all.firstOrNull()
     }
 
     open fun date(time: LocalDateTime) = AwsUtils.format(time, dateFormatter)

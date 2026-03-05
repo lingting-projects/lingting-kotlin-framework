@@ -4,7 +4,6 @@ import io.ktor.http.HttpMethod
 import kotlinx.io.RawSource
 import kotlinx.io.Source
 import kotlinx.io.files.Path
-import kotlinx.io.files.SystemFileSystem
 import live.lingting.kotlin.framework.async.Async
 import live.lingting.kotlin.framework.async.async
 import live.lingting.kotlin.framework.aws.AwsUtils
@@ -16,6 +15,8 @@ import live.lingting.kotlin.framework.aws.s3.multipart.AwsS3MultipartUploadTask
 import live.lingting.kotlin.framework.aws.s3.request.AwsS3ObjectPutRequest
 import live.lingting.kotlin.framework.aws.s3.response.AwsS3PreSignedResponse
 import live.lingting.kotlin.framework.data.DataSize
+import live.lingting.kotlin.framework.http.HttpContentTypes
+import live.lingting.kotlin.framework.http.body.Body
 import live.lingting.kotlin.framework.http.body.SourceBody
 import live.lingting.kotlin.framework.http.donwload.HttpMultipartDownload
 import live.lingting.kotlin.framework.io.multipart.MultipartSource
@@ -63,18 +64,17 @@ interface AwsS3ObjectInterface {
 
     suspend fun put(path: Path) = put(path, null as Acl?)
 
-    suspend fun put(path: Path, acl: Acl?) = put(SystemFileSystem.source(path), acl, null)
+    suspend fun put(path: Path, acl: Acl?) = put(SourceBody(path), acl, null)
 
-    suspend fun put(path: Path, meta: S3Meta?) = put(SystemFileSystem.source(path), null, meta)
+    suspend fun put(path: Path, meta: S3Meta?) = put(SourceBody(path), null, meta)
 
-    suspend fun put(input: RawSource) = put(input, null as Acl?)
+    suspend fun put(body: Body<*>) = put(body, null as Acl?)
 
-    suspend fun put(input: RawSource, acl: Acl?) = put(input, acl, null)
+    suspend fun put(body: Body<*>, acl: Acl?) = put(body, acl, null)
 
-    suspend fun put(input: RawSource, meta: S3Meta?) = put(input, null, meta)
+    suspend fun put(body: Body<*>, meta: S3Meta?) = put(body, null, meta)
 
-    suspend fun put(input: RawSource, acl: Acl?, meta: S3Meta?) {
-        val body = SourceBody(1) { input }
+    suspend fun put(body: Body<*>, acl: Acl?, meta: S3Meta?) {
         val request = AwsS3ObjectPutRequest(body)
         request.acl = acl
         meta?.run { request.meta.addAll(this) }
@@ -166,6 +166,7 @@ interface AwsS3ObjectInterface {
         if (meta != null) {
             r.meta.addAll(meta)
         }
+        r.headers.contentType(HttpContentTypes.STREAM)
         return pre(r)
     }
 

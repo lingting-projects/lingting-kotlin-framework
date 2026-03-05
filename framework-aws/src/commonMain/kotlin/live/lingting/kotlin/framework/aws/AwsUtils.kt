@@ -120,13 +120,13 @@ object AwsUtils {
     @JvmStatic
     @JvmOverloads
     fun multipart(block: (Builder.() -> Unit)? = null): Multipart = Multipart.build {
-        if (block != null) {
-            block()
-        }
         partSize(MULTIPART_DEFAULT_PART_SIZE)
         minPartSize(MULTIPART_MIN_PART_SIZE)
         maxPartSize(MULTIPART_MAX_PART_SIZE)
         maxPartCount(MULTIPART_MAX_PART_COUNT)
+        if (block != null) {
+            block()
+        }
     }
 
 }

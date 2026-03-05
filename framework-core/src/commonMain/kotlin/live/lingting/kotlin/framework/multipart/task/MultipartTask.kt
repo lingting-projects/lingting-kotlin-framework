@@ -62,6 +62,7 @@ abstract class MultipartTask @JvmOverloads protected constructor(
     protected val lock = reentrantLock()
 
     fun start() {
+        require(tasks.isNotEmpty()) { "无可用分片! 请检查构造参数" }
         if (isStarted || !statusRef.compareAndSet(Status.WAIT, Status.RUNNING)) {
             return
         }

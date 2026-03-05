@@ -4,7 +4,7 @@ import io.ktor.http.Headers
 import live.lingting.kotlin.framework.aws.AwsUtils
 import live.lingting.kotlin.framework.aws.s3.impl.S3Meta
 import live.lingting.kotlin.framework.http.header.HttpHeaders
-import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.toHttpHeaders
+import live.lingting.kotlin.framework.http.util.HttpHeadersUtils.to
 import kotlin.jvm.JvmOverloads
 
 /**
@@ -17,6 +17,6 @@ class AwsS3Meta : S3Meta {
         source?.run { from(this) }
     }
 
-    constructor(source: Headers?) : this(source?.toHttpHeaders())
+    constructor(source: Headers?) : this(source?.to())
 
 }

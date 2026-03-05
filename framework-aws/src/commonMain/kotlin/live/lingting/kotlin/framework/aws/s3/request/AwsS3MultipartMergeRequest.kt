@@ -2,6 +2,7 @@ package live.lingting.kotlin.framework.aws.s3.request
 
 import io.ktor.http.HttpMethod
 import live.lingting.kotlin.framework.aws.s3.AwsS3Request
+import live.lingting.kotlin.framework.http.HttpContentTypes
 import live.lingting.kotlin.framework.http.body.Body
 import live.lingting.kotlin.framework.http.body.MemoryBody
 
@@ -38,6 +39,7 @@ class AwsS3MultipartMergeRequest : AwsS3Request() {
     }
 
     override fun onBuildBefore() {
+        headers.contentType(HttpContentTypes.XML)
         params.add("uploadId", uploadId!!)
     }
 

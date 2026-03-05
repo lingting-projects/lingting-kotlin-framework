@@ -5,8 +5,8 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.encodedPath
-import live.lingting.kotlin.framework.aws.AwsS3Client
 import live.lingting.kotlin.framework.aws.exception.AwsS3Exception
+import live.lingting.kotlin.framework.aws.s3.AwsS3Client
 import live.lingting.kotlin.framework.aws.s3.AwsS3Request
 import live.lingting.kotlin.framework.aws.s3.interfaces.AwsS3Listener
 import live.lingting.kotlin.framework.aws.signer.AwsSigner

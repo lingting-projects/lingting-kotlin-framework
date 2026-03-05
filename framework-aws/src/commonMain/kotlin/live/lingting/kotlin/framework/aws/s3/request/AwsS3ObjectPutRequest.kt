@@ -2,6 +2,7 @@ package live.lingting.kotlin.framework.aws.s3.request
 
 import io.ktor.http.HttpMethod
 import live.lingting.kotlin.framework.aws.s3.AwsS3Request
+import live.lingting.kotlin.framework.http.HttpContentTypes
 import live.lingting.kotlin.framework.http.body.Body
 import live.lingting.kotlin.framework.multipart.Part
 import live.lingting.kotlin.framework.value.MultiValue
@@ -49,10 +50,7 @@ open class AwsS3ObjectPutRequest(val body: Body<*>) : AwsS3Request() {
     }
 
     override fun onBuildBefore() {
-        headers.contentType("application/octet-stream")
-        part?.run {
-            headers.contentLength(size.bytes)
-        }
+        headers.contentType(HttpContentTypes.STREAM)
     }
 
     override fun onBuildUrlBefore() {

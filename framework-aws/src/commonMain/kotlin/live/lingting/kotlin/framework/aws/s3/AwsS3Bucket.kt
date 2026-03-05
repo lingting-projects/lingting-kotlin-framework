@@ -1,7 +1,6 @@
 package live.lingting.kotlin.framework.aws.s3
 
 import io.ktor.http.HttpMethod
-import live.lingting.kotlin.framework.aws.AwsS3Client
 import live.lingting.kotlin.framework.aws.properties.S3Properties
 import live.lingting.kotlin.framework.aws.s3.interfaces.AwsS3BucketInterface
 import live.lingting.kotlin.framework.aws.s3.request.AwsS3ListObjectsRequest

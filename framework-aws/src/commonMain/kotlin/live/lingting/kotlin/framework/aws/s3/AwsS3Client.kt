@@ -1,4 +1,4 @@
-package live.lingting.kotlin.framework.aws
+package live.lingting.kotlin.framework.aws.s3
 
 
 import io.ktor.client.request.HttpRequestBuilder
@@ -8,10 +8,9 @@ import io.ktor.http.URLProtocol
 import io.ktor.utils.io.charsets.Charset
 import io.ktor.utils.io.charsets.Charsets
 import io.ktor.utils.io.core.toByteArray
+import live.lingting.kotlin.framework.aws.AwsUtils
 import live.lingting.kotlin.framework.aws.policy.Acl
 import live.lingting.kotlin.framework.aws.properties.S3Properties
-import live.lingting.kotlin.framework.aws.s3.AwsS3PreRequest
-import live.lingting.kotlin.framework.aws.s3.AwsS3Request
 import live.lingting.kotlin.framework.aws.s3.impl.AwsS3DefaultListener
 import live.lingting.kotlin.framework.aws.s3.interfaces.AwsS3Listener
 import live.lingting.kotlin.framework.aws.s3.response.AwsS3PreSignedResponse
@@ -90,7 +89,7 @@ abstract class AwsS3Client protected constructor(val properties: S3Properties) :
             if (r is AwsS3PreRequest) signer.signed(current, r.expire)
             else signer.signed(current)
 
-        signed.fill(builder)
+        signed.replace(builder)
         return signed
     }
 

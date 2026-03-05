@@ -74,7 +74,7 @@ abstract class AliClient<R : AliRequest> protected constructor(private val prope
         )
 
         val signed = signer.signed()
-        signed.fill(builder)
+        signed.replace(builder)
         return super.call(r, builder)
     }
 

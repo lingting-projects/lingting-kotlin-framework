@@ -6,6 +6,7 @@ import kotlinx.io.Buffer
 import kotlinx.io.RawSource
 import kotlinx.io.Sink
 import kotlinx.io.buffered
+import live.lingting.kotlin.framework.data.DataSize
 import live.lingting.kotlin.framework.io.CompositeSource
 import live.lingting.kotlin.framework.multipart.Part
 
@@ -30,15 +31,16 @@ open class MemoryMultipartSink : MultipartSink {
             map.keys.sortedBy { it.index }
         }
         val list = mutableListOf<RawSource>()
-
+        var size = DataSize.ZERO
         for (part in parts) {
             val buffer = map[part]!!
             val peek = buffer.peek()
+            size += buffer.size
             list.add(peek)
         }
 
         val s = CompositeSource(list).buffered()
-        return MemoryMultipartSource(s)
+        return MemoryMultipartSource(s, size)
     }
 
     override fun flush() {

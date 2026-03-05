@@ -7,8 +7,10 @@ import kotlinx.io.Sink
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
+import live.lingting.kotlin.framework.data.DataSize
 import live.lingting.kotlin.framework.io.CompositeSource
 import live.lingting.kotlin.framework.multipart.Part
+import live.lingting.kotlin.framework.util.FileUtils.size
 
 /**
  * @author lingting 2026/2/26 16:57
@@ -42,15 +44,16 @@ open class FileMultipartSink(val path: Path) : MultipartSink {
             map.keys.sortedBy { it.index }
         }
         val list = mutableListOf<RawSource>()
-
+        var size = DataSize.ZERO
         for (part in parts) {
             val path = map[part]!!
             val source = SystemFileSystem.source(path)
+            size += path.size() ?: DataSize.ZERO
             list.add(source)
         }
 
         val s = CompositeSource(list).buffered()
-        return MemoryMultipartSource(s)
+        return MemoryMultipartSource(s, size)
     }
 
     override fun flush() {
