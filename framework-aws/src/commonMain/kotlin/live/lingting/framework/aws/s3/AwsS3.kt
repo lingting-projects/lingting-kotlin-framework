@@ -10,11 +10,13 @@ import io.ktor.utils.io.charsets.Charsets
 import io.ktor.utils.io.core.toByteArray
 import live.lingting.framework.aws.AwsUtils
 import live.lingting.framework.aws.policy.Acl
+import live.lingting.framework.aws.properties.S3Properties
 import live.lingting.framework.aws.s3.impl.AwsS3DefaultListener
 import live.lingting.framework.aws.s3.interfaces.AwsS3Listener
 import live.lingting.framework.aws.s3.response.AwsS3PreSignedResponse
 import live.lingting.framework.aws.signer.AwsSigner
 import live.lingting.framework.http.DefaultHttpResponse
+import live.lingting.framework.http.api.ApiClient
 import live.lingting.framework.http.util.HttpUtils.isOk
 import live.lingting.framework.json.JsonExtraUtils.toJson
 import live.lingting.framework.time.DateTime
@@ -23,8 +25,8 @@ import live.lingting.framework.util.DurationUtils.isPositive
 /**
  * @author lingting 2024-09-19 15:02
  */
-abstract class AwsS3 protected constructor(val properties: live.lingting.framework.aws.properties.S3Properties) :
-    live.lingting.framework.http.api.ApiClient<AwsS3Request>(properties.host()) {
+abstract class AwsS3 protected constructor(val properties: S3Properties) :
+    ApiClient<AwsS3Request>(properties.host()) {
 
     open val charset: Charset = Charsets.UTF_8
 

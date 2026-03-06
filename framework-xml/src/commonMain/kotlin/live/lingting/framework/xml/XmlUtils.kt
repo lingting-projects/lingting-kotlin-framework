@@ -5,10 +5,12 @@ import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import nl.adaptivity.xmlutil.ExperimentalXmlUtilApi
+import nl.adaptivity.xmlutil.XmlReader
 import nl.adaptivity.xmlutil.serialization.DefaultXmlSerializationPolicy
 import nl.adaptivity.xmlutil.serialization.FormatCache
 import nl.adaptivity.xmlutil.serialization.XML
 import nl.adaptivity.xmlutil.serialization.defaultSharedFormatCache
+import nl.adaptivity.xmlutil.xmlStreaming
 import kotlin.jvm.JvmStatic
 
 /**
@@ -18,11 +20,24 @@ object XmlUtils {
 
     @OptIn(ExperimentalXmlUtilApi::class)
     var instance: XML = XML {
+        repairNamespaces = true
         policy = DefaultXmlSerializationPolicy.Builder().apply {
+            pedantic = false
+            autoPolymorphic = true
             formatCache = runCatching { defaultSharedFormatCache() }.getOrElse { FormatCache.Dummy }
             ignoreUnknownChildren()
         }.build()
-        autoPolymorphic = true
+    }
+
+    /**
+     * @see XML.decodeFromString
+     */
+    @JvmStatic
+    fun reader(xml: String): XmlReader {
+        return when {
+            instance.config.defaultToGenericParser -> xmlStreaming.newGenericReader(xml)
+            else -> xmlStreaming.newReader(xml)
+        }
     }
 
     @JvmStatic

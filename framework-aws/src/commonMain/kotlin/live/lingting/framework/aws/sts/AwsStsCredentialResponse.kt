@@ -1,16 +1,16 @@
 package live.lingting.framework.aws.sts
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import nl.adaptivity.xmlutil.serialization.XmlSerialName
 
 /**
  * @author lingting 2025/6/3 17:41
  */
 @Serializable
-@XmlSerialName("AssumeRoleResponse", namespace = "", prefix = "")
+@SerialName("AssumeRoleResponse")
 class AwsStsCredentialResponse : live.lingting.framework.aws.AwsResponse() {
 
-    @XmlSerialName("AssumeRoleResult")
+    @SerialName("AssumeRoleResult")
     var result: Result = Result()
 
     val accessKeyId: String
@@ -28,7 +28,7 @@ class AwsStsCredentialResponse : live.lingting.framework.aws.AwsResponse() {
     @Serializable
     class Result {
 
-        @XmlSerialName("Credentials")
+        @SerialName("Credentials")
         var credentials: Credentials = Credentials()
 
     }
@@ -36,16 +36,16 @@ class AwsStsCredentialResponse : live.lingting.framework.aws.AwsResponse() {
     @Serializable
     class Credentials {
 
-        @XmlSerialName("AccessKeyId")
+        @SerialName("AccessKeyId")
         var accessKeyId: String = ""
 
-        @XmlSerialName("SecretAccessKey")
+        @SerialName("SecretAccessKey")
         var secretAccessKey: String = ""
 
-        @XmlSerialName("SessionToken")
+        @SerialName("SessionToken")
         var sessionToken: String = ""
 
-        @XmlSerialName("Expiration")
+        @SerialName("Expiration")
         var expiration: String = ""
 
     }

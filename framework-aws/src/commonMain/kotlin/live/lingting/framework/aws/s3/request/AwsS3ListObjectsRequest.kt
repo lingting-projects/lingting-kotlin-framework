@@ -36,7 +36,11 @@ class AwsS3ListObjectsRequest : AwsS3Request() {
         if (v2) {
             params.add("list-type", "2")
         }
-        prefix?.run { isNotBlank().ifTrue { params.add("prefix", this) } }
+        prefix?.run {
+            isNotBlank().ifTrue {
+                params.add("prefix", this)
+            }
+        }
         token?.run {
             isNotBlank().ifTrue {
                 if (v2) {

@@ -19,6 +19,7 @@ import live.lingting.framework.aws.s3.multipart.AwsS3MultipartUploadTask
 import live.lingting.framework.aws.s3.request.AwsS3MultipartMergeRequest
 import live.lingting.framework.aws.s3.request.AwsS3ObjectPutRequest
 import live.lingting.framework.aws.s3.request.AwsS3SimpleRequest
+import live.lingting.framework.aws.s3.response.AwsS3MultipartInitResponse
 import live.lingting.framework.data.DataSize
 import live.lingting.framework.http.body.SourceBody
 import live.lingting.framework.http.donwload.HttpMultipartDownload
@@ -92,7 +93,7 @@ class AwsS3Object(properties: S3Properties, override val key: String) :
         request.params.add("uploads")
         meta?.run { request.meta.addAll(this) }
         return call(request).convert {
-            it.xmlToObj<live.lingting.framework.aws.s3.response.AwsS3MultipartInitResponse>()
+            it.xmlToObj<AwsS3MultipartInitResponse>()
         }.uploadId
     }
 

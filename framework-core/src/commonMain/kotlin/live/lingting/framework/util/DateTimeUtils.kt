@@ -29,6 +29,6 @@ object DateTimeUtils {
 
     @JvmStatic
     fun Long.dateTime(zone: TimeZone = DateTime.zone): LocalDateTime =
-        Instant.fromEpochSeconds(this).toLocalDateTime(zone)
+        Instant.fromEpochMilliseconds(this).toLocalDateTime(zone)
 
 }

@@ -4,11 +4,13 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.http.HeadersBuilder
 import io.ktor.http.URLBuilder
 import kotlinx.datetime.LocalDateTime
+import live.lingting.framework.http.header.HttpHeaders
 import live.lingting.framework.http.util.HttpHeadersUtils.authorization
 import live.lingting.framework.http.util.HttpHeadersUtils.setAll
 import live.lingting.framework.http.util.ParametersUtils.appendAll
 import live.lingting.framework.time.DateTime
 import live.lingting.framework.util.DurationUtils.between
+import live.lingting.framework.value.multi.StringMultiValue
 import kotlin.time.Duration
 
 
@@ -57,15 +59,15 @@ abstract class AwsSigner<S : AwsSigner<S, R>, R : AwsSigner.Signed<S, R>>(
 
     open class Signed<S : AwsSigner<S, R>, R : Signed<S, R>>(
         open val signer: S,
-        open val headers: live.lingting.framework.http.header.HttpHeaders,
-        open val params: live.lingting.framework.value.multi.StringMultiValue?,
+        open val headers: HttpHeaders,
+        open val params: StringMultiValue?,
         open val bodyPayload: String,
         open val source: String,
         open val sign: String,
         open val authorization: String,
     ) {
 
-        open fun replace(headers: live.lingting.framework.http.header.HttpHeaders?) {
+        open fun replace(headers: HttpHeaders?) {
             if (headers == null) {
                 return
             }
@@ -86,7 +88,7 @@ abstract class AwsSigner<S : AwsSigner<S, R>, R : AwsSigner.Signed<S, R>>(
         }
 
         open fun replace(
-            headers: live.lingting.framework.http.header.HttpHeaders? = null,
+            headers: HttpHeaders? = null,
             urlBuilder: URLBuilder? = null
         ) {
             replace(headers)
