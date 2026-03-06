@@ -18,7 +18,7 @@ kotlin {
         commonTest {
             dependencies {
                 api(project(":framework-crypto"))
-                api(libs.kotlin.ktor.server)
+                api(project(":framework-webserver"))
                 api(libs.okio)
             }
         }

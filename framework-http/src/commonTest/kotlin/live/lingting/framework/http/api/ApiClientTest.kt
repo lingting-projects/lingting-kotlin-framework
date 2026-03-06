@@ -8,8 +8,6 @@ import io.ktor.http.HeadersBuilder
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.cio.CIO
-import io.ktor.server.engine.embeddedServer
 import io.ktor.server.request.header
 import io.ktor.server.request.receiveText
 import io.ktor.server.response.respondText
@@ -23,6 +21,7 @@ import kotlinx.serialization.json.JsonElement
 import live.lingting.framework.http.body.MemoryBody
 import live.lingting.framework.json.JsonExtraUtils.jsonToObj
 import live.lingting.framework.json.JsonExtraUtils.toJson
+import live.lingting.framework.webserver.util.WebServerUtils.webserver
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -45,9 +44,8 @@ class ApiClientTest {
 
     @Test
     fun `test api client logic`() = runTest {
-
         // 2. 启动随机端口 Server
-        val server = embeddedServer(CIO, host = "127.0.0.1", port = 0) {
+        val server = webserver(host = "127.0.0.1") {
             routing {
                 // 鉴权逻辑：手动判断 Header
                 val checkAuth: suspend (ApplicationCall) -> Boolean = { call ->
@@ -71,10 +69,11 @@ class ApiClientTest {
                     }
                 }
             }
-        }.start(wait = false)
+        }
+        server.startSuspend()
 
         try {
-            val port = server.engine.resolvedConnectors().first().port
+            val port = server.port()
             val host = "127.0.0.1:$port"
             val apiClient = TestApiClient(host)
 
