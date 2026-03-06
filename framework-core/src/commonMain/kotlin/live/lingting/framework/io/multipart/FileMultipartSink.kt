@@ -7,12 +7,14 @@ import kotlinx.io.Sink
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
+import live.lingting.framework.data.DataSize
+import live.lingting.framework.io.CompositeSource
 import live.lingting.framework.util.FileUtils.size
 
 /**
  * @author lingting 2026/2/26 16:57
  */
-open class FileMultipartSink(val path: Path) : live.lingting.framework.io.multipart.MultipartSink {
+open class FileMultipartSink(val path: Path) : MultipartSink {
 
     /**
      * 临时文件存储的文件夹
@@ -36,21 +38,21 @@ open class FileMultipartSink(val path: Path) : live.lingting.framework.io.multip
         }
     }
 
-    override fun merge(): live.lingting.framework.io.multipart.MultipartSource {
+    override fun merge(): MultipartSource {
         val parts = lock.withLock {
             map.keys.sortedBy { it.index }
         }
         val list = mutableListOf<RawSource>()
-        var size = _root_ide_package_.live.lingting.framework.data.DataSize.ZERO
+        var size = DataSize.ZERO
         for (part in parts) {
             val path = map[part]!!
             val source = SystemFileSystem.source(path)
-            size += path.size() ?: _root_ide_package_.live.lingting.framework.data.DataSize.ZERO
+            size += path.size() ?: DataSize.ZERO
             list.add(source)
         }
 
-        val s = _root_ide_package_.live.lingting.framework.io.CompositeSource(list).buffered()
-        return _root_ide_package_.live.lingting.framework.io.multipart.MemoryMultipartSource(s, size)
+        val s = CompositeSource(list).buffered()
+        return MemoryMultipartSource(s, size)
     }
 
     override fun flush() {

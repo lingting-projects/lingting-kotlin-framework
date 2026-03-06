@@ -2,6 +2,7 @@ package live.lingting.framework.aws.policy
 
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
+import live.lingting.framework.time.DateTime
 import live.lingting.framework.util.DurationUtils.between
 import live.lingting.framework.util.DurationUtils.isNegative
 import live.lingting.framework.util.DurationUtils.isZero
@@ -21,7 +22,7 @@ class Credential(
 ) {
 
     fun between(): Duration {
-        val now = _root_ide_package_.live.lingting.framework.time.DateTime.current()
+        val now = DateTime.current()
         return between(now)
     }
 

@@ -2,7 +2,9 @@ package live.lingting.framework.multipart
 
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
+import live.lingting.framework.data.DataSize
 import live.lingting.framework.util.DataSizeUtils.bytes
+import live.lingting.framework.util.ValueUtils
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 
@@ -20,17 +22,17 @@ open class Multipart(
      * 原始内容大小
      */
     @JvmField
-    val size: live.lingting.framework.data.DataSize,
+    val size: DataSize,
     /**
      * 每个分片的最大大小
      */
     @JvmField
-    val partSize: live.lingting.framework.data.DataSize,
+    val partSize: DataSize,
     /**
      * 所有分片
      */
     @JvmField
-    val parts: Collection<live.lingting.framework.multipart.Part>,
+    val parts: Collection<Part>,
 ) {
 
     companion object {
@@ -50,8 +52,8 @@ open class Multipart(
          */
         @JvmStatic
         fun calculate(
-            size: live.lingting.framework.data.DataSize,
-            partSize: live.lingting.framework.data.DataSize
+            size: DataSize,
+            partSize: DataSize
         ): Long {
             val d = size / partSize
             val l = d.toLong()
@@ -62,17 +64,14 @@ open class Multipart(
         }
 
         @JvmStatic
-        fun split(
-            size: live.lingting.framework.data.DataSize,
-            partSize: live.lingting.framework.data.DataSize
-        ): Collection<live.lingting.framework.multipart.Part> {
+        fun split(size: DataSize, partSize: DataSize): Collection<Part> {
             val number = calculate(size, partSize)
-            val parts: MutableList<live.lingting.framework.multipart.Part> = ArrayList(number.toInt())
+            val parts: MutableList<Part> = ArrayList(number.toInt())
             for (i in 0 until number) {
                 val start = partSize * i
                 val middle = start + partSize - 1
                 val end = if (middle >= size) size - 1 else middle
-                val part = _root_ide_package_.live.lingting.framework.multipart.Part(i, start, end)
+                val part = Part(i, start, end)
                 parts.add(part)
             }
             return parts.toList()
@@ -80,38 +79,38 @@ open class Multipart(
 
     }
 
-    fun usePartSize(partSize: live.lingting.framework.data.DataSize): Multipart {
+    fun usePartSize(partSize: DataSize): Multipart {
         return usePartSize(partSize, id)
     }
 
-    fun usePartSize(partSize: live.lingting.framework.data.DataSize, id: String): Multipart {
+    fun usePartSize(partSize: DataSize, id: String): Multipart {
         return Multipart(id, size, partSize, parts)
     }
 
     class Builder {
 
-        var partSize: live.lingting.framework.data.DataSize =
-            _root_ide_package_.live.lingting.framework.data.DataSize.ZERO
+        var partSize: DataSize =
+            DataSize.ZERO
             private set
 
-        var id: String = _root_ide_package_.live.lingting.framework.util.ValueUtils.simpleUuid()
+        var id: String = ValueUtils.simpleUuid()
             private set
 
-        var size: live.lingting.framework.data.DataSize = _root_ide_package_.live.lingting.framework.data.DataSize.ZERO
+        var size: DataSize = DataSize.ZERO
             private set
 
-        var maxPartSize: live.lingting.framework.data.DataSize =
-            _root_ide_package_.live.lingting.framework.data.DataSize.ZERO
+        var maxPartSize: DataSize =
+            DataSize.ZERO
             private set
 
-        var minPartSize: live.lingting.framework.data.DataSize =
-            _root_ide_package_.live.lingting.framework.data.DataSize.ZERO
+        var minPartSize: DataSize =
+            DataSize.ZERO
             private set
 
         var maxPartCount: Long = 0
             private set
 
-        fun partSize(partSize: live.lingting.framework.data.DataSize): Builder {
+        fun partSize(partSize: DataSize): Builder {
             this.partSize = partSize
             return this
         }
@@ -121,7 +120,7 @@ open class Multipart(
             return this
         }
 
-        fun size(size: live.lingting.framework.data.DataSize): Builder {
+        fun size(size: DataSize): Builder {
             this.size = size
             return this
         }
@@ -132,12 +131,12 @@ open class Multipart(
             return size(metadata.size.bytes)
         }
 
-        fun maxPartSize(maxPartSize: live.lingting.framework.data.DataSize): Builder {
+        fun maxPartSize(maxPartSize: DataSize): Builder {
             this.maxPartSize = maxPartSize
             return this
         }
 
-        fun minPartSize(minPartSize: live.lingting.framework.data.DataSize): Builder {
+        fun minPartSize(minPartSize: DataSize): Builder {
             this.minPartSize = minPartSize
             return this
         }
@@ -147,7 +146,7 @@ open class Multipart(
             return this
         }
 
-        fun parts(): Collection<live.lingting.framework.multipart.Part> {
+        fun parts(): Collection<Part> {
             if (minPartSize.bytes > 0 && partSize < minPartSize) {
                 partSize(minPartSize)
             }

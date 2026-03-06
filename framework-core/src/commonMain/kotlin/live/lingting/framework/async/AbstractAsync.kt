@@ -9,13 +9,13 @@ import kotlin.jvm.JvmOverloads
 /**
  * @author lingting 2026/2/26 10:35
  */
-abstract class AbstractAsync : live.lingting.framework.async.Async {
+abstract class AbstractAsync : Async {
 
-    final override var limit: Long = _root_ide_package_.live.lingting.framework.async.Async.UNLIMITED
+    final override var limit: Long = Async.UNLIMITED
         private set
 
     @JvmOverloads
-    constructor(limit: Long = _root_ide_package_.live.lingting.framework.async.Async.UNLIMITED) {
+    constructor(limit: Long = Async.UNLIMITED) {
         this.limit = limit
     }
 
@@ -23,7 +23,7 @@ abstract class AbstractAsync : live.lingting.framework.async.Async {
 
     protected val lock = reentrantLock()
 
-    protected val items = HashMap<String, live.lingting.framework.async.AsyncItem>()
+    protected val items = HashMap<String, AsyncItem>()
 
     protected val waitQueue = ArrayDeque<String>()
 
@@ -42,9 +42,9 @@ abstract class AbstractAsync : live.lingting.framework.async.Async {
     override val all: Long
         get() = allRef.value
 
-    override fun submit(name: String?, block: suspend (live.lingting.framework.async.AsyncItem) -> Unit) {
+    override fun submit(name: String?, block: suspend (AsyncItem) -> Unit) {
         lock.withLock {
-            val item = _root_ide_package_.live.lingting.framework.async.AsyncItem(name, { execBlock(block) })
+            val item = AsyncItem(name, { execBlock(block) })
             items[item.id] = item
             waitQueue.addLast(item.id)
             allRef.incrementAndGet()
@@ -52,7 +52,7 @@ abstract class AbstractAsync : live.lingting.framework.async.Async {
         }
     }
 
-    protected open suspend fun live.lingting.framework.async.AsyncItem.execBlock(block: suspend (live.lingting.framework.async.AsyncItem) -> Unit) {
+    protected open suspend fun AsyncItem.execBlock(block: suspend (AsyncItem) -> Unit) {
         toRun()
         try {
             if (!isFinish) {
@@ -90,7 +90,7 @@ abstract class AbstractAsync : live.lingting.framework.async.Async {
         }
     }
 
-    protected abstract fun run(item: live.lingting.framework.async.AsyncItem)
+    protected abstract fun run(item: AsyncItem)
 
     override fun cancelAll() {
         lock.withLock {

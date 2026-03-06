@@ -6,29 +6,32 @@ import kotlinx.io.Buffer
 import kotlinx.io.RawSource
 import kotlinx.io.Sink
 import kotlinx.io.buffered
+import live.lingting.framework.data.DataSize
+import live.lingting.framework.io.CompositeSource
+import live.lingting.framework.multipart.Part
 
 /**
  * @author lingting 2026/2/26 15:30
  */
-open class MemoryMultipartSink : live.lingting.framework.io.multipart.MultipartSink {
+open class MemoryMultipartSink : MultipartSink {
 
     protected val lock = reentrantLock()
 
-    protected val map = mutableMapOf<live.lingting.framework.multipart.Part, Buffer>()
+    protected val map = mutableMapOf<Part, Buffer>()
 
-    override fun sink(part: live.lingting.framework.multipart.Part): Sink {
+    override fun sink(part: Part): Sink {
         return lock.withLock {
             val buffer = map.getOrPut(part) { Buffer() }
             part.wrapperSink(buffer)
         }
     }
 
-    override fun merge(): live.lingting.framework.io.multipart.MultipartSource {
+    override fun merge(): MultipartSource {
         val parts = lock.withLock {
             map.keys.sortedBy { it.index }
         }
         val list = mutableListOf<RawSource>()
-        var size = _root_ide_package_.live.lingting.framework.data.DataSize.ZERO
+        var size = DataSize.ZERO
         for (part in parts) {
             val buffer = map[part]!!
             val peek = buffer.peek()
@@ -36,8 +39,8 @@ open class MemoryMultipartSink : live.lingting.framework.io.multipart.MultipartS
             list.add(peek)
         }
 
-        val s = _root_ide_package_.live.lingting.framework.io.CompositeSource(list).buffered()
-        return _root_ide_package_.live.lingting.framework.io.multipart.MemoryMultipartSource(s, size)
+        val s = CompositeSource(list).buffered()
+        return MemoryMultipartSource(s, size)
     }
 
     override fun flush() {

@@ -1,5 +1,6 @@
 package live.lingting.framework.aws.s3
 
+import io.ktor.client.HttpClient
 import io.ktor.client.engine.ProxyBuilder
 import io.ktor.client.engine.http
 import io.ktor.client.request.get
@@ -9,12 +10,22 @@ import io.ktor.util.appendAll
 import io.ktor.utils.io.core.toByteArray
 import kotlinx.coroutines.CoroutineScope
 import live.lingting.framework.async.async
+import live.lingting.framework.aws.AwsUtils
+import live.lingting.framework.aws.properties.S3Properties
+import live.lingting.framework.aws.s3.interfaces.AwsS3BucketDelegation
+import live.lingting.framework.aws.s3.interfaces.AwsS3ObjectDelegation
 import live.lingting.framework.crypto.util.DigestUtils.toMd5Hex
+import live.lingting.framework.http.HttpClients
+import live.lingting.framework.http.api.ApiClient
 import live.lingting.framework.http.util.HttpExtraUtils.use
 import live.lingting.framework.http.util.HttpUtils.isOk
+import live.lingting.framework.io.multipart.MemoryMultipartSource
+import live.lingting.framework.snowflake.Snowflake
+import live.lingting.framework.util.CoroutineUtils
 import live.lingting.framework.util.DataSizeUtils.bytes
 import live.lingting.framework.util.DurationUtils.millis
 import live.lingting.framework.util.LoggerUtils.logger
+import live.lingting.framework.util.SystemUtils
 import kotlin.concurrent.atomics.AtomicLong
 import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.test.assertEquals
@@ -31,23 +42,23 @@ abstract class S3BasicTest {
 
     private val log = logger()
 
-    private val snowflake = _root_ide_package_.live.lingting.framework.snowflake.Snowflake(0, 0)
+    private val snowflake = Snowflake(0, 0)
 
     protected open val useProxy: Boolean = false
 
-    abstract suspend fun buildObj(key: String): live.lingting.framework.aws.s3.interfaces.AwsS3ObjectDelegation
+    abstract suspend fun buildObj(key: String): AwsS3ObjectDelegation
 
-    abstract suspend fun buildBucket(): live.lingting.framework.aws.s3.interfaces.AwsS3BucketDelegation
+    abstract suspend fun buildBucket(): AwsS3BucketDelegation
 
-    abstract fun properties(): live.lingting.framework.aws.properties.S3Properties
+    abstract fun properties(): S3Properties
 
     protected val properties = properties()
 
-    protected var client: io.ktor.client.HttpClient = live.lingting.framework.http.api.ApiClient.defaultClient
+    protected var client: HttpClient = ApiClient.defaultClient
 
     private fun before() {
         if (useProxy) {
-            client = live.lingting.framework.http.HttpClients.build {
+            client = HttpClients.build {
                 disableSsl()
                 proxy(ProxyBuilder.http("http://127.0.0.1:9999"))
             }
@@ -56,15 +67,15 @@ abstract class S3BasicTest {
 
     suspend fun CoroutineScope.run() {
         before()
-        live.lingting.framework.http.api.ApiClient.defaultClient = client
-        _root_ide_package_.live.lingting.framework.util.CoroutineUtils.switchScope(this)
+        ApiClient.defaultClient = client
+        CoroutineUtils.switchScope(this)
         doTest()
-        val domain = _root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("DOMAIN")
+        val domain = SystemUtils.getEnv("DOMAIN")
         if (!domain.isNullOrBlank()) {
             properties.domain = domain
             doTest()
         }
-        val domain1 = _root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("DOMAIN1")
+        val domain1 = SystemUtils.getEnv("DOMAIN1")
         if (!domain1.isNullOrBlank()) {
             properties.domain = domain1
             doTest()
@@ -72,7 +83,7 @@ abstract class S3BasicTest {
     }
 
     protected open suspend fun doTest() {
-        val async = _root_ide_package_.live.lingting.framework.async.async(1)
+        val async = async(1)
         val atomic = AtomicLong(0L)
 
         async.submit {
@@ -123,7 +134,7 @@ abstract class S3BasicTest {
             val hex = bytes.toMd5Hex()
             obj.put(
                 live.lingting.framework.http.body.MemoryBody(bytes),
-                _root_ide_package_.live.lingting.framework.aws.policy.Acl.PUBLIC_READ
+                live.lingting.framework.aws.policy.Acl.PUBLIC_READ
             )
             val head = obj.head()
             assertNotNull(head)
@@ -157,7 +168,7 @@ abstract class S3BasicTest {
             }
         }
 
-        val snowflake = _root_ide_package_.live.lingting.framework.snowflake.Snowflake(0, 1)
+        val snowflake = Snowflake(0, 1)
         val key = "test/m_" + snowflake.nextId()
         val obj = buildObj(key)
         try {
@@ -166,17 +177,17 @@ abstract class S3BasicTest {
             val bytes = source.toByteArray()
             val hex = bytes.toMd5Hex()
             val task = obj.multipart(
-                _root_ide_package_.live.lingting.framework.io.multipart.MemoryMultipartSource(bytes),
+                MemoryMultipartSource(bytes),
                 1.bytes,
-                _root_ide_package_.live.lingting.framework.async.async(10),
-                _root_ide_package_.live.lingting.framework.aws.policy.Acl.PUBLIC_READ
+                async(10),
+                live.lingting.framework.aws.policy.Acl.PUBLIC_READ
             )
             assertTrue(task.isStarted)
             task.await()
             assertTrue(task.isCompleted)
             assertFalse(task.isFailed)
             val multipart = task.multipart
-            assertTrue(multipart.partSize >= _root_ide_package_.live.lingting.framework.aws.AwsUtils.MULTIPART_MIN_PART_SIZE)
+            assertTrue(multipart.partSize >= AwsUtils.MULTIPART_MIN_PART_SIZE)
             val head = obj.head()
             assertNotNull(head)
             assertEquals(bytes.size.toLong(), head.contentSize().bytes)
@@ -196,12 +207,12 @@ abstract class S3BasicTest {
             val source = "hello world"
             val bytes = source.toByteArray()
             val md5 = bytes.toMd5Hex()
-            val meta = _root_ide_package_.live.lingting.framework.aws.s3.AwsS3Meta()
+            val meta = AwsS3Meta()
             meta.add("md5", md5)
-            meta.add("timestamp", _root_ide_package_.live.lingting.framework.time.DateTime.millis().toString())
+            meta.add("timestamp", live.lingting.framework.time.DateTime.millis().toString())
             obj.put(
                 live.lingting.framework.http.body.MemoryBody(bytes),
-                _root_ide_package_.live.lingting.framework.aws.policy.Acl.PUBLIC_READ,
+                live.lingting.framework.aws.policy.Acl.PUBLIC_READ,
                 meta
             )
 
@@ -243,8 +254,8 @@ abstract class S3BasicTest {
 
             log.info { "=================put=================" }
             val prePutR = obj.prePut(
-                _root_ide_package_.live.lingting.framework.aws.policy.Acl.PRIVATE,
-                _root_ide_package_.live.lingting.framework.aws.s3.impl.S3Meta.empty().also {
+                live.lingting.framework.aws.policy.Acl.PRIVATE,
+                live.lingting.framework.aws.s3.impl.S3Meta.empty().also {
                     it.put("pre", "true")
                 })
 
@@ -260,7 +271,7 @@ abstract class S3BasicTest {
                 assertTrue(putR.isOk)
             }
 
-            _root_ide_package_.live.lingting.framework.concurrent.Await.wait(500.millis)
+            live.lingting.framework.concurrent.Await.wait(500.millis)
             client.get(obj.publicUrl()).use { getR ->
                 assertFalse(getR.isOk)
             }

@@ -2,6 +2,7 @@ package live.lingting.framework.io.multipart
 
 import kotlinx.io.Sink
 import kotlinx.io.files.Path
+import live.lingting.framework.multipart.Part
 import kotlin.jvm.JvmStatic
 
 /**
@@ -12,18 +13,16 @@ interface MultipartSink : AutoCloseable {
     companion object {
 
         @JvmStatic
-        fun file(path: Path): live.lingting.framework.io.multipart.FileMultipartSink =
-            _root_ide_package_.live.lingting.framework.io.multipart.FileMultipartSink(path)
+        fun file(path: Path): FileMultipartSink = FileMultipartSink(path)
 
         @JvmStatic
-        fun memory(): live.lingting.framework.io.multipart.MemoryMultipartSink =
-            _root_ide_package_.live.lingting.framework.io.multipart.MemoryMultipartSink()
+        fun memory(): MemoryMultipartSink = MemoryMultipartSink()
 
     }
 
-    fun sink(part: live.lingting.framework.multipart.Part): Sink
+    fun sink(part: Part): Sink
 
-    fun write(part: live.lingting.framework.multipart.Part, bytes: ByteArray) {
+    fun write(part: Part, bytes: ByteArray) {
         sink(part).use {
             it.write(bytes)
         }
@@ -32,7 +31,7 @@ interface MultipartSink : AutoCloseable {
     /**
      * 合并当前已经写入的所有数据
      */
-    fun merge(): live.lingting.framework.io.multipart.MultipartSource
+    fun merge(): MultipartSource
 
     fun flush()
 

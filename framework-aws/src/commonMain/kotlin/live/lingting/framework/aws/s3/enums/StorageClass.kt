@@ -1,13 +1,15 @@
 package live.lingting.framework.aws.s3.enums
 
 import kotlinx.serialization.Serializable
+import live.lingting.framework.aws.s3.enums.StorageClass.Serializer
+import live.lingting.framework.serializable.EnumSerializer
 import kotlin.jvm.JvmStatic
 
 
 /**
  * @author lingting 2025/1/15 10:16
  */
-@Serializable(with = _root_ide_package_.live.lingting.framework.aws.s3.enums.StorageClass.Serializer::class)
+@Serializable(with = Serializer::class)
 enum class StorageClass {
 
     STANDARD,
@@ -23,7 +25,7 @@ enum class StorageClass {
     companion object {
 
         @JvmStatic
-        fun of(value: String?): live.lingting.framework.aws.s3.enums.StorageClass? {
+        fun of(value: String?): StorageClass? {
             return entries.firstOrNull {
                 if (value.isNullOrBlank()) {
                     false
@@ -34,9 +36,8 @@ enum class StorageClass {
         }
     }
 
-    class Serializer :
-        live.lingting.framework.serializable.EnumSerializer<live.lingting.framework.aws.s3.enums.StorageClass>(
-            enumValues<live.lingting.framework.aws.s3.enums.StorageClass>()
-        )
+    class Serializer : EnumSerializer<StorageClass>(
+        enumValues<StorageClass>()
+    )
 
 }

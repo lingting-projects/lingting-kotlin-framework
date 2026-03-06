@@ -10,11 +10,11 @@ enum class DataSizeUnit(
     val text: String,
 ) {
     BYTES(1, "Bytes"),
-    KB(BYTES.size * _root_ide_package_.live.lingting.framework.data.DataSize.STEP, "KB"),
-    MB(KB.size * _root_ide_package_.live.lingting.framework.data.DataSize.STEP, "MB"),
-    GB(MB.size * _root_ide_package_.live.lingting.framework.data.DataSize.STEP, "GB"),
-    TB(GB.size * _root_ide_package_.live.lingting.framework.data.DataSize.STEP, "TB"),
-    PB(TB.size * _root_ide_package_.live.lingting.framework.data.DataSize.STEP, "PB"),
+    KB(BYTES.size * DataSize.STEP, "KB"),
+    MB(KB.size * DataSize.STEP, "MB"),
+    GB(MB.size * DataSize.STEP, "GB"),
+    TB(GB.size * DataSize.STEP, "TB"),
+    PB(TB.size * DataSize.STEP, "PB"),
 
     ;
 
@@ -33,13 +33,13 @@ enum class DataSizeUnit(
         }
     }
 
-    fun of(value: Long): live.lingting.framework.data.DataSize {
-        return _root_ide_package_.live.lingting.framework.data.DataSize(value * size)
+    fun of(value: Long): DataSize {
+        return DataSize(value * size)
     }
 
-    fun of(decimal: Double): live.lingting.framework.data.DataSize {
+    fun of(decimal: Double): DataSize {
         val multiply = size * decimal
-        return _root_ide_package_.live.lingting.framework.data.DataSize(multiply.toLong())
+        return DataSize(multiply.toLong())
     }
 
 }

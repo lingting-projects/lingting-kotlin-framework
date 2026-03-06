@@ -2,24 +2,25 @@ package live.lingting.framework.async
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import live.lingting.framework.util.CoroutineUtils
 import kotlin.jvm.JvmOverloads
 
 /**
  * @author lingting 2026/2/25 15:34
  */
-open class CoroutineAsync : live.lingting.framework.async.AbstractAsync {
+open class CoroutineAsync : AbstractAsync {
 
     private val scope: CoroutineScope
 
     @JvmOverloads
     constructor(
-        limit: Long = _root_ide_package_.live.lingting.framework.async.Async.UNLIMITED,
-        scope: CoroutineScope = _root_ide_package_.live.lingting.framework.util.CoroutineUtils.defaultScope
+        limit: Long = Async.UNLIMITED,
+        scope: CoroutineScope = CoroutineUtils.defaultScope
     ) : super(limit) {
         this.scope = scope
     }
 
-    override fun run(item: live.lingting.framework.async.AsyncItem) {
+    override fun run(item: AsyncItem) {
         scope.launch {
             item.block(item)
         }
@@ -29,7 +30,6 @@ open class CoroutineAsync : live.lingting.framework.async.AbstractAsync {
 
 @JvmOverloads
 fun async(
-    limit: Long = _root_ide_package_.live.lingting.framework.async.Async.UNLIMITED,
-    scope: CoroutineScope = _root_ide_package_.live.lingting.framework.util.CoroutineUtils.defaultScope
-) =
-    _root_ide_package_.live.lingting.framework.async.CoroutineAsync(limit, scope)
+    limit: Long = Async.UNLIMITED,
+    scope: CoroutineScope = CoroutineUtils.defaultScope
+) = CoroutineAsync(limit, scope)

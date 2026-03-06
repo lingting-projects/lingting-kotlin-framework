@@ -47,7 +47,7 @@ data class DataSize @JvmOverloads constructor(
             val (valueStr, unitStr) = find.destructured
 
             val value = valueStr.toDoubleOrNull() ?: return null
-            val unit = _root_ide_package_.live.lingting.framework.data.DataSizeUnit.entries.firstOrNull {
+            val unit = DataSizeUnit.entries.firstOrNull {
                 it.text.equals(unitStr, ignoreCase = true)
             } ?: return null
             return unit.of(value)
@@ -85,7 +85,7 @@ data class DataSize @JvmOverloads constructor(
 
     }
 
-    val unit = _root_ide_package_.live.lingting.framework.data.DataSizeUnit.of(bytes)
+    val unit = DataSizeUnit.of(bytes)
 
     val value by lazy { bytes / unit.size }
 
@@ -125,7 +125,7 @@ data class DataSize @JvmOverloads constructor(
     }
 
     override fun toString(): String {
-        return "${_root_ide_package_.live.lingting.framework.util.NumberUtils.toPlainString(scaleValue)} ${unit.text}"
+        return "${live.lingting.framework.util.NumberUtils.toPlainString(scaleValue)} ${unit.text}"
     }
 
     // region operator

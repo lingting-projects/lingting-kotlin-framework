@@ -1,38 +1,43 @@
 package live.lingting.framework.aws
 
+import live.lingting.framework.aws.policy.Acl
+import live.lingting.framework.aws.properties.AwsS3Properties
+import live.lingting.framework.aws.properties.AwsStsProperties
+import live.lingting.framework.aws.sts.AwsSts
+import live.lingting.framework.util.SystemUtils
 import kotlin.test.assertNotNull
 
 object AwsBasic {
 
-    fun sts(): live.lingting.framework.aws.sts.AwsSts {
-        val properties = _root_ide_package_.live.lingting.framework.aws.properties.AwsStsProperties()
-        properties.ak = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("AK"))
-        properties.sk = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("SK"))
-        properties.region = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("REGION"))
+    fun sts(): AwsSts {
+        val properties = AwsStsProperties()
+        properties.ak = assertNotNull(SystemUtils.getEnv("AK"))
+        properties.sk = assertNotNull(SystemUtils.getEnv("SK"))
+        properties.region = assertNotNull(SystemUtils.getEnv("REGION"))
         properties.roleArn =
-            assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("ROLE_ARN"))
+            assertNotNull(SystemUtils.getEnv("ROLE_ARN"))
         properties.roleSessionName =
-            assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("ROLE_SESSION_NAME"))
+            assertNotNull(SystemUtils.getEnv("ROLE_SESSION_NAME"))
         properties.sourceIdentity =
-            _root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("SOURCE_IDENTITY") ?: ""
-        return _root_ide_package_.live.lingting.framework.aws.sts.AwsSts(properties)
+            SystemUtils.getEnv("SOURCE_IDENTITY") ?: ""
+        return AwsSts(properties)
     }
 
-    fun s3StsProperties(): live.lingting.framework.aws.properties.AwsS3Properties {
-        val properties = _root_ide_package_.live.lingting.framework.aws.properties.AwsS3Properties()
-        properties.region = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("REGION"))
-        properties.bucket = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("BUCKET"))
-        properties.acl = _root_ide_package_.live.lingting.framework.aws.policy.Acl.PUBLIC_READ
+    fun s3StsProperties(): AwsS3Properties {
+        val properties = AwsS3Properties()
+        properties.region = assertNotNull(SystemUtils.getEnv("REGION"))
+        properties.bucket = assertNotNull(SystemUtils.getEnv("BUCKET"))
+        properties.acl = Acl.PUBLIC_READ
         return properties
     }
 
-    fun s3Properties(): live.lingting.framework.aws.properties.AwsS3Properties {
-        val properties = _root_ide_package_.live.lingting.framework.aws.properties.AwsS3Properties()
-        properties.ak = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("AK"))
-        properties.sk = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("SK"))
-        properties.region = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("REGION"))
-        properties.bucket = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("BUCKET"))
-        properties.acl = _root_ide_package_.live.lingting.framework.aws.policy.Acl.PUBLIC_READ
+    fun s3Properties(): AwsS3Properties {
+        val properties = AwsS3Properties()
+        properties.ak = assertNotNull(SystemUtils.getEnv("AK"))
+        properties.sk = assertNotNull(SystemUtils.getEnv("SK"))
+        properties.region = assertNotNull(SystemUtils.getEnv("REGION"))
+        properties.bucket = assertNotNull(SystemUtils.getEnv("BUCKET"))
+        properties.acl = Acl.PUBLIC_READ
         return properties
     }
 

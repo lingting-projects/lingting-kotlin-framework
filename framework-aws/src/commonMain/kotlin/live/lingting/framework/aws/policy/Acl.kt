@@ -1,12 +1,15 @@
 package live.lingting.framework.aws.policy
 
 import kotlinx.serialization.Serializable
+import live.lingting.framework.aws.policy.Acl.Serializer
+import live.lingting.framework.serializable.EnumSerializer
+import live.lingting.framework.value.KEnumValue
 
 /**
  * @author lingting 2024-09-12 20:55
  */
-@Serializable(with = _root_ide_package_.live.lingting.framework.aws.policy.Acl.Serializer::class)
-enum class Acl(override val value: String) : live.lingting.framework.value.KEnumValue<String> {
+@Serializable(with = Serializer::class)
+enum class Acl(override val value: String) : KEnumValue<String> {
 
     /**
      * 不传递 acl, 继承桶策略
@@ -21,7 +24,6 @@ enum class Acl(override val value: String) : live.lingting.framework.value.KEnum
 
     ;
 
-    class Serializer :
-        live.lingting.framework.serializable.EnumSerializer<live.lingting.framework.aws.policy.Acl>(enumValues<live.lingting.framework.aws.policy.Acl>())
+    class Serializer : EnumSerializer<Acl>(enumValues<Acl>())
 
 }

@@ -3,6 +3,7 @@ package live.lingting.framework.io.multipart
 import kotlinx.io.Source
 import kotlinx.io.files.Path
 import kotlinx.io.readByteArray
+import live.lingting.framework.data.DataSize
 import kotlin.jvm.JvmStatic
 
 /**
@@ -13,27 +14,21 @@ interface MultipartSource {
     companion object {
 
         @JvmStatic
-        fun file(path: Path): live.lingting.framework.io.multipart.FileMultipartSource =
-            _root_ide_package_.live.lingting.framework.io.multipart.FileMultipartSource(path)
+        fun file(path: Path): FileMultipartSource = FileMultipartSource(path)
 
         @JvmStatic
-        fun memory(
-            source: Source,
-            size: live.lingting.framework.data.DataSize
-        ): live.lingting.framework.io.multipart.MemoryMultipartSource =
-            _root_ide_package_.live.lingting.framework.io.multipart.MemoryMultipartSource(source, size)
+        fun memory(source: Source, size: DataSize): MemoryMultipartSource =
+            MemoryMultipartSource(source, size)
 
         @JvmStatic
-        fun memory(bytes: ByteArray): live.lingting.framework.io.multipart.MemoryMultipartSource =
-            _root_ide_package_.live.lingting.framework.io.multipart.MemoryMultipartSource(bytes)
+        fun memory(bytes: ByteArray): MemoryMultipartSource = MemoryMultipartSource(bytes)
 
         @JvmStatic
-        fun memory(content: String): live.lingting.framework.io.multipart.MemoryMultipartSource =
-            _root_ide_package_.live.lingting.framework.io.multipart.MemoryMultipartSource(content)
+        fun memory(content: String): MemoryMultipartSource = MemoryMultipartSource(content)
 
     }
 
-    val size: live.lingting.framework.data.DataSize
+    val size: DataSize
 
     /**
      * 获取完整源

@@ -1,6 +1,7 @@
 package live.lingting.framework.aws.s3.response
 
 import kotlinx.serialization.Serializable
+import live.lingting.framework.aws.s3.multipart.AwsS3MultipartItem
 import nl.adaptivity.xmlutil.serialization.XmlElement
 import nl.adaptivity.xmlutil.serialization.XmlSerialName
 
@@ -41,9 +42,9 @@ data class AwsS3MultipartListResponse(
 
     val items by lazy { items() }
 
-    private fun items(): List<live.lingting.framework.aws.s3.multipart.AwsS3MultipartItem> {
+    private fun items(): List<AwsS3MultipartItem> {
         return uploads.map {
-            _root_ide_package_.live.lingting.framework.aws.s3.multipart.AwsS3MultipartItem(
+            AwsS3MultipartItem(
                 it.key,
                 it.uploadId
             )

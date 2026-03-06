@@ -1,5 +1,7 @@
 package live.lingting.framework.async
 
+import live.lingting.framework.concurrent.Await
+import live.lingting.framework.exception.TimeoutException
 import kotlin.time.Duration
 
 /**
@@ -39,26 +41,26 @@ interface Async {
     val isFull: Boolean
         get() = !isUnlimited && running >= limit
 
-    fun submit(block: suspend (live.lingting.framework.async.AsyncItem) -> Unit) = submit(null, block)
+    fun submit(block: suspend (AsyncItem) -> Unit) = submit(null, block)
 
-    fun submit(name: String?, block: suspend (live.lingting.framework.async.AsyncItem) -> Unit)
+    fun submit(name: String?, block: suspend (AsyncItem) -> Unit)
 
-    @Throws(_root_ide_package_.live.lingting.framework.exception.TimeoutException::class)
+    @Throws(TimeoutException::class)
     suspend fun await() = await(null)
 
     /**
      * 等待结束
      * @param duration       超时时间
      */
-    @Throws(_root_ide_package_.live.lingting.framework.exception.TimeoutException::class)
+    @Throws(TimeoutException::class)
     suspend fun await(duration: Duration? = null) {
-        _root_ide_package_.live.lingting.framework.concurrent.Await.waitTrue(duration) { running == 0L }
+        Await.waitTrue(duration) { running == 0L }
     }
 
-    @Throws(_root_ide_package_.live.lingting.framework.exception.TimeoutException::class)
+    @Throws(TimeoutException::class)
     suspend fun awaitIdle(duration: Duration? = null) {
         if (!isUnlimited) {
-            _root_ide_package_.live.lingting.framework.concurrent.Await.waitTrue(duration) { notCompleted == 0L }
+            Await.waitTrue(duration) { notCompleted == 0L }
         }
     }
 

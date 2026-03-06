@@ -1,12 +1,15 @@
 package live.lingting.framework.async
 
+import live.lingting.framework.time.DateTime
+import live.lingting.framework.util.ValueUtils
+
 /**
  * @author lingting 2026/2/25 15:17
  */
 data class AsyncItem(
     val name: String? = null,
     internal val block: suspend AsyncItem.() -> Unit,
-    val id: String = _root_ide_package_.live.lingting.framework.util.ValueUtils.uuid(),
+    val id: String = ValueUtils.uuid(),
 ) {
 
     var status: Status = Status.WAIT
@@ -21,14 +24,14 @@ data class AsyncItem(
     var finishTimestamp: Long = 0
         private set
 
-    val createTimestamp: Long = _root_ide_package_.live.lingting.framework.time.DateTime.millis()
+    val createTimestamp: Long = DateTime.millis()
 
     val isFinish
         get() = status == Status.SUCCESS || status == Status.FAIL || status == Status.ABORT
 
     internal fun toRun() {
         status = Status.RUNNING
-        runTimestamp = _root_ide_package_.live.lingting.framework.time.DateTime.millis()
+        runTimestamp = DateTime.millis()
         finishTimestamp = 0
     }
 
@@ -37,7 +40,7 @@ data class AsyncItem(
             return
         }
         status = Status.ABORT
-        abortTimestamp = _root_ide_package_.live.lingting.framework.time.DateTime.millis()
+        abortTimestamp = DateTime.millis()
     }
 
     internal fun toFinish(status: Status) {
@@ -45,7 +48,7 @@ data class AsyncItem(
         if (status != Status.ABORT) {
             this.status = status
         }
-        this.finishTimestamp = _root_ide_package_.live.lingting.framework.time.DateTime.millis()
+        this.finishTimestamp = DateTime.millis()
     }
 
     internal fun toSuccess() = toFinish(Status.SUCCESS)

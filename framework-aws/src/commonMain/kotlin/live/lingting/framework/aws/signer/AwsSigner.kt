@@ -7,6 +7,7 @@ import kotlinx.datetime.LocalDateTime
 import live.lingting.framework.http.util.HttpHeadersUtils.authorization
 import live.lingting.framework.http.util.HttpHeadersUtils.setAll
 import live.lingting.framework.http.util.ParametersUtils.appendAll
+import live.lingting.framework.time.DateTime
 import live.lingting.framework.util.DurationUtils.between
 import kotlin.time.Duration
 
@@ -14,13 +15,13 @@ import kotlin.time.Duration
 /**
  * @author lingting 2026/2/4 16:16
  */
-abstract class AwsSigner<S : live.lingting.framework.aws.signer.AwsSigner<S, R>, R : live.lingting.framework.aws.signer.AwsSigner.Signed<S, R>>(
+abstract class AwsSigner<S : AwsSigner<S, R>, R : AwsSigner.Signed<S, R>>(
     open val ak: String
 ) {
 
     protected abstract val bodyPayload: String
 
-    open fun signed(): R = signed(_root_ide_package_.live.lingting.framework.time.DateTime.current())
+    open fun signed(): R = signed(DateTime.current())
 
     /**
      * header 签名
@@ -43,7 +44,7 @@ abstract class AwsSigner<S : live.lingting.framework.aws.signer.AwsSigner<S, R>,
     }
 
     open fun signed(duration: Duration): R =
-        signed(_root_ide_package_.live.lingting.framework.time.DateTime.current(), duration)
+        signed(DateTime.current(), duration)
 
     /**
      * url 签名
@@ -54,7 +55,7 @@ abstract class AwsSigner<S : live.lingting.framework.aws.signer.AwsSigner<S, R>,
 
     abstract fun signed(time: LocalDateTime, duration: Duration, bodyPayload: String): R
 
-    open class Signed<S : live.lingting.framework.aws.signer.AwsSigner<S, R>, R : Signed<S, R>>(
+    open class Signed<S : AwsSigner<S, R>, R : Signed<S, R>>(
         open val signer: S,
         open val headers: live.lingting.framework.http.header.HttpHeaders,
         open val params: live.lingting.framework.value.multi.StringMultiValue?,

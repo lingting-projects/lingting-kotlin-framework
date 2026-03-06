@@ -7,6 +7,8 @@ import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
 import kotlinx.io.readByteArray
+import live.lingting.framework.io.LimitedSink
+import live.lingting.framework.io.LimitedSource
 
 
 /**
@@ -35,7 +37,7 @@ data class Part(
     fun openSource(path: Path): Source {
         val s = SystemFileSystem.source(path).buffered()
         s.skip(start.bytes)
-        return _root_ide_package_.live.lingting.framework.io.LimitedSource(s, size.bytes).buffered()
+        return LimitedSource(s, size.bytes).buffered()
     }
 
     /**
@@ -44,11 +46,11 @@ data class Part(
     fun pickSource(source: Source): Source {
         val peek = source.peek()
         peek.skip(start.bytes)
-        return _root_ide_package_.live.lingting.framework.io.LimitedSource(peek, size.bytes).buffered()
+        return LimitedSource(peek, size.bytes).buffered()
     }
 
     fun wrapperSink(sink: RawSink): Sink {
-        return _root_ide_package_.live.lingting.framework.io.LimitedSink(sink, size.bytes).buffered()
+        return LimitedSink(sink, size.bytes).buffered()
     }
 
 }

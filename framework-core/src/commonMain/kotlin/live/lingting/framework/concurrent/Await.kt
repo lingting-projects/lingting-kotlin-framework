@@ -7,6 +7,7 @@ import live.lingting.framework.concurrent.Awaiter.Companion.defaultContext
 import live.lingting.framework.concurrent.Awaiter.Companion.defaultDelay
 import live.lingting.framework.concurrent.Awaiter.Companion.defaultScope
 import live.lingting.framework.concurrent.Awaiter.Companion.defaultStart
+import live.lingting.framework.exception.TimeoutException
 import kotlin.coroutines.CoroutineContext
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
@@ -24,7 +25,7 @@ object Await {
 
     @JvmStatic
     @JvmOverloads
-    @Throws(_root_ide_package_.live.lingting.framework.exception.TimeoutException::class)
+    @Throws(TimeoutException::class)
     suspend fun waitTrue(
         timeout: Duration?,
         name: String? = null,
@@ -34,7 +35,7 @@ object Await {
         start: CoroutineStart = defaultStart,
         worker: suspend CoroutineScope.() -> Boolean?
     ) {
-        val awaiter = _root_ide_package_.live.lingting.framework.concurrent.Awaiter(
+        val awaiter = Awaiter(
             timeout = timeout,
             name = name,
             delay = delay,
@@ -49,7 +50,7 @@ object Await {
 
     @JvmStatic
     @JvmOverloads
-    @Throws(_root_ide_package_.live.lingting.framework.exception.TimeoutException::class)
+    @Throws(TimeoutException::class)
     suspend fun waitFalse(
         timeout: Duration?,
         name: String? = null,
@@ -59,7 +60,7 @@ object Await {
         start: CoroutineStart = defaultStart,
         worker: suspend CoroutineScope.() -> Boolean?
     ) {
-        val awaiter = _root_ide_package_.live.lingting.framework.concurrent.Awaiter(
+        val awaiter = Awaiter(
             timeout = timeout,
             name = name,
             delay = delay,
@@ -74,7 +75,7 @@ object Await {
 
     @JvmStatic
     @JvmOverloads
-    @Throws(_root_ide_package_.live.lingting.framework.exception.TimeoutException::class)
+    @Throws(TimeoutException::class)
     suspend fun <T> waitNull(
         timeout: Duration?,
         name: String? = null,
@@ -84,7 +85,7 @@ object Await {
         start: CoroutineStart = defaultStart,
         worker: suspend CoroutineScope.() -> T?
     ) {
-        val awaiter = _root_ide_package_.live.lingting.framework.concurrent.Awaiter(
+        val awaiter = Awaiter(
             timeout = timeout,
             name = name,
             delay = delay,
@@ -99,7 +100,7 @@ object Await {
 
     @JvmStatic
     @JvmOverloads
-    @Throws(_root_ide_package_.live.lingting.framework.exception.TimeoutException::class)
+    @Throws(TimeoutException::class)
     suspend fun <T> waitNotNull(
         timeout: Duration?,
         name: String? = null,
@@ -109,7 +110,7 @@ object Await {
         start: CoroutineStart = defaultStart,
         worker: suspend CoroutineScope.() -> T?
     ): T {
-        val awaiter = _root_ide_package_.live.lingting.framework.concurrent.Awaiter(
+        val awaiter = Awaiter(
             timeout = timeout,
             name = name,
             delay = delay,
@@ -124,7 +125,7 @@ object Await {
 
     @JvmStatic
     @JvmOverloads
-    @Throws(_root_ide_package_.live.lingting.framework.exception.TimeoutException::class)
+    @Throws(TimeoutException::class)
     suspend fun <T> waitPresent(
         timeout: Duration?,
         name: String? = null,
@@ -134,14 +135,14 @@ object Await {
         start: CoroutineStart = defaultStart,
         worker: suspend CoroutineScope.() -> T?
     ): T {
-        val awaiter = _root_ide_package_.live.lingting.framework.concurrent.Awaiter(
+        val awaiter = Awaiter(
             timeout = timeout,
             name = name,
             delay = delay,
             scope = scope,
             context = context,
             start = start,
-            predicate = { _root_ide_package_.live.lingting.framework.util.ValueUtils.isPresent(it) },
+            predicate = { live.lingting.framework.util.ValueUtils.isPresent(it) },
             worker = worker
         )
         return awaiter.await()!!
@@ -149,7 +150,7 @@ object Await {
 
     @JvmStatic
     @JvmOverloads
-    @Throws(_root_ide_package_.live.lingting.framework.exception.TimeoutException::class)
+    @Throws(TimeoutException::class)
     suspend fun <T> wait(
         timeout: Duration?,
         name: String? = null,
@@ -160,7 +161,7 @@ object Await {
         predicate: suspend (T?) -> Boolean,
         worker: suspend CoroutineScope.() -> T?
     ): T? {
-        val awaiter = _root_ide_package_.live.lingting.framework.concurrent.Awaiter(
+        val awaiter = Awaiter(
             timeout = timeout,
             name = name,
             delay = delay,

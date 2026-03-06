@@ -21,7 +21,7 @@ abstract class EnumSerializer<E : Enum<E>> : KSerializer<E> {
         @JvmStatic
         fun <E : Enum<E>> buildSerialDescriptor(values: Array<E>, name: String?): SerialDescriptor {
             val first = values.first()
-            val any = _root_ide_package_.live.lingting.framework.util.EnumUtils.getValue(first)
+            val any = EnumUtils.getValue(first)
             requireNotNull(any) { "枚举值不允许为null!" }
             val cls = first::class
             val serialName = if (name.isNullOrBlank()) cls.qualifiedName ?: "UnknownEnum" else name
@@ -77,7 +77,7 @@ abstract class EnumSerializer<E : Enum<E>> : KSerializer<E> {
     }
 
     override fun serialize(encoder: Encoder, value: E) {
-        when (val v: Any? = _root_ide_package_.live.lingting.framework.util.EnumUtils.getValue(value)) {
+        when (val v: Any? = EnumUtils.getValue(value)) {
             null -> encoder.encodeNull()
             is Number -> encoder.encodeLong(v.toLong())
             is Boolean -> encoder.encodeBoolean(v)

@@ -10,7 +10,7 @@ open class S3Meta(prefix: String) : live.lingting.framework.http.header.Collecti
     companion object {
 
         @JvmStatic
-        fun empty() = _root_ide_package_.live.lingting.framework.aws.s3.impl.S3Meta("")
+        fun empty() = S3Meta("")
 
     }
 

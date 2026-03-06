@@ -13,7 +13,7 @@ abstract class AwsProperties {
 
     open var ssl: Boolean = true
 
-    open var region = _root_ide_package_.live.lingting.framework.aws.properties.AwsProperties.Companion.REGION
+    open var region = REGION
 
     open var endpoint: String = "amazonaws.com"
 

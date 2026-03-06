@@ -9,17 +9,33 @@ import io.ktor.utils.io.readBuffer
 import kotlinx.io.RawSource
 import kotlinx.io.Source
 import kotlinx.io.files.Path
+import live.lingting.framework.async.Async
+import live.lingting.framework.aws.AwsUtils
+import live.lingting.framework.aws.policy.Acl
+import live.lingting.framework.aws.properties.S3Properties
+import live.lingting.framework.aws.s3.impl.S3Meta
+import live.lingting.framework.aws.s3.interfaces.AwsS3ObjectInterface
+import live.lingting.framework.aws.s3.multipart.AwsS3MultipartUploadTask
+import live.lingting.framework.aws.s3.request.AwsS3MultipartMergeRequest
+import live.lingting.framework.aws.s3.request.AwsS3ObjectPutRequest
+import live.lingting.framework.aws.s3.request.AwsS3SimpleRequest
+import live.lingting.framework.data.DataSize
+import live.lingting.framework.http.body.SourceBody
+import live.lingting.framework.http.donwload.HttpMultipartDownload
 import live.lingting.framework.http.util.HttpExtraUtils.convert
 import live.lingting.framework.http.util.HttpHeadersUtils.etag
 import live.lingting.framework.http.util.HttpHeadersUtils.to
+import live.lingting.framework.io.multipart.MultipartSource
+import live.lingting.framework.multipart.Multipart
+import live.lingting.framework.multipart.Part
 import live.lingting.framework.xml.XmlExtraUtils.xmlToObj
 
 /**
  * @author lingting 2024-09-19 15:09
  */
-class AwsS3Object(properties: live.lingting.framework.aws.properties.S3Properties, override val key: String) :
+class AwsS3Object(properties: S3Properties, override val key: String) :
     AwsS3(properties),
-    live.lingting.framework.aws.s3.interfaces.AwsS3ObjectInterface {
+    AwsS3ObjectInterface {
 
     val publicUrl: String = properties.urlBuilder().appendPathSegments(key).build().toString()
 
@@ -38,7 +54,7 @@ class AwsS3Object(properties: live.lingting.framework.aws.properties.S3Propertie
     }
 
     override suspend fun head(): AwsS3Meta {
-        val request = _root_ide_package_.live.lingting.framework.aws.s3.request.AwsS3SimpleRequest(HttpMethod.Get)
+        val request = AwsS3SimpleRequest(HttpMethod.Get)
         request.headers.range(0, 0)
         val response = call(request)
         val headers = response.headers.to()
@@ -49,30 +65,30 @@ class AwsS3Object(properties: live.lingting.framework.aws.properties.S3Propertie
     }
 
     override suspend fun download(): Source {
-        val request = _root_ide_package_.live.lingting.framework.aws.s3.request.AwsS3SimpleRequest(HttpMethod.Get)
+        val request = AwsS3SimpleRequest(HttpMethod.Get)
         val response = call(request)
         return response.bodyAsChannel().readBuffer()
     }
 
     override fun download(
         path: Path,
-        multipart: live.lingting.framework.multipart.Multipart
-    ): live.lingting.framework.http.donwload.HttpMultipartDownload {
+        multipart: Multipart
+    ): HttpMultipartDownload {
         val url = preGet().url
-        return live.lingting.framework.http.donwload.HttpMultipartDownload(Url(url), path, multipart)
+        return HttpMultipartDownload(Url(url), path, multipart)
     }
 
-    override suspend fun put(request: live.lingting.framework.aws.s3.request.AwsS3ObjectPutRequest) {
+    override suspend fun put(request: AwsS3ObjectPutRequest) {
         call(request)
     }
 
     override suspend fun delete() {
-        val request = _root_ide_package_.live.lingting.framework.aws.s3.request.AwsS3SimpleRequest(HttpMethod.Delete)
+        val request = AwsS3SimpleRequest(HttpMethod.Delete)
         call(request)
     }
 
-    override suspend fun multipartInit(meta: live.lingting.framework.aws.s3.impl.S3Meta?): String {
-        val request = _root_ide_package_.live.lingting.framework.aws.s3.request.AwsS3SimpleRequest(HttpMethod.Post)
+    override suspend fun multipartInit(meta: S3Meta?): String {
+        val request = AwsS3SimpleRequest(HttpMethod.Post)
         request.params.add("uploads")
         meta?.run { request.meta.addAll(this) }
         return call(request).convert {
@@ -81,21 +97,21 @@ class AwsS3Object(properties: live.lingting.framework.aws.properties.S3Propertie
     }
 
     override suspend fun multipart(
-        source: live.lingting.framework.io.multipart.MultipartSource,
-        parSize: live.lingting.framework.data.DataSize,
-        async: live.lingting.framework.async.Async,
-        acl: live.lingting.framework.aws.policy.Acl?,
-        meta: live.lingting.framework.aws.s3.impl.S3Meta?
-    ): live.lingting.framework.aws.s3.multipart.AwsS3MultipartUploadTask {
+        source: MultipartSource,
+        parSize: DataSize,
+        async: Async,
+        acl: Acl?,
+        meta: S3Meta?
+    ): AwsS3MultipartUploadTask {
         val uploadId = multipartInit(meta)
 
-        val multipart = live.lingting.framework.aws.AwsUtils.multipart {
+        val multipart = AwsUtils.multipart {
             id(uploadId)
             size(source.size)
             partSize(parSize)
         }
 
-        val task = _root_ide_package_.live.lingting.framework.aws.s3.multipart.AwsS3MultipartUploadTask(
+        val task = AwsS3MultipartUploadTask(
             source,
             multipart,
             async,
@@ -112,11 +128,11 @@ class AwsS3Object(properties: live.lingting.framework.aws.properties.S3Propertie
      */
     override suspend fun multipartUpload(
         uploadId: String,
-        part: live.lingting.framework.multipart.Part,
+        part: Part,
         input: RawSource
     ): String {
-        val body = live.lingting.framework.http.body.SourceBody(part.size.bytes) { input }
-        val request = _root_ide_package_.live.lingting.framework.aws.s3.request.AwsS3ObjectPutRequest(body)
+        val body = SourceBody(part.size.bytes) { input }
+        val request = AwsS3ObjectPutRequest(body)
         request.multipart(uploadId, part)
         val response = call(request)
         val headers = response.headers
@@ -130,9 +146,9 @@ class AwsS3Object(properties: live.lingting.framework.aws.properties.S3Propertie
     override suspend fun multipartMerge(
         uploadId: String,
         map: Map<Long, String>,
-        acl: live.lingting.framework.aws.policy.Acl?
+        acl: Acl?
     ) {
-        val request = _root_ide_package_.live.lingting.framework.aws.s3.request.AwsS3MultipartMergeRequest()
+        val request = AwsS3MultipartMergeRequest()
         request.uploadId = uploadId
         request.eTagMap = map
         request.acl = acl
@@ -140,7 +156,7 @@ class AwsS3Object(properties: live.lingting.framework.aws.properties.S3Propertie
     }
 
     override suspend fun multipartCancel(uploadId: String) {
-        val request = _root_ide_package_.live.lingting.framework.aws.s3.request.AwsS3SimpleRequest(HttpMethod.Delete)
+        val request = AwsS3SimpleRequest(HttpMethod.Delete)
         request.params.add("uploadId", uploadId)
         call(request)
     }

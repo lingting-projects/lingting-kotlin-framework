@@ -6,7 +6,9 @@ import kotlinx.atomicfu.locks.withLock
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
+import live.lingting.framework.async.Async
 import live.lingting.framework.async.async
+import live.lingting.framework.multipart.Multipart
 import live.lingting.framework.util.LoggerUtils.logger
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmOverloads
@@ -16,8 +18,8 @@ import kotlin.time.Duration
  * @author lingting 2026/2/13 18:28
  */
 abstract class MultipartTask @JvmOverloads protected constructor(
-    val multipart: live.lingting.framework.multipart.Multipart,
-    @JvmField protected val async: live.lingting.framework.async.Async = _root_ide_package_.live.lingting.framework.async.async()
+    val multipart: Multipart,
+    @JvmField protected val async: Async = async()
 ) {
 
     protected val log = logger()
@@ -42,7 +44,7 @@ abstract class MultipartTask @JvmOverloads protected constructor(
     val id: String
         get() = multipart.id
 
-    protected val tasks = multipart.parts.map { _root_ide_package_.live.lingting.framework.multipart.task.PartTask(it) }
+    protected val tasks = multipart.parts.map { PartTask(it) }
 
     val completedNumber: Int
         get() = successfulNumber + failedNumber
@@ -69,16 +71,16 @@ abstract class MultipartTask @JvmOverloads protected constructor(
                     while (true) {
                         try {
                             task.status =
-                                _root_ide_package_.live.lingting.framework.multipart.task.PartTask.Status.RUNNING
+                                PartTask.Status.RUNNING
                             onPart(task)
                             task.t = null
                             task.status =
-                                _root_ide_package_.live.lingting.framework.multipart.task.PartTask.Status.SUCCESSFUL
+                                PartTask.Status.SUCCESSFUL
                             break
                         } catch (t: Throwable) {
                             task.t = t
                             task.status =
-                                _root_ide_package_.live.lingting.framework.multipart.task.PartTask.Status.FAILED
+                                PartTask.Status.FAILED
                             if (!allowRetry(task, t)) {
                                 break
                             }
@@ -95,7 +97,7 @@ abstract class MultipartTask @JvmOverloads protected constructor(
 
     @JvmOverloads
     suspend fun await(timeout: Duration? = null) {
-        _root_ide_package_.live.lingting.framework.concurrent.Await.waitTrue(timeout) { isCompleted }
+        live.lingting.framework.concurrent.Await.waitTrue(timeout) { isCompleted }
     }
 
     protected open suspend fun update() {
@@ -152,7 +154,7 @@ abstract class MultipartTask @JvmOverloads protected constructor(
         //
     }
 
-    protected abstract suspend fun onPart(task: live.lingting.framework.multipart.task.PartTask)
+    protected abstract suspend fun onPart(task: PartTask)
 
     protected open suspend fun onMerge() {
         //
@@ -166,7 +168,7 @@ abstract class MultipartTask @JvmOverloads protected constructor(
         //
     }
 
-    protected open fun allowRetry(task: live.lingting.framework.multipart.task.PartTask, t: Throwable?): Boolean {
+    protected open fun allowRetry(task: PartTask, t: Throwable?): Boolean {
         // 已失败数量大于0, 则不再进行重试.
         if (failedNumber > 0) {
             return false

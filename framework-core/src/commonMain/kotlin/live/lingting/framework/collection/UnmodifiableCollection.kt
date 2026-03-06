@@ -5,8 +5,7 @@ package live.lingting.framework.collection
  */
 class UnmodifiableCollection<T>(private val source: Collection<T>) : MutableCollection<T> {
 
-    override fun iterator(): MutableIterator<T> =
-        _root_ide_package_.live.lingting.framework.collection.UnmodifiableIterator(source.iterator())
+    override fun iterator(): MutableIterator<T> = UnmodifiableIterator(source.iterator())
 
     override fun add(element: T): Boolean = throw UnsupportedOperationException()
 

@@ -5,6 +5,10 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.encodedPath
+import live.lingting.framework.aws.exception.AwsS3Exception
+import live.lingting.framework.aws.s3.AwsS3Request
+import live.lingting.framework.aws.signer.AwsSigner
+import live.lingting.framework.aws.signer.AwsV4Signer
 import live.lingting.framework.http.util.HttpHeadersUtils.to
 import live.lingting.framework.http.util.ParametersUtils.to
 import live.lingting.framework.util.LoggerUtils.logger
@@ -19,28 +23,21 @@ open class AwsS3DefaultListener(@JvmField protected val client: live.lingting.fr
     @JvmField
     protected val log = client.logger()
 
-    override suspend fun onFailed(
-        r: live.lingting.framework.aws.s3.AwsS3Request,
-        request: HttpRequestBuilder,
-        response: HttpResponse
-    ) {
+    override suspend fun onFailed(r: AwsS3Request, request: HttpRequestBuilder, response: HttpResponse) {
         val httpStatus = response.status.value
         val string = response.bodyAsText()
         val msg = "[S3] AWS 请求异常! uri: ${request.url.encodedPath}; httpStatus: $httpStatus;"
         log.error {
             "$msg body: \n$string"
         }
-        throw _root_ide_package_.live.lingting.framework.aws.exception.AwsS3Exception(msg)
+        throw AwsS3Exception(msg)
     }
 
 
-    override fun onSign(
-        r: live.lingting.framework.aws.s3.AwsS3Request,
-        builder: HttpRequestBuilder
-    ): live.lingting.framework.aws.signer.AwsSigner<*, *> {
+    override fun onSign(r: AwsS3Request, builder: HttpRequestBuilder): AwsSigner<*, *> {
         val properties = client.properties
 
-        return _root_ide_package_.live.lingting.framework.aws.signer.AwsV4Signer(
+        return AwsV4Signer(
             builder.method,
             builder.url.encodedPath,
             builder.headers.to(),
