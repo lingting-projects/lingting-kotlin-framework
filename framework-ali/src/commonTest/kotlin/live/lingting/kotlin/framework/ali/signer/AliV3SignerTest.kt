@@ -1,10 +1,10 @@
-package live.lingting.kotlin.framework.ali.signer
+package live.lingting.framework.ali.signer
 
 import io.ktor.http.HttpMethod
-import live.lingting.kotlin.framework.aws.AwsUtils
-import live.lingting.kotlin.framework.http.header.HttpHeaders
-import live.lingting.kotlin.framework.time.DateTimePattern
-import live.lingting.kotlin.framework.value.multi.StringMultiValue
+import live.lingting.framework.aws.AwsUtils
+import live.lingting.framework.http.header.HttpHeaders
+import live.lingting.framework.time.DateTimePattern
+import live.lingting.framework.value.multi.StringMultiValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -15,19 +15,22 @@ class AliV3SignerTest {
 
     @Test
     fun test() {
-        val headers = HttpHeaders.empty()
+        val headers = live.lingting.framework.http.header.HttpHeaders.empty()
         headers.put("x-acs-signature-nonce", "3156853299f313e23d1673dc12e1703d")
         headers.put("x-acs-action", "RunInstances")
         headers.put("x-acs-version", "2014-05-26")
         headers.put("host", "ecs.cn-shanghai.aliyuncs.com")
 
-        val time = AwsUtils.parse("2023-10-26T10:22:32Z", DateTimePattern.FORMATTER_ISO_8601)
+        val time = live.lingting.framework.aws.AwsUtils.parse(
+            "2023-10-26T10:22:32Z",
+            _root_ide_package_.live.lingting.framework.time.DateTimePattern.FORMATTER_ISO_8601
+        )
 
-        val params = StringMultiValue()
+        val params = _root_ide_package_.live.lingting.framework.value.multi.StringMultiValue()
         params.add("ImageId", "win2019_1809_x64_dtc_zh-cn_40G_alibase_20230811.vhd")
         params.add("RegionId", "cn-shanghai")
 
-        val signer = AliV3Signer(
+        val signer = _root_ide_package_.live.lingting.framework.ali.signer.AliV3Signer(
             HttpMethod.Post,
             "/",
             headers,

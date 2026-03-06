@@ -1,4 +1,4 @@
-package live.lingting.kotlin.framework.http.api
+package live.lingting.framework.http.api
 
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.HttpResponse
@@ -18,9 +18,8 @@ import io.ktor.util.toMap
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
-import live.lingting.kotlin.framework.http.body.MemoryBody
-import live.lingting.kotlin.framework.json.JsonExtraUtils.jsonToObj
-import live.lingting.kotlin.framework.json.JsonExtraUtils.toJson
+import live.lingting.framework.json.JsonExtraUtils.jsonToObj
+import live.lingting.framework.json.JsonExtraUtils.toJson
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -77,7 +76,7 @@ class ApiClientTest {
             val apiClient = TestApiClient(host)
 
             // --- 场景 1: 正确的 GET 请求 ---
-            val getReq = ApiSimpleRequest(HttpMethod.Get, "/get").apply {
+            val getReq = api.ApiSimpleRequest(HttpMethod.Get, "/get").apply {
                 params["name"] = "lingting"
             }
             val getResp = apiClient.request(getReq)
@@ -93,7 +92,11 @@ class ApiClientTest {
 
             // --- 场景 2: 正确的 POST 请求 ---
             val postContent = "hello-world"
-            val postReq = ApiSimpleRequest(HttpMethod.Post, "/post", MemoryBody(postContent))
+            val postReq = api.ApiSimpleRequest(
+                HttpMethod.Post,
+                "/post",
+                body.MemoryBody(postContent)
+            )
 
             val postResp = apiClient.request(postReq)
             val postResultString = postResp.bodyAsText()
@@ -104,7 +107,7 @@ class ApiClientTest {
             assertEquals(postContent, postResult.data)
 
             // --- 场景 3: 异常请求 (鉴权失败) ---
-            val failReq = ApiSimpleRequest(HttpMethod.Get, "/get").apply {
+            val failReq = api.ApiSimpleRequest(HttpMethod.Get, "/get").apply {
                 params[noAuthKey] = ""
             }
             val exception = assertFailsWith<IllegalStateException> {
@@ -119,10 +122,15 @@ class ApiClientTest {
         }
     }
 
-    class TestApiClient(host: String) : ApiClient<ApiSimpleRequest>(host) {
+    class TestApiClient(host: String) :
+        live.lingting.framework.http.api.ApiClient<live.lingting.framework.http.api.ApiSimpleRequest>(host) {
 
         // 在这里实现校验逻辑
-        override suspend fun checkout(r: ApiSimpleRequest, request: HttpRequestBuilder, response: HttpResponse) {
+        override suspend fun checkout(
+            r: live.lingting.framework.http.api.ApiSimpleRequest,
+            request: HttpRequestBuilder,
+            response: HttpResponse
+        ) {
             if (response.status != HttpStatusCode.OK) {
                 throw IllegalStateException("Check failed: status=${response.status}")
             }
@@ -135,13 +143,13 @@ class ApiClientTest {
             }
         }
 
-        override fun onHeadersAfter(r: ApiSimpleRequest, headers: HeadersBuilder) {
+        override fun onHeadersAfter(r: live.lingting.framework.http.api.ApiSimpleRequest, headers: HeadersBuilder) {
             if (!r.params.hasKey(noAuthKey)) {
                 headers["Authorization"] = authValue
             }
         }
 
-        suspend fun request(r: ApiSimpleRequest): HttpResponse {
+        suspend fun request(r: live.lingting.framework.http.api.ApiSimpleRequest): HttpResponse {
             return call(r)
         }
 

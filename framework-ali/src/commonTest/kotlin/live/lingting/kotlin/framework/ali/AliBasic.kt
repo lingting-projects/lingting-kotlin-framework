@@ -1,10 +1,5 @@
-package live.lingting.kotlin.framework.ali
+package live.lingting.framework.ali
 
-import live.lingting.kotlin.framework.ali.properties.AliOssProperties
-import live.lingting.kotlin.framework.ali.properties.AliStsProperties
-import live.lingting.kotlin.framework.ali.sts.AliStsClient
-import live.lingting.kotlin.framework.aws.policy.Acl
-import live.lingting.kotlin.framework.util.SystemUtils
 import kotlin.test.assertNotNull
 
 
@@ -13,31 +8,33 @@ import kotlin.test.assertNotNull
  */
 internal object AliBasic {
 
-    fun sts(): AliStsClient {
-        val properties = AliStsProperties()
-        properties.ak = assertNotNull(SystemUtils.getEnv("AK"))
-        properties.sk = assertNotNull(SystemUtils.getEnv("SK"))
-        properties.region = assertNotNull(SystemUtils.getEnv("REGION"))
-        properties.roleArn = assertNotNull(SystemUtils.getEnv("ROLE_ARN"))
-        properties.roleSessionName = assertNotNull(SystemUtils.getEnv("ROLE_SESSION_NAME"))
-        return AliStsClient(properties)
+    fun sts(): live.lingting.framework.ali.sts.AliSts {
+        val properties = _root_ide_package_.live.lingting.framework.ali.properties.AliStsProperties()
+        properties.ak = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("AK"))
+        properties.sk = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("SK"))
+        properties.region = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("REGION"))
+        properties.roleArn =
+            assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("ROLE_ARN"))
+        properties.roleSessionName =
+            assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("ROLE_SESSION_NAME"))
+        return _root_ide_package_.live.lingting.framework.ali.sts.AliSts(properties)
     }
 
-    fun ossStsProperties(): AliOssProperties {
-        val properties = AliOssProperties()
-        properties.region = assertNotNull(SystemUtils.getEnv("REGION"))
-        properties.bucket = assertNotNull(SystemUtils.getEnv("BUCKET"))
-        properties.acl = Acl.PRIVATE
+    fun ossStsProperties(): live.lingting.framework.ali.properties.AliOssProperties {
+        val properties = _root_ide_package_.live.lingting.framework.ali.properties.AliOssProperties()
+        properties.region = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("REGION"))
+        properties.bucket = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("BUCKET"))
+        properties.acl = live.lingting.framework.aws.policy.Acl.PRIVATE
         return properties
     }
 
-    fun ossProperties(): AliOssProperties {
-        val properties = AliOssProperties()
-        properties.ak = assertNotNull(SystemUtils.getEnv("AK"))
-        properties.sk = assertNotNull(SystemUtils.getEnv("SK"))
-        properties.region = assertNotNull(SystemUtils.getEnv("REGION"))
-        properties.bucket = assertNotNull(SystemUtils.getEnv("BUCKET"))
-        properties.acl = Acl.PRIVATE
+    fun ossProperties(): live.lingting.framework.ali.properties.AliOssProperties {
+        val properties = _root_ide_package_.live.lingting.framework.ali.properties.AliOssProperties()
+        properties.ak = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("AK"))
+        properties.sk = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("SK"))
+        properties.region = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("REGION"))
+        properties.bucket = assertNotNull(_root_ide_package_.live.lingting.framework.util.SystemUtils.getEnv("BUCKET"))
+        properties.acl = live.lingting.framework.aws.policy.Acl.PRIVATE
         return properties
     }
 

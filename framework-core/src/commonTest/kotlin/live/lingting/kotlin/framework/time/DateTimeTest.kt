@@ -1,4 +1,4 @@
-package live.lingting.kotlin.framework.time
+package live.lingting.framework.time
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest

@@ -1,10 +1,10 @@
-package live.lingting.kotlin.framework.util
+package live.lingting.framework.util
 
 import kotlinx.coroutines.test.runTest
-import live.lingting.kotlin.framework.util.StringUtils.firstLower
-import live.lingting.kotlin.framework.util.StringUtils.firstUpper
-import live.lingting.kotlin.framework.util.StringUtils.toHexBytes
-import live.lingting.kotlin.framework.util.StringUtils.toHexString
+import live.lingting.framework.util.StringUtils.firstLower
+import live.lingting.framework.util.StringUtils.firstUpper
+import live.lingting.framework.util.StringUtils.toHexBytes
+import live.lingting.framework.util.StringUtils.toHexString
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals

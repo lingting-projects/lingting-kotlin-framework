@@ -1,9 +1,9 @@
-package live.lingting.kotlin.framework.ali.sts
+package live.lingting.framework.ali.sts
 
 import kotlinx.coroutines.test.runTest
-import live.lingting.kotlin.framework.ali.AliBasic
-import live.lingting.kotlin.framework.aws.policy.Statement
-import live.lingting.kotlin.framework.util.StringUtils
+import live.lingting.framework.ali.AliBasic
+import live.lingting.framework.aws.policy.Statement
+import live.lingting.framework.util.StringUtils
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -13,19 +13,19 @@ import kotlin.test.assertTrue
  */
 internal class AliStsTest {
 
-    var sts: AliStsClient? = null
+    var sts: live.lingting.framework.ali.sts.AliSts? = null
 
     @Test
     fun credential() = runTest {
         sts = AliBasic.sts()
-        val statement = Statement(true)
+        val statement = live.lingting.framework.aws.policy.Statement(true)
         statement.addAction("obs:*")
         statement.addResource("obs:*:*:bucket:*")
         val credential = sts!!.credential(statement)
         assertNotNull(credential)
-        assertTrue(StringUtils.hasText(credential.ak))
-        assertTrue(StringUtils.hasText(credential.sk))
-        assertTrue(StringUtils.hasText(credential.token))
+        assertTrue(_root_ide_package_.live.lingting.framework.util.StringUtils.hasText(credential.ak))
+        assertTrue(_root_ide_package_.live.lingting.framework.util.StringUtils.hasText(credential.sk))
+        assertTrue(_root_ide_package_.live.lingting.framework.util.StringUtils.hasText(credential.token))
         assertNotNull(credential.expire)
     }
 }

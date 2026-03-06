@@ -1,10 +1,10 @@
-package live.lingting.kotlin.framework.util
+package live.lingting.framework.util
 
 import kotlinx.coroutines.test.runTest
 import kotlinx.io.Buffer
 import kotlinx.io.readByteArray
-import live.lingting.kotlin.framework.util.BufferUtils.write
-import live.lingting.kotlin.framework.util.BufferUtils.writeChar
+import live.lingting.framework.util.BufferUtils.write
+import live.lingting.framework.util.BufferUtils.writeChar
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

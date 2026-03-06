@@ -1,8 +1,8 @@
-package live.lingting.kotlin.framework.util
+package live.lingting.framework.util
 
 import kotlinx.coroutines.test.runTest
-import live.lingting.kotlin.framework.util.CollectionUtils.flatten
-import live.lingting.kotlin.framework.util.CollectionUtils.split
+import live.lingting.framework.util.CollectionUtils.flatten
+import live.lingting.framework.util.CollectionUtils.split
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

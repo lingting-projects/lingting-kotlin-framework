@@ -1,4 +1,4 @@
-package live.lingting.kotlin.framework.util
+package live.lingting.framework.util
 
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test

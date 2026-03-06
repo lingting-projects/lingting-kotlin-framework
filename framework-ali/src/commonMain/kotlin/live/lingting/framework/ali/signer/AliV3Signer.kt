@@ -1,0 +1,223 @@
+package live.lingting.framework.ali.signer
+
+import io.ktor.http.HttpMethod
+import kotlinx.datetime.LocalDateTime
+import live.lingting.framework.aws.AwsUtils.HEADER_MD5
+import live.lingting.framework.crypto.hmac.Hmac256
+import live.lingting.framework.crypto.util.DigestUtils.toSha256Hex
+import live.lingting.framework.http.QueryBuilder
+import live.lingting.framework.http.body.Body
+import live.lingting.framework.http.header.HttpHeaders
+import live.lingting.framework.util.ArrayUtils.contains
+import live.lingting.framework.util.StringUtils.deleteLast
+import live.lingting.framework.util.ValueUtils.forEachSorted
+import kotlin.jvm.JvmField
+import kotlin.jvm.JvmOverloads
+import kotlin.time.Duration
+
+/**
+ * @author lingting 2025/5/27 20:17
+ */
+class AliV3Signer(
+    val method: HttpMethod,
+    path: String,
+    headers: live.lingting.framework.http.header.HttpHeaders,
+    val body: live.lingting.framework.http.body.Body<*>?,
+    params: live.lingting.framework.value.multi.StringMultiValue,
+    ak: String,
+    val sk: String,
+) : live.lingting.framework.aws.signer.AwsSigner<AliV3Signer, AliV3Signer.Signed>(ak) {
+
+    companion object {
+
+        @JvmField
+        val ALGORITHM: String = "ACS3-HMAC-SHA256"
+
+        @JvmField
+        val HEADER_PREFIX: String = "x-acs"
+
+        @JvmField
+        val HEADER_INCLUDE = arrayOf("host", "content-type", HEADER_MD5)
+
+    }
+
+    val headers = live.lingting.framework.http.header.HttpHeaders.empty().also { it.putAll(headers) }
+
+    val params = _root_ide_package_.live.lingting.framework.value.multi.StringMultiValue().also { it.putAll(params) }
+
+    val path = path.let {
+        if (path.startsWith("/")) path else "/$path"
+    }
+
+    override val bodyPayload by lazy {
+        body.let {
+            if (it == null || it.length() < 1) {
+                ""
+            } else {
+                it.string().toSha256Hex()
+            }
+        }
+    }
+
+    fun date(time: LocalDateTime) = live.lingting.framework.aws.AwsUtils.format(
+        time,
+        _root_ide_package_.live.lingting.framework.time.DateTimePattern.FORMATTER_ISO_8601
+    )
+
+    fun canonicalUri() = path
+
+    fun canonicalQuery(): String {
+        return live.lingting.framework.http.QueryBuilder(params).apply {
+            sort = true
+        }.build()
+    }
+
+    fun headersForEach(consumer: (String, Collection<String>) -> Unit) {
+        headers.forEachSorted { k, vs ->
+            if (!k.startsWith(_root_ide_package_.live.lingting.framework.ali.signer.AliV3Signer.Companion.HEADER_PREFIX) && !_root_ide_package_.live.lingting.framework.ali.signer.AliV3Signer.Companion.HEADER_INCLUDE.contains(
+                    k
+                )
+            ) {
+                return@forEachSorted
+            }
+            consumer(k, vs)
+        }
+    }
+
+    fun canonicalHeaders(): String {
+        val builder = StringBuilder()
+
+        headersForEach { k, vs ->
+            for (v in vs) {
+                builder.append(k).append(":").append(v).append("\n")
+            }
+        }
+
+        return builder.toString()
+    }
+
+    fun signedHeaders(): String {
+        val builder = StringBuilder()
+
+        headersForEach { k, _ -> builder.append(k).append(";") }
+
+        return deleteLast(builder).toString()
+    }
+
+    fun canonicalRequest(): String {
+        val uri = canonicalUri()
+        val query = canonicalQuery()
+        val canonicalHeaders = canonicalHeaders()
+        val signedHeaders = signedHeaders()
+
+        return canonicalRequest(uri, query, canonicalHeaders, signedHeaders)
+    }
+
+    @JvmOverloads
+    fun canonicalRequest(
+        uri: String,
+        query: String,
+        canonicalHeaders: String,
+        signedHeaders: String,
+        bodyPayload: String = this.bodyPayload,
+    ): String {
+        return "$method\n$uri\n$query\n$canonicalHeaders\n$signedHeaders\n$bodyPayload"
+    }
+
+    fun source(request: String): String {
+        val requestSha = request.toSha256Hex()
+        return "${_root_ide_package_.live.lingting.framework.ali.signer.AliV3Signer.Companion.ALGORITHM}\n$requestSha"
+    }
+
+    fun calculate(source: String): String {
+        val hmac256 = Hmac256(sk)
+        return hmac256.calculateHex(source)
+    }
+
+    fun authorization(signedHeaders: String, sign: String): String {
+        return "${_root_ide_package_.live.lingting.framework.ali.signer.AliV3Signer.Companion.ALGORITHM} Credential=$ak,SignedHeaders=$signedHeaders,Signature=$sign"
+    }
+
+    override fun signed(time: LocalDateTime): Signed = signed(time, bodyPayload)
+
+    override fun signed(
+        time: LocalDateTime,
+        bodyPayload: String
+    ): Signed {
+        val date = date(time)
+        headers.put(
+            "${_root_ide_package_.live.lingting.framework.ali.signer.AliV3Signer.Companion.HEADER_PREFIX}-date",
+            date
+        )
+        headers.put(
+            "${_root_ide_package_.live.lingting.framework.ali.signer.AliV3Signer.Companion.HEADER_PREFIX}-content-sha256",
+            bodyPayload
+        )
+
+
+        val canonicalUri = canonicalUri()
+        val canonicalQuery = canonicalQuery()
+        val canonicalHeaders = canonicalHeaders()
+        val signedHeaders = signedHeaders()
+
+        val canonicalRequest =
+            canonicalRequest(canonicalUri, canonicalQuery, canonicalHeaders, signedHeaders, bodyPayload)
+
+        val source = source(canonicalRequest)
+
+        val calculate = calculate(source)
+
+        val authorization = authorization(signedHeaders, calculate)
+
+        return Signed(
+            this,
+            headers,
+            params,
+            bodyPayload,
+            canonicalUri,
+            canonicalQuery,
+            canonicalHeaders,
+            signedHeaders,
+            canonicalRequest,
+            date,
+            source,
+            calculate,
+            authorization,
+        )
+    }
+
+    override fun signed(
+        time: LocalDateTime,
+        duration: Duration,
+        bodyPayload: String,
+    ): Signed {
+        throw UnsupportedOperationException()
+    }
+
+    class Signed(
+        signer: live.lingting.framework.ali.signer.AliV3Signer,
+        headers: live.lingting.framework.http.header.HttpHeaders,
+        params: live.lingting.framework.value.multi.StringMultiValue?,
+        bodyPayload: String,
+        val canonicalUri: String,
+        val canonicalQuery: String,
+        val canonicalizedHeaders: String,
+        val signedHeaders: String,
+        val canonicalRequest: String,
+        val date: String,
+        source: String,
+        sign: String,
+        authorization: String
+    ) : live.lingting.framework.aws.signer.AwsSigner.Signed<live.lingting.framework.ali.signer.AliV3Signer, Signed>(
+        signer,
+        headers,
+        params,
+        bodyPayload,
+        source,
+        sign,
+        authorization,
+    ) {
+
+    }
+
+}

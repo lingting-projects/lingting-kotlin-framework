@@ -1,4 +1,4 @@
-package live.lingting.kotlin.framework.data
+package live.lingting.framework.data
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

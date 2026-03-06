@@ -1,7 +1,7 @@
-package live.lingting.kotlin.framework.util
+package live.lingting.framework.util
 
 import kotlinx.coroutines.test.runTest
-import live.lingting.kotlin.framework.util.DoubleUtils.scaleHalfUp
+import live.lingting.framework.util.DoubleUtils.scaleHalfUp
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -1,12 +1,7 @@
-package live.lingting.kotlin.framework.aws.s3
+package live.lingting.framework.aws.s3
 
 import kotlinx.coroutines.test.runTest
-import live.lingting.kotlin.framework.aws.AwsBasic
-import live.lingting.kotlin.framework.aws.properties.AwsS3Properties
-import live.lingting.kotlin.framework.aws.properties.S3Properties
-import live.lingting.kotlin.framework.aws.s3.interfaces.AwsS3BucketDelegation
-import live.lingting.kotlin.framework.aws.s3.interfaces.AwsS3ObjectDelegation
-import live.lingting.kotlin.framework.aws.sts.AwsStsClient
+import live.lingting.framework.aws.AwsBasic
 import kotlin.test.Test
 
 /**
@@ -14,7 +9,7 @@ import kotlin.test.Test
  */
 class AwsS3Test : S3BasicTest() {
 
-    var sts: AwsStsClient? = null
+    var sts: live.lingting.framework.aws.sts.AwsSts? = null
 
     var useSts = false
 
@@ -26,24 +21,30 @@ class AwsS3Test : S3BasicTest() {
         run()
     }
 
-    override suspend fun buildObj(key: String): AwsS3ObjectDelegation {
-        val obj = if (useSts) sts!!.s3Object(properties as AwsS3Properties, key) else AwsS3Object(
+    override suspend fun buildObj(key: String): live.lingting.framework.aws.s3.interfaces.AwsS3ObjectDelegation {
+        val obj = if (useSts) sts!!.s3Object(
+            properties as live.lingting.framework.aws.properties.AwsS3Properties,
+            key
+        ) else _root_ide_package_.live.lingting.framework.aws.s3.AwsS3Object(
             AwsBasic.s3Properties(),
             key
         )
-        return object : AwsS3ObjectDelegation {
-            override fun delegation(): AwsS3Object = obj
+        return object : live.lingting.framework.aws.s3.interfaces.AwsS3ObjectDelegation {
+            override fun delegation(): live.lingting.framework.aws.s3.AwsS3Object = obj
         }
     }
 
-    override suspend fun buildBucket(): AwsS3BucketDelegation {
-        val bucket = if (useSts) sts!!.s3Bucket(properties as AwsS3Properties) else AwsS3Bucket(AwsBasic.s3Properties())
-        return object : AwsS3BucketDelegation {
-            override fun delegation(): AwsS3Bucket = bucket
+    override suspend fun buildBucket(): live.lingting.framework.aws.s3.interfaces.AwsS3BucketDelegation {
+        val bucket =
+            if (useSts) sts!!.s3Bucket(properties as live.lingting.framework.aws.properties.AwsS3Properties) else _root_ide_package_.live.lingting.framework.aws.s3.AwsS3Bucket(
+                AwsBasic.s3Properties()
+            )
+        return object : live.lingting.framework.aws.s3.interfaces.AwsS3BucketDelegation {
+            override fun delegation(): live.lingting.framework.aws.s3.AwsS3Bucket = bucket
         }
     }
 
-    override fun properties(): S3Properties {
+    override fun properties(): live.lingting.framework.aws.properties.S3Properties {
         return if (useSts) AwsBasic.s3StsProperties() else AwsBasic.s3Properties()
     }
 

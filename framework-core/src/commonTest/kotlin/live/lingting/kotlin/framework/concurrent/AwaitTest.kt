@@ -1,9 +1,9 @@
-package live.lingting.kotlin.framework.concurrent
+package live.lingting.framework.concurrent
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
-import live.lingting.kotlin.framework.exception.TimeoutException
+import live.lingting.framework.exception.TimeoutException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

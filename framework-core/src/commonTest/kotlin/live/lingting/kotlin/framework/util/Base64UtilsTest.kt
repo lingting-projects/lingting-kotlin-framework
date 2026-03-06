@@ -1,8 +1,8 @@
-package live.lingting.kotlin.framework.util
+package live.lingting.framework.util
 
 import kotlinx.coroutines.test.runTest
-import live.lingting.kotlin.framework.util.Base64Utils.toBase64Bytes
-import live.lingting.kotlin.framework.util.Base64Utils.toBase64String
+import live.lingting.framework.util.Base64Utils.toBase64Bytes
+import live.lingting.framework.util.Base64Utils.toBase64String
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals

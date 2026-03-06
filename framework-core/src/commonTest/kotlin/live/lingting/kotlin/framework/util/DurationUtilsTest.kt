@@ -1,14 +1,14 @@
-package live.lingting.kotlin.framework.util
+package live.lingting.framework.util
 
 import kotlinx.coroutines.test.runTest
-import live.lingting.kotlin.framework.util.DurationUtils.hours
-import live.lingting.kotlin.framework.util.DurationUtils.isNegative
-import live.lingting.kotlin.framework.util.DurationUtils.isPositive
-import live.lingting.kotlin.framework.util.DurationUtils.isZero
-import live.lingting.kotlin.framework.util.DurationUtils.millis
-import live.lingting.kotlin.framework.util.DurationUtils.months
-import live.lingting.kotlin.framework.util.DurationUtils.weeks
-import live.lingting.kotlin.framework.util.DurationUtils.years
+import live.lingting.framework.util.DurationUtils.hours
+import live.lingting.framework.util.DurationUtils.isNegative
+import live.lingting.framework.util.DurationUtils.isPositive
+import live.lingting.framework.util.DurationUtils.isZero
+import live.lingting.framework.util.DurationUtils.millis
+import live.lingting.framework.util.DurationUtils.months
+import live.lingting.framework.util.DurationUtils.weeks
+import live.lingting.framework.util.DurationUtils.years
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

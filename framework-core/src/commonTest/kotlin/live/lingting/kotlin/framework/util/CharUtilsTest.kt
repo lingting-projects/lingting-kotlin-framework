@@ -1,9 +1,9 @@
-package live.lingting.kotlin.framework.util
+package live.lingting.framework.util
 
 import kotlinx.coroutines.test.runTest
-import live.lingting.kotlin.framework.util.CharUtils.isLetter
-import live.lingting.kotlin.framework.util.CharUtils.isLowerLetter
-import live.lingting.kotlin.framework.util.CharUtils.isUpperLetter
+import live.lingting.framework.util.CharUtils.isLetter
+import live.lingting.framework.util.CharUtils.isLowerLetter
+import live.lingting.framework.util.CharUtils.isUpperLetter
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

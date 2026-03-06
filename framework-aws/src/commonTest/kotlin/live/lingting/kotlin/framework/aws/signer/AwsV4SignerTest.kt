@@ -1,17 +1,14 @@
-package live.lingting.kotlin.framework.aws.signer
+package live.lingting.framework.aws.signer
 
 import io.ktor.http.HttpMethod
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
 import io.ktor.http.appendPathSegments
-import live.lingting.kotlin.framework.aws.AwsUtils
-import live.lingting.kotlin.framework.http.header.CollectionHttpHeaders
-import live.lingting.kotlin.framework.http.util.HttpUrlUtils.buildPath
-import live.lingting.kotlin.framework.http.util.HttpUrlUtils.buildStringBySort
-import live.lingting.kotlin.framework.http.util.HttpUrlUtils.headerHost
-import live.lingting.kotlin.framework.http.util.ParametersUtils.appendAll
-import live.lingting.kotlin.framework.util.DurationUtils.days
-import live.lingting.kotlin.framework.value.multi.StringMultiValue
+import live.lingting.framework.http.util.HttpUrlUtils.buildPath
+import live.lingting.framework.http.util.HttpUrlUtils.buildStringBySort
+import live.lingting.framework.http.util.HttpUrlUtils.headerHost
+import live.lingting.framework.http.util.ParametersUtils.appendAll
+import live.lingting.framework.util.DurationUtils.days
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -28,7 +25,7 @@ class AwsV4SignerTest {
     }
 
     fun testParamsToken() {
-        val params = StringMultiValue()
+        val params = _root_ide_package_.live.lingting.framework.value.multi.StringMultiValue()
 
         val builder = URLBuilder().apply {
             protocol = URLProtocol.HTTPS
@@ -36,12 +33,12 @@ class AwsV4SignerTest {
             appendPathSegments("test.txt")
         }
 
-        val headers = CollectionHttpHeaders()
+        val headers = live.lingting.framework.http.header.CollectionHttpHeaders()
         headers["Host"] = builder.headerHost()
-        headers[AwsUtils.HEADER_TOKEN] =
+        headers[_root_ide_package_.live.lingting.framework.aws.AwsUtils.HEADER_TOKEN] =
             "IQoJb3JpZ2luX2VjEMv//////////wEaCXVzLWVhc3QtMSJGMEQCIBSUbVdj9YGs2g0HkHsOHFdkwOozjARSKHL987NhhOC8AiBPepRU1obMvIbGU0T+WphFPgK/qpxaf5Snvm5M57XFkCqlAgjz//////////8BEAAaDDQ3MjM4NTU0NDY2MCIM83pULBe5/+Nm1GZBKvkBVslSaJVgwSef7SsoZCJlfJ56weYl3QCwEGr2F4BmCZZyFpmWEYzWnhNK1AnHMj5nkfKlKBx30XAT5PZGVrmq4Vkn9ewlXQy1Iu3QJRi9Tdod8Ef9/yajTaUGh76+F5u5a4O115jwultOQiKomVwO318CO4l8lv/3HhMOkpdanMXn+4PY8lvM8RgnzSu90jOUpGXEOAo/6G8OqlMim3+ZmaQmasn4VYRvESEd7O72QGZ3+vDnDVnss0lSYjlv8PP7IujnvhZRnj0WoeOyMe1lL0wTG/a9usH5hE52w/YUJccOn0OaZuyROuVsRV4Q70sbWQhUvYUt+0tUMKzm8vsFOp4BaNZFqobbjtb36Y92v+x5kY6i0s8QE886jJtUWMP5ldMziClGx3p0mN5dzsYlM3GyiJ/O1mWkPQDwg3mtSpOA9oeeuAMPTA7qMqy9RNuTKBDSx9EW27wvPzBum3SJhEfxv48euadKgrIX3Z79ruQFSQOc9LUrDjR+4SoWAJqK+GX8Q3vPSjsLxhqhEMWd6U4TXcM7ku3gxMbzqfT8NDg="
 
-        val signer = AwsV4Signer(
+        val signer = _root_ide_package_.live.lingting.framework.aws.signer.AwsV4Signer(
             HttpMethod.Get,
             builder.buildPath(),
             headers,
@@ -53,7 +50,8 @@ class AwsV4SignerTest {
             "s3"
         )
 
-        val dateTime = AwsUtils.parse("20200524T000000Z", signer.dateFormatter)
+        val dateTime =
+            _root_ide_package_.live.lingting.framework.aws.AwsUtils.parse("20200524T000000Z", signer.dateFormatter)
 
         val signed = signer.signed(dateTime, 1.days)
 
@@ -85,7 +83,7 @@ class AwsV4SignerTest {
     }
 
     fun testParams() {
-        val params = StringMultiValue()
+        val params = _root_ide_package_.live.lingting.framework.value.multi.StringMultiValue()
 
         val builder = URLBuilder().apply {
             protocol = URLProtocol.HTTPS
@@ -93,10 +91,10 @@ class AwsV4SignerTest {
             appendPathSegments("test.txt")
         }
 
-        val headers = CollectionHttpHeaders()
+        val headers = live.lingting.framework.http.header.CollectionHttpHeaders()
         headers["Host"] = builder.headerHost()
 
-        val signer = AwsV4Signer(
+        val signer = _root_ide_package_.live.lingting.framework.aws.signer.AwsV4Signer(
             HttpMethod.Get,
             builder.buildPath(),
             headers,
@@ -108,7 +106,8 @@ class AwsV4SignerTest {
             "s3"
         )
 
-        val dateTime = AwsUtils.parse("20130524T000000Z", signer.dateFormatter)
+        val dateTime =
+            _root_ide_package_.live.lingting.framework.aws.AwsUtils.parse("20130524T000000Z", signer.dateFormatter)
 
         val signed = signer.signed(dateTime, 1.days)
 
@@ -140,13 +139,13 @@ class AwsV4SignerTest {
     }
 
     fun testHeader() {
-        val params = StringMultiValue()
+        val params = _root_ide_package_.live.lingting.framework.value.multi.StringMultiValue()
 
-        val headers = CollectionHttpHeaders()
+        val headers = live.lingting.framework.http.header.CollectionHttpHeaders()
         headers["Host"] = "examplebucket.s3.amazonaws.com"
         headers["Range"] = "bytes=0-9"
 
-        val signer = AwsV4Signer(
+        val signer = _root_ide_package_.live.lingting.framework.aws.signer.AwsV4Signer(
             HttpMethod.Get,
             "/test.txt",
             headers,
@@ -159,7 +158,8 @@ class AwsV4SignerTest {
         )
 
         val bodyPayload = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        val dateTime = AwsUtils.parse("20130524T000000Z", signer.dateFormatter)
+        val dateTime =
+            _root_ide_package_.live.lingting.framework.aws.AwsUtils.parse("20130524T000000Z", signer.dateFormatter)
         val signed = signer.signed(dateTime, bodyPayload)
 
         assertEquals(bodyPayload, signed.bodyPayload)

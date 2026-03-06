@@ -1,4 +1,4 @@
-package live.lingting.kotlin.framework.http
+package live.lingting.framework.http
 
 import io.ktor.client.request.get
 import kotlinx.coroutines.test.runTest

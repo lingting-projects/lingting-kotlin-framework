@@ -1,4 +1,4 @@
-package live.lingting.kotlin.framework.snowflake
+package live.lingting.framework.snowflake
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

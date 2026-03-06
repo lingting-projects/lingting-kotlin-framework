@@ -1,4 +1,4 @@
-package live.lingting.kotlin.framework.async
+package live.lingting.framework.async
 
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.delay

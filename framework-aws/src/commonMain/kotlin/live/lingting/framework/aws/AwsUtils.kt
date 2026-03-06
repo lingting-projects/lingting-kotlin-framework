@@ -1,0 +1,153 @@
+package live.lingting.framework.aws
+
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format.DateTimeFormat
+import kotlinx.datetime.format.char
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
+import live.lingting.framework.crypto.util.DigestUtils.toMd5Hex
+import live.lingting.framework.multipart.Multipart.Builder
+import live.lingting.framework.util.Base64Utils.toBase64String
+import live.lingting.framework.util.StringUtils.firstUpper
+import live.lingting.framework.util.StringUtils.toHexBytes
+import kotlin.jvm.JvmField
+import kotlin.jvm.JvmOverloads
+import kotlin.jvm.JvmStatic
+
+
+/**
+ * @author lingting 2024-09-19 15:20
+ */
+object AwsUtils {
+
+    @JvmField
+    val DATE_FORMATTER = LocalDateTime.Format {
+        year(); monthNumber(); day()
+        char('T')
+        hour(); minute(); second()
+        char('Z')
+    }
+
+    @JvmField
+    val SCOPE_DATE_FORMATTER = LocalDateTime.Format {
+        year(); monthNumber(); day()
+    }
+
+    /**
+     * 10M
+     */
+    @JvmField
+    val MULTIPART_DEFAULT_PART_SIZE = _root_ide_package_.live.lingting.framework.data.DataSize.ofMb(10)
+
+    /**
+     * 5G
+     */
+    @JvmField
+    val MULTIPART_MAX_PART_SIZE = _root_ide_package_.live.lingting.framework.data.DataSize.ofGb(5)
+
+    /**
+     * 100K
+     */
+    @JvmField
+    val MULTIPART_MIN_PART_SIZE = _root_ide_package_.live.lingting.framework.data.DataSize.ofKb(100)
+
+    const val MULTIPART_MAX_PART_COUNT = 1000L
+
+    const val PAYLOAD_UNSIGNED: String = "UNSIGNED-PAYLOAD"
+
+    const val HEADER_PREFIX: String = "x-amz"
+
+    const val HEADER_DATE: String = "$HEADER_PREFIX-date"
+
+    const val HEADER_CONTENT_SHA256: String = "$HEADER_PREFIX-content-sha256"
+
+    const val HEADER_TOKEN: String = "$HEADER_PREFIX-security-token"
+
+    const val HEADER_ACL: String = "$HEADER_PREFIX-acl"
+
+    const val HEADER_MD5: String = "content-md5"
+
+    const val HEADER_PREFIX_META: String = "$HEADER_PREFIX-meta-"
+
+    /**
+     * 从当前区域时间转为+0时区时间, 然后格式化
+     * @see live.lingting.framework.time.DateTime.zone
+     */
+    @JvmStatic
+    fun format(dateTime: LocalDateTime, formatter: DateTimeFormat<LocalDateTime>): String {
+        return format(_root_ide_package_.live.lingting.framework.time.DateTime.zone, dateTime, formatter)
+    }
+
+    /**
+     * 从指定时区转为+0时区时间, 然后格式化
+     */
+    @JvmStatic
+    fun format(zone: TimeZone, dateTime: LocalDateTime, formatter: DateTimeFormat<LocalDateTime>): String {
+        // 当前时区时间
+        val atZone = dateTime.toInstant(zone)
+        // 切换到+0
+        val atGmt = atZone.toLocalDateTime(_root_ide_package_.live.lingting.framework.time.DateTimePattern.GMT_ZONE)
+        return formatter.format(atGmt)
+    }
+
+    /**
+     * 把+0时区的对应格式时间字符串转为当前时区的时间
+     */
+    @JvmStatic
+    fun parse(string: String, formatter: DateTimeFormat<LocalDateTime>): LocalDateTime {
+        return parse(_root_ide_package_.live.lingting.framework.time.DateTimePattern.GMT_ZONE, string, formatter)
+    }
+
+    /**
+     * 把指定时区的对应格式时间字符串转为当前时区的时间
+     */
+    @JvmStatic
+    fun parse(zone: TimeZone, string: String, formatter: DateTimeFormat<LocalDateTime>): LocalDateTime {
+        // 时间原始字符串转为时间类型
+        val dateTime = formatter.parse(string)
+        // 原始时区为 +0
+        val atGmt = dateTime.toInstant(zone)
+        // 切换到当前系统时区
+        val atZone = atGmt.toLocalDateTime(_root_ide_package_.live.lingting.framework.time.DateTime.zone)
+        return atZone
+    }
+
+    @JvmStatic
+    fun toParamsKey(key: String): String {
+        val split = key.split("-")
+        return split.joinToString("-") { it.firstUpper() }
+    }
+
+    /**
+     * 计算内容在请求头上的 contentMd5 值
+     */
+    @JvmStatic
+    fun contentMd5(bytes: ByteArray): String {
+        val hex = bytes.toMd5Hex()
+        return contentMd5FromMd5(hex)
+    }
+
+    /**
+     * 从原始的md5 生成请求头上的 contentMd5 值
+     */
+    @JvmStatic
+    fun contentMd5FromMd5(md5: String): String {
+        val bytes = md5.toHexBytes()
+        return bytes.toBase64String()
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun multipart(block: (Builder.() -> Unit)? = null): live.lingting.framework.multipart.Multipart =
+        _root_ide_package_.live.lingting.framework.multipart.Multipart.build {
+            partSize(MULTIPART_DEFAULT_PART_SIZE)
+            minPartSize(MULTIPART_MIN_PART_SIZE)
+            maxPartSize(MULTIPART_MAX_PART_SIZE)
+            maxPartCount(MULTIPART_MAX_PART_COUNT)
+            if (block != null) {
+                block()
+            }
+        }
+
+}

@@ -1,11 +1,11 @@
-package live.lingting.kotlin.framework.util
+package live.lingting.framework.util
 
-import live.lingting.kotlin.framework.util.ArrayUtils.contains
-import live.lingting.kotlin.framework.util.ArrayUtils.containsIgnoreCase
-import live.lingting.kotlin.framework.util.ArrayUtils.indexOf
-import live.lingting.kotlin.framework.util.ArrayUtils.isArray
-import live.lingting.kotlin.framework.util.ArrayUtils.isEmpty
-import live.lingting.kotlin.framework.util.ArrayUtils.sub
+import live.lingting.framework.util.ArrayUtils.contains
+import live.lingting.framework.util.ArrayUtils.containsIgnoreCase
+import live.lingting.framework.util.ArrayUtils.indexOf
+import live.lingting.framework.util.ArrayUtils.isArray
+import live.lingting.framework.util.ArrayUtils.isEmpty
+import live.lingting.framework.util.ArrayUtils.sub
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals

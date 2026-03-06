@@ -1,7 +1,7 @@
-package live.lingting.kotlin.framework.value
+package live.lingting.framework.value
 
-import live.lingting.kotlin.framework.util.ArrayUtils
-import live.lingting.kotlin.framework.value.multi.ListMultiValue
+import live.lingting.framework.util.ArrayUtils
+import live.lingting.framework.value.multi.ListMultiValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
