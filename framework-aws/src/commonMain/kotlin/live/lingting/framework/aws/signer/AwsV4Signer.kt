@@ -3,7 +3,7 @@ package live.lingting.framework.aws.signer
 import io.ktor.http.HttpMethod
 import kotlinx.datetime.LocalDateTime
 import live.lingting.framework.aws.AwsUtils
-import live.lingting.framework.crypto.hmac.Hmac256
+import live.lingting.framework.crypto.hmac.HmacSha256
 import live.lingting.framework.crypto.util.DigestUtils.toSha256Hex
 import live.lingting.framework.http.header.CollectionHttpHeaders
 import live.lingting.framework.util.StringUtils.deleteLast
@@ -196,7 +196,7 @@ open class AwsV4Signer(
     }
 
     open fun calculate(scopeDate: String, source: String): String {
-        val mac = Hmac256("$secretPrefix$sk")
+        val mac = HmacSha256("$secretPrefix$sk")
         val sourceKey1 = mac.calculate(scopeDate)
         val sourceKey2 = mac.useKey(sourceKey1).calculate(region)
         val sourceKey3 = mac.useKey(sourceKey2).calculate(service)

@@ -5,7 +5,7 @@ import kotlinx.datetime.LocalDateTime
 import live.lingting.framework.aws.AwsUtils
 import live.lingting.framework.aws.AwsUtils.HEADER_MD5
 import live.lingting.framework.aws.signer.AwsSigner
-import live.lingting.framework.crypto.hmac.Hmac256
+import live.lingting.framework.crypto.hmac.HmacSha256
 import live.lingting.framework.crypto.util.DigestUtils.toSha256Hex
 import live.lingting.framework.http.QueryBuilder
 import live.lingting.framework.http.body.Body
@@ -131,7 +131,7 @@ class AliV3Signer(
     }
 
     fun calculate(source: String): String {
-        val hmac256 = Hmac256(sk)
+        val hmac256 = HmacSha256(sk)
         return hmac256.calculateHex(source)
     }
 

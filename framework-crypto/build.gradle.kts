@@ -12,6 +12,7 @@ kotlin {
                 implementation("org.kotlincrypto.hash:sha1:$version")
                 implementation("org.kotlincrypto.hash:sha2:$version")
                 implementation("org.kotlincrypto.hash:md:$version")
+                implementation("org.kotlincrypto.macs:hmac-sha1:$version")
                 implementation("org.kotlincrypto.macs:hmac-sha2:$version")
             }
         }
