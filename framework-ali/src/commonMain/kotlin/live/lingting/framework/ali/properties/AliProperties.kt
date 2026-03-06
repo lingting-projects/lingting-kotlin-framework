@@ -18,8 +18,7 @@ abstract class AliProperties {
 
     open var region: String = "us-east-1"
 
-    open var endpoint: String =
-        _root_ide_package_.live.lingting.framework.ali.properties.AliProperties.Companion.ENDPOINT
+    open var endpoint: String = ENDPOINT
 
     open var ak: String = ""
 

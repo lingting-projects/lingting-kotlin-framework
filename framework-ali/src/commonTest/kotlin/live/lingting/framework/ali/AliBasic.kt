@@ -1,6 +1,7 @@
 package live.lingting.framework.ali
 
 import live.lingting.framework.ali.properties.AliOssProperties
+import live.lingting.framework.ali.properties.AliStsProperties
 import live.lingting.framework.ali.sts.AliSts
 import live.lingting.framework.aws.policy.Acl
 import live.lingting.framework.util.SystemUtils
@@ -13,7 +14,7 @@ import kotlin.test.assertNotNull
 internal object AliBasic {
 
     fun sts(): AliSts {
-        val properties = _root_ide_package_.live.lingting.framework.ali.properties.AliStsProperties()
+        val properties = AliStsProperties()
         properties.ak = assertNotNull(SystemUtils.getEnv("AK"))
         properties.sk = assertNotNull(SystemUtils.getEnv("SK"))
         properties.region = assertNotNull(SystemUtils.getEnv("REGION"))
@@ -21,11 +22,11 @@ internal object AliBasic {
             assertNotNull(SystemUtils.getEnv("ROLE_ARN"))
         properties.roleSessionName =
             assertNotNull(SystemUtils.getEnv("ROLE_SESSION_NAME"))
-        return _root_ide_package_.live.lingting.framework.ali.sts.AliSts(properties)
+        return AliSts(properties)
     }
 
     fun ossStsProperties(): AliOssProperties {
-        val properties = _root_ide_package_.live.lingting.framework.ali.properties.AliOssProperties()
+        val properties = AliOssProperties()
         properties.region = assertNotNull(SystemUtils.getEnv("REGION"))
         properties.bucket = assertNotNull(SystemUtils.getEnv("BUCKET"))
         properties.acl = Acl.PRIVATE
@@ -33,7 +34,7 @@ internal object AliBasic {
     }
 
     fun ossProperties(): AliOssProperties {
-        val properties = _root_ide_package_.live.lingting.framework.ali.properties.AliOssProperties()
+        val properties = AliOssProperties()
         properties.ak = assertNotNull(SystemUtils.getEnv("AK"))
         properties.sk = assertNotNull(SystemUtils.getEnv("SK"))
         properties.region = assertNotNull(SystemUtils.getEnv("REGION"))

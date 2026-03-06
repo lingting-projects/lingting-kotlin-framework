@@ -7,7 +7,10 @@ import kotlinx.datetime.format.char
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import live.lingting.framework.crypto.util.DigestUtils.toMd5Hex
+import live.lingting.framework.data.DataSize
 import live.lingting.framework.multipart.Multipart.Builder
+import live.lingting.framework.time.DateTime
+import live.lingting.framework.time.DateTimePattern
 import live.lingting.framework.util.Base64Utils.toBase64String
 import live.lingting.framework.util.StringUtils.firstUpper
 import live.lingting.framework.util.StringUtils.toHexBytes
@@ -38,19 +41,19 @@ object AwsUtils {
      * 10M
      */
     @JvmField
-    val MULTIPART_DEFAULT_PART_SIZE = _root_ide_package_.live.lingting.framework.data.DataSize.ofMb(10)
+    val MULTIPART_DEFAULT_PART_SIZE = DataSize.ofMb(10)
 
     /**
      * 5G
      */
     @JvmField
-    val MULTIPART_MAX_PART_SIZE = _root_ide_package_.live.lingting.framework.data.DataSize.ofGb(5)
+    val MULTIPART_MAX_PART_SIZE = DataSize.ofGb(5)
 
     /**
      * 100K
      */
     @JvmField
-    val MULTIPART_MIN_PART_SIZE = _root_ide_package_.live.lingting.framework.data.DataSize.ofKb(100)
+    val MULTIPART_MIN_PART_SIZE = DataSize.ofKb(100)
 
     const val MULTIPART_MAX_PART_COUNT = 1000L
 
@@ -72,11 +75,11 @@ object AwsUtils {
 
     /**
      * 从当前区域时间转为+0时区时间, 然后格式化
-     * @see live.lingting.framework.time.DateTime.zone
+     * @see DateTime.zone
      */
     @JvmStatic
     fun format(dateTime: LocalDateTime, formatter: DateTimeFormat<LocalDateTime>): String {
-        return format(_root_ide_package_.live.lingting.framework.time.DateTime.zone, dateTime, formatter)
+        return format(DateTime.zone, dateTime, formatter)
     }
 
     /**
@@ -87,7 +90,7 @@ object AwsUtils {
         // 当前时区时间
         val atZone = dateTime.toInstant(zone)
         // 切换到+0
-        val atGmt = atZone.toLocalDateTime(_root_ide_package_.live.lingting.framework.time.DateTimePattern.GMT_ZONE)
+        val atGmt = atZone.toLocalDateTime(DateTimePattern.GMT_ZONE)
         return formatter.format(atGmt)
     }
 
@@ -96,7 +99,7 @@ object AwsUtils {
      */
     @JvmStatic
     fun parse(string: String, formatter: DateTimeFormat<LocalDateTime>): LocalDateTime {
-        return parse(_root_ide_package_.live.lingting.framework.time.DateTimePattern.GMT_ZONE, string, formatter)
+        return parse(DateTimePattern.GMT_ZONE, string, formatter)
     }
 
     /**
@@ -109,7 +112,7 @@ object AwsUtils {
         // 原始时区为 +0
         val atGmt = dateTime.toInstant(zone)
         // 切换到当前系统时区
-        val atZone = atGmt.toLocalDateTime(_root_ide_package_.live.lingting.framework.time.DateTime.zone)
+        val atZone = atGmt.toLocalDateTime(DateTime.zone)
         return atZone
     }
 
@@ -140,7 +143,7 @@ object AwsUtils {
     @JvmStatic
     @JvmOverloads
     fun multipart(block: (Builder.() -> Unit)? = null): live.lingting.framework.multipart.Multipart =
-        _root_ide_package_.live.lingting.framework.multipart.Multipart.build {
+        live.lingting.framework.multipart.Multipart.build {
             partSize(MULTIPART_DEFAULT_PART_SIZE)
             minPartSize(MULTIPART_MIN_PART_SIZE)
             maxPartSize(MULTIPART_MAX_PART_SIZE)

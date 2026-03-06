@@ -6,10 +6,12 @@ import live.lingting.framework.ali.oss.AliOssBucket
 import live.lingting.framework.ali.oss.AliOssObject
 import live.lingting.framework.ali.properties.AliOssProperties
 import live.lingting.framework.ali.properties.AliStsProperties
+import live.lingting.framework.aws.AwsUtils
 import live.lingting.framework.aws.policy.Credential
 import live.lingting.framework.aws.policy.Statement
 import live.lingting.framework.http.util.HttpExtraUtils.convert
 import live.lingting.framework.json.JsonExtraUtils.jsonToObj
+import live.lingting.framework.time.DateTimePattern
 import live.lingting.framework.util.StringUtils.hasText
 import kotlin.time.Duration
 
@@ -34,10 +36,7 @@ open class AliSts(protected val properties: AliStsProperties) : AliClient<AliSts
             val ak = r.accessKeyId
             val sk = r.accessKeySecret
             val token = r.securityToken
-            val expire = live.lingting.framework.aws.AwsUtils.parse(
-                r.expire,
-                live.lingting.framework.time.DateTimePattern.FORMATTER_ISO_8601
-            )
+            val expire = AwsUtils.parse(r.expire, DateTimePattern.FORMATTER_ISO_8601)
             Credential(ak, sk, token, expire)
         }
     }

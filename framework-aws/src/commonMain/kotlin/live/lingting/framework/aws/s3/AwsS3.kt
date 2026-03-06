@@ -8,8 +8,16 @@ import io.ktor.http.URLProtocol
 import io.ktor.utils.io.charsets.Charset
 import io.ktor.utils.io.charsets.Charsets
 import io.ktor.utils.io.core.toByteArray
+import live.lingting.framework.aws.AwsUtils
+import live.lingting.framework.aws.policy.Acl
+import live.lingting.framework.aws.s3.impl.AwsS3DefaultListener
+import live.lingting.framework.aws.s3.interfaces.AwsS3Listener
+import live.lingting.framework.aws.s3.response.AwsS3PreSignedResponse
+import live.lingting.framework.aws.signer.AwsSigner
+import live.lingting.framework.http.DefaultHttpResponse
 import live.lingting.framework.http.util.HttpUtils.isOk
 import live.lingting.framework.json.JsonExtraUtils.toJson
+import live.lingting.framework.time.DateTime
 import live.lingting.framework.util.DurationUtils.isPositive
 
 /**
@@ -26,12 +34,11 @@ abstract class AwsS3 protected constructor(val properties: live.lingting.framewo
 
     val token: String? = properties.token
 
-    val acl: live.lingting.framework.aws.policy.Acl? = properties.acl
+    val acl: Acl? = properties.acl
 
     val bucket: String = properties.bucket
 
-    var listener: live.lingting.framework.aws.s3.interfaces.AwsS3Listener =
-        _root_ide_package_.live.lingting.framework.aws.s3.impl.AwsS3DefaultListener(this)
+    var listener: AwsS3Listener = AwsS3DefaultListener(this)
 
     override fun hostUrlBuilder(): URLBuilder {
         return super.hostUrlBuilder().also {
@@ -64,25 +71,24 @@ abstract class AwsS3 protected constructor(val properties: live.lingting.framewo
     fun sign(
         r: AwsS3Request,
         builder: HttpRequestBuilder
-    ): live.lingting.framework.aws.signer.AwsSigner.Signed<out live.lingting.framework.aws.signer.AwsSigner<*, out live.lingting.framework.aws.signer.AwsSigner.Signed<*, *>>, *> {
+    ): AwsSigner.Signed<out AwsSigner<*, out AwsSigner.Signed<*, *>>, *> {
         val headers = builder.headers
-        if (r.acl != null && r.acl != live.lingting.framework.aws.policy.Acl.DEFAULT) {
-            headers[live.lingting.framework.aws.AwsUtils.HEADER_ACL] = r.acl!!.value
+        if (r.acl != null && r.acl != Acl.DEFAULT) {
+            headers[AwsUtils.HEADER_ACL] = r.acl!!.value
         }
 
         if (!token.isNullOrBlank()) {
-            headers[live.lingting.framework.aws.AwsUtils.HEADER_TOKEN] = token
+            headers[AwsUtils.HEADER_TOKEN] = token
         }
 
         r.meta.forEach { k, vs ->
-            val key =
-                if (k.startsWith(live.lingting.framework.aws.AwsUtils.HEADER_PREFIX_META)) k else "${live.lingting.framework.aws.AwsUtils.HEADER_PREFIX_META}$k"
+            val key = if (k.startsWith(AwsUtils.HEADER_PREFIX_META)) k else "${AwsUtils.HEADER_PREFIX_META}$k"
             headers.appendAll(key, vs)
         }
 
         val signer = listener.onSign(r, builder)
 
-        val current = live.lingting.framework.time.DateTime.current()
+        val current = DateTime.current()
 
         val signed =
             if (r is AwsS3PreRequest) signer.signed(current, r.expire)
@@ -94,28 +100,28 @@ abstract class AwsS3 protected constructor(val properties: live.lingting.framewo
 
     private fun callPre(
         builder: HttpRequestBuilder,
-        signed: live.lingting.framework.aws.signer.AwsSigner.Signed<out live.lingting.framework.aws.signer.AwsSigner<*, out live.lingting.framework.aws.signer.AwsSigner.Signed<*, *>>, *>
-    ): live.lingting.framework.http.DefaultHttpResponse {
+        signed: AwsSigner.Signed<out AwsSigner<*, out AwsSigner.Signed<*, *>>, *>
+    ): DefaultHttpResponse {
         val value = buildPre(builder, signed)
         val json = value.toJson()
         val bytes = json.toByteArray(charset)
 
-        return live.lingting.framework.http.DefaultHttpResponse.build {
+        return DefaultHttpResponse.build {
             body(bytes)
         }
     }
 
     protected fun buildPre(
         builder: HttpRequestBuilder,
-        signed: live.lingting.framework.aws.signer.AwsSigner.Signed<out live.lingting.framework.aws.signer.AwsSigner<*, out live.lingting.framework.aws.signer.AwsSigner.Signed<*, *>>, *>
-    ): live.lingting.framework.aws.s3.response.AwsS3PreSignedResponse {
+        signed: AwsSigner.Signed<out AwsSigner<*, out AwsSigner.Signed<*, *>>, *>
+    ): AwsS3PreSignedResponse {
         val url = builder.url.buildString()
-        return _root_ide_package_.live.lingting.framework.aws.s3.response.AwsS3PreSignedResponse(
+        return AwsS3PreSignedResponse(
             url,
             signed.headers.map().mapValues { (_, v) -> v.toList() })
     }
 
-    open fun pre(r: AwsS3PreRequest): live.lingting.framework.aws.s3.response.AwsS3PreSignedResponse {
+    open fun pre(r: AwsS3PreRequest): AwsS3PreSignedResponse {
         val expire = r.expire
         check(expire.isPositive) { "预签名过期时间不能为负数!" }
         val builder = buildRequest(r)

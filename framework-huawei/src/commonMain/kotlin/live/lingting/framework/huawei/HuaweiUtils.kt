@@ -8,6 +8,7 @@ import kotlinx.datetime.format.MonthNames
 import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
+import live.lingting.framework.aws.AwsUtils
 import live.lingting.framework.util.DurationUtils.days
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
@@ -27,7 +28,7 @@ object HuaweiUtils {
     val FORMATTER_RFC_1123_DATETIME: DateTimeFormat<LocalDateTime> = LocalDateTime.Format {
         dayOfWeek(DayOfWeekNames.ENGLISH_ABBREVIATED)
         chars(", ")
-        day(Padding.ZERO)
+        day(Padding.NONE)
         char(' ')
         monthName(MonthNames.ENGLISH_ABBREVIATED)
         char(' ')
@@ -58,8 +59,7 @@ object HuaweiUtils {
     @JvmStatic
     fun format(dateTime: LocalDateTime): String {
         // 时间区域
-        val format =
-            _root_ide_package_.live.lingting.framework.aws.AwsUtils.format(dateTime, FORMATTER_RFC_1123_DATETIME)
+        val format = AwsUtils.format(dateTime, FORMATTER_RFC_1123_DATETIME)
         // 拼接时区
         return "$format GMT"
     }
@@ -73,7 +73,7 @@ object HuaweiUtils {
         // 时区区域
         val zonePart = string.substring(lastSpaceIndex + 1)
         val zone = TimeZone.of(zonePart)
-        return _root_ide_package_.live.lingting.framework.aws.AwsUtils.parse(
+        return AwsUtils.parse(
             zone,
             timePart,
             FORMATTER_RFC_1123_DATETIME

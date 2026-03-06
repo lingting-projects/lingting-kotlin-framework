@@ -8,6 +8,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withTimeout
+import live.lingting.framework.exception.TimeoutException
+import live.lingting.framework.util.CoroutineUtils
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.jvm.JvmField
@@ -33,7 +35,7 @@ open class Awaiter<R>(
         var defaultDelay: suspend () -> Unit = { delay(100) }
 
         @JvmField
-        var defaultScope: CoroutineScope = _root_ide_package_.live.lingting.framework.util.CoroutineUtils.defaultScope
+        var defaultScope: CoroutineScope = CoroutineUtils.defaultScope
 
         @JvmField
         var defaultContext: CoroutineContext = EmptyCoroutineContext
@@ -43,7 +45,7 @@ open class Awaiter<R>(
 
     }
 
-    @Throws(_root_ide_package_.live.lingting.framework.exception.TimeoutException::class)
+    @Throws(TimeoutException::class)
     suspend fun await(): R? {
         val combinedContext = if (!name.isNullOrBlank()) context + CoroutineName(name) else context
 
@@ -52,7 +54,7 @@ open class Awaiter<R>(
                 try {
                     withTimeout(timeout) { poll() }
                 } catch (_: kotlinx.coroutines.TimeoutCancellationException) {
-                    throw _root_ide_package_.live.lingting.framework.exception.TimeoutException("等待超时! 预计时间: $timeout")
+                    throw TimeoutException("等待超时! 预计时间: $timeout")
                 }
             } else {
                 poll()

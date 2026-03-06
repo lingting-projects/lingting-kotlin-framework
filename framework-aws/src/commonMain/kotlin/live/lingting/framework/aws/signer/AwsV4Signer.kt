@@ -2,10 +2,13 @@ package live.lingting.framework.aws.signer
 
 import io.ktor.http.HttpMethod
 import kotlinx.datetime.LocalDateTime
+import live.lingting.framework.aws.AwsUtils
 import live.lingting.framework.crypto.hmac.Hmac256
 import live.lingting.framework.crypto.util.DigestUtils.toSha256Hex
+import live.lingting.framework.http.header.CollectionHttpHeaders
 import live.lingting.framework.util.StringUtils.deleteLast
 import live.lingting.framework.util.ValueUtils.forEachSorted
+import live.lingting.framework.value.multi.StringMultiValue
 import kotlin.jvm.JvmOverloads
 import kotlin.time.Duration
 
@@ -19,7 +22,7 @@ open class AwsV4Signer(
     path: String,
     headers: live.lingting.framework.http.header.HttpHeaders,
     val body: live.lingting.framework.http.body.Body<*>?,
-    params: live.lingting.framework.value.multi.StringMultiValue,
+    params: StringMultiValue,
     val region: String,
     ak: String,
     val sk: String,
@@ -39,9 +42,9 @@ open class AwsV4Signer(
     /**
      * 用于类似算法直接使用时设置
      */
-    open val dateFormatter = _root_ide_package_.live.lingting.framework.aws.AwsUtils.DATE_FORMATTER
+    open val dateFormatter = AwsUtils.DATE_FORMATTER
 
-    open val scopeDateFormatter = _root_ide_package_.live.lingting.framework.aws.AwsUtils.SCOPE_DATE_FORMATTER
+    open val scopeDateFormatter = AwsUtils.SCOPE_DATE_FORMATTER
 
     open val algorithm = "AWS4-HMAC-SHA256"
 
@@ -53,13 +56,13 @@ open class AwsV4Signer(
 
     open val nameAlgorithm = "Algorithm"
 
-    open val headerPrefix = _root_ide_package_.live.lingting.framework.aws.AwsUtils.HEADER_PREFIX
+    open val headerPrefix = AwsUtils.HEADER_PREFIX
 
     /**
      * 除指定前缀开头的请求外, 其他参与签名的头
      */
     open val headerInclude =
-        arrayOf("host", _root_ide_package_.live.lingting.framework.aws.AwsUtils.HEADER_MD5, "range")
+        arrayOf("host", AwsUtils.HEADER_MD5, "range")
 
     open val headerDate by lazy { "$headerPrefix-date" }
 
@@ -67,10 +70,9 @@ open class AwsV4Signer(
 
     open val headerSecurityToken by lazy { "$headerPrefix-security-token" }
 
-    open val headers = live.lingting.framework.http.header.CollectionHttpHeaders().also { it.appendAll(headers) }
+    open val headers = CollectionHttpHeaders().also { it.appendAll(headers) }
 
-    open val params =
-        _root_ide_package_.live.lingting.framework.value.multi.StringMultiValue().also { it.appendAll(params) }
+    open val params = StringMultiValue().also { it.appendAll(params) }
 
     open val path = path.let {
         if (path.startsWith("/")) path else "/$path"
@@ -79,14 +81,14 @@ open class AwsV4Signer(
     override val bodyPayload by lazy {
         body.let {
             if (it == null || it.length() < 1) {
-                _root_ide_package_.live.lingting.framework.aws.AwsUtils.PAYLOAD_UNSIGNED
+                AwsUtils.PAYLOAD_UNSIGNED
             } else {
                 it.string().toSha256Hex()
             }
         }
     }
 
-    open fun toParamName(key: String) = _root_ide_package_.live.lingting.framework.aws.AwsUtils.toParamsKey(key)
+    open fun toParamName(key: String) = AwsUtils.toParamsKey(key)
 
     open fun addParam(key: String, value: String) {
         val s = if (!key.startsWith(headerPrefix)) "$headerPrefix-$key" else key
@@ -101,7 +103,7 @@ open class AwsV4Signer(
     }
 
     open fun date(time: LocalDateTime) =
-        _root_ide_package_.live.lingting.framework.aws.AwsUtils.format(time, dateFormatter)
+        AwsUtils.format(time, dateFormatter)
 
     open fun canonicalUri() = path
 
@@ -162,7 +164,7 @@ open class AwsV4Signer(
     }
 
     open fun scopeDate(time: LocalDateTime) =
-        _root_ide_package_.live.lingting.framework.aws.AwsUtils.format(time, scopeDateFormatter)
+        AwsUtils.format(time, scopeDateFormatter)
 
     open fun scope(time: LocalDateTime) = scope(scopeDate(time))
 
@@ -314,7 +316,7 @@ open class AwsV4Signer(
     open class Signed(
         signer: live.lingting.framework.aws.signer.AwsV4Signer,
         headers: live.lingting.framework.http.header.HttpHeaders,
-        params: live.lingting.framework.value.multi.StringMultiValue?,
+        params: StringMultiValue?,
         bodyPayload: String,
         open val canonicalUri: String,
         open val canonicalQuery: String,
