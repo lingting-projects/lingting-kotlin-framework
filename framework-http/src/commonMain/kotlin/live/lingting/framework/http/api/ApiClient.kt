@@ -26,7 +26,7 @@ import kotlin.jvm.JvmField
 /**
  * @author lingting 2026/1/31 23:24
  */
-abstract class ApiClient<R : live.lingting.framework.http.api.ApiRequest>(@JvmField protected val host: String) {
+abstract class ApiClient<R : ApiRequest>(@JvmField protected val host: String) {
 
     companion object {
 
@@ -48,7 +48,13 @@ abstract class ApiClient<R : live.lingting.framework.http.api.ApiRequest>(@JvmFi
     protected val hostUrl: Url by lazy { hostUrlBuilder().build() }
 
     protected open fun hostUrlBuilder(): URLBuilder {
-        return URLBuilder(host = host)
+        val builder = URLBuilder()
+        var str = host
+        if (!host.contains("://")) {
+            str = "http://$host"
+        }
+        builder.takeFrom(str)
+        return builder
     }
 
     /**
