@@ -14,7 +14,7 @@ import kotlin.test.Test
  */
 class AliOssTest : S3BasicTest() {
 
-    var sts: live.lingting.framework.ali.sts.AliSts? = null
+    var sts: AliSts? = null
 
     var useSts = true
 
@@ -28,26 +28,26 @@ class AliOssTest : S3BasicTest() {
         run()
     }
 
-    override suspend fun buildObj(key: String): live.lingting.framework.ali.oss.AliOssObject =
+    override suspend fun buildObj(key: String): AliOssObject =
         if (useSts) sts!!.ossObject(
-            properties as live.lingting.framework.ali.properties.AliOssProperties,
+            properties as AliOssProperties,
             key
-        ) else _root_ide_package_.live.lingting.framework.ali.oss.AliOssObject(
+        ) else AliOssObject(
             AliBasic.ossProperties(),
             key
         )
 
-    override suspend fun buildBucket(): live.lingting.framework.ali.oss.AliOssBucket =
-        if (useSts) sts!!.ossBucket(properties as live.lingting.framework.ali.properties.AliOssProperties) else _root_ide_package_.live.lingting.framework.ali.oss.AliOssBucket(
+    override suspend fun buildBucket(): AliOssBucket =
+        if (useSts) sts!!.ossBucket(properties as AliOssProperties) else AliOssBucket(
             AliBasic.ossProperties()
         )
 
-    override fun properties(): live.lingting.framework.aws.properties.S3Properties =
+    override fun properties(): S3Properties =
         if (useSts) AliBasic.ossStsProperties() else AliBasic.ossProperties()
 
     override suspend fun pre() {
         // 仅在非全球加速时测试预签名
-        if (properties.region != _root_ide_package_.live.lingting.framework.ali.AliUtils.REGION_ACCELERATE) {
+        if (properties.region != AliUtils.REGION_ACCELERATE) {
             super.pre()
         }
     }

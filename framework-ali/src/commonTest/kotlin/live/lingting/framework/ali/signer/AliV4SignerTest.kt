@@ -29,7 +29,7 @@ class AliV4SignerTest {
     }
 
     fun testParamsToken() {
-        val params = _root_ide_package_.live.lingting.framework.value.multi.StringMultiValue()
+        val params = StringMultiValue()
 
         val builder = URLBuilder().apply {
             protocol = URLProtocol.HTTPS
@@ -37,26 +37,26 @@ class AliV4SignerTest {
             appendPathSegments("test.txt")
         }
 
-        val headers = live.lingting.framework.http.header.HttpHeaders.empty()
+        val headers = HttpHeaders.empty()
         headers.put("Host", builder.headerHost())
         headers.put(
-            live.lingting.framework.aws.AwsUtils.HEADER_TOKEN,
+            AwsUtils.HEADER_TOKEN,
             "IQoJb3JpZ2luX2VjEMv//////////wEaCXVzLWVhc3QtMSJGMEQCIBSUbVdj9YGs2g0HkHsOHFdkwOozjARSKHL987NhhOC8AiBPepRU1obMvIbGU0T+WphFPgK/qpxaf5Snvm5M57XFkCqlAgjz//////////8BEAAaDDQ3MjM4NTU0NDY2MCIM83pULBe5/+Nm1GZBKvkBVslSaJVgwSef7SsoZCJlfJ56weYl3QCwEGr2F4BmCZZyFpmWEYzWnhNK1AnHMj5nkfKlKBx30XAT5PZGVrmq4Vkn9ewlXQy1Iu3QJRi9Tdod8Ef9/yajTaUGh76+F5u5a4O115jwultOQiKomVwO318CO4l8lv/3HhMOkpdanMXn+4PY8lvM8RgnzSu90jOUpGXEOAo/6G8OqlMim3+ZmaQmasn4VYRvESEd7O72QGZ3+vDnDVnss0lSYjlv8PP7IujnvhZRnj0WoeOyMe1lL0wTG/a9usH5hE52w/YUJccOn0OaZuyROuVsRV4Q70sbWQhUvYUt+0tUMKzm8vsFOp4BaNZFqobbjtb36Y92v+x5kY6i0s8QE886jJtUWMP5ldMziClGx3p0mN5dzsYlM3GyiJ/O1mWkPQDwg3mtSpOA9oeeuAMPTA7qMqy9RNuTKBDSx9EW27wvPzBum3SJhEfxv48euadKgrIX3Z79ruQFSQOc9LUrDjR+4SoWAJqK+GX8Q3vPSjsLxhqhEMWd6U4TXcM7ku3gxMbzqfT8NDg="
         )
 
         headers.keys().forEach { name ->
-            if (name == live.lingting.framework.aws.AwsUtils.HEADER_ACL) {
-                headers.replace(name, _root_ide_package_.live.lingting.framework.ali.AliUtils.HEADER_ACL)
-            } else if (name.startsWith(live.lingting.framework.aws.AwsUtils.HEADER_PREFIX)) {
+            if (name == AwsUtils.HEADER_ACL) {
+                headers.replace(name, AliUtils.HEADER_ACL)
+            } else if (name.startsWith(AwsUtils.HEADER_PREFIX)) {
                 val newName = name.replace(
-                    live.lingting.framework.aws.AwsUtils.HEADER_PREFIX,
-                    _root_ide_package_.live.lingting.framework.ali.AliUtils.HEADER_PREFIX
+                    AwsUtils.HEADER_PREFIX,
+                    AliUtils.HEADER_PREFIX
                 )
                 headers.replace(name, newName)
             }
         }
 
-        val signer = _root_ide_package_.live.lingting.framework.ali.signer.AliV4Signer(
+        val signer = AliV4Signer(
             HttpMethod.Get,
             builder.buildPath(),
             headers,
@@ -68,7 +68,7 @@ class AliV4SignerTest {
             "oss"
         )
 
-        val dateTime = live.lingting.framework.aws.AwsUtils.parse("20200524T000000Z", signer.dateFormatter)
+        val dateTime = AwsUtils.parse("20200524T000000Z", signer.dateFormatter)
 
         val signed = signer.signed(dateTime, 1.days)
 
@@ -99,7 +99,7 @@ class AliV4SignerTest {
     }
 
     fun testParams() {
-        val params = _root_ide_package_.live.lingting.framework.value.multi.StringMultiValue()
+        val params = StringMultiValue()
 
         val builder = URLBuilder().apply {
             protocol = URLProtocol.HTTPS
@@ -107,10 +107,10 @@ class AliV4SignerTest {
             appendPathSegments("test.txt")
         }
 
-        val headers = live.lingting.framework.http.header.HttpHeaders.empty()
+        val headers = HttpHeaders.empty()
         headers.put("Host", builder.headerHost())
 
-        val signer = _root_ide_package_.live.lingting.framework.ali.signer.AliV4Signer(
+        val signer = AliV4Signer(
             HttpMethod.Get,
             builder.buildPath(),
             headers,
@@ -122,7 +122,7 @@ class AliV4SignerTest {
             "oss"
         )
 
-        val dateTime = live.lingting.framework.aws.AwsUtils.parse("20130524T000000Z", signer.dateFormatter)
+        val dateTime = AwsUtils.parse("20130524T000000Z", signer.dateFormatter)
 
         val signed = signer.signed(dateTime, 1.days)
 
@@ -152,13 +152,13 @@ class AliV4SignerTest {
     }
 
     fun testHeader() {
-        val params = _root_ide_package_.live.lingting.framework.value.multi.StringMultiValue()
+        val params = StringMultiValue()
 
-        val headers = live.lingting.framework.http.header.HttpHeaders.empty()
+        val headers = HttpHeaders.empty()
         headers.put("Host", "examplebucket.oss.aliyuncs.com")
         headers.put("Range", "bytes=0-9")
 
-        val signer = _root_ide_package_.live.lingting.framework.ali.signer.AliV4Signer(
+        val signer = AliV4Signer(
             HttpMethod.Get,
             "/test.txt",
             headers,
@@ -171,7 +171,7 @@ class AliV4SignerTest {
         )
 
         val bodyPayload = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        val dateTime = live.lingting.framework.aws.AwsUtils.parse("20130524T000000Z", signer.dateFormatter)
+        val dateTime = AwsUtils.parse("20130524T000000Z", signer.dateFormatter)
         val signed = signer.signed(dateTime, bodyPayload)
 
         assertEquals(bodyPayload, signed.bodyPayload)

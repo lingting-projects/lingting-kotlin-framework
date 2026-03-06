@@ -25,7 +25,7 @@ class HttpMultipartDownloadTest {
 
     @Test
     fun `download memory`() = runTest {
-        val download = donwload.HttpMultipartDownload.build {
+        val download = HttpMultipartDownload.build {
             url(url)
         }
         download.start()
@@ -38,7 +38,7 @@ class HttpMultipartDownloadTest {
     fun `download file`() = runTest {
         val tmpDir = Path(FileSystem.SYSTEM_TEMPORARY_DIRECTORY.toString())
         val file = Path(tmpDir, ".${ValueUtils.simpleUuid()}")
-        val download = donwload.HttpMultipartDownload.build {
+        val download = HttpMultipartDownload.build {
             url(url)
             sink(file)
         }

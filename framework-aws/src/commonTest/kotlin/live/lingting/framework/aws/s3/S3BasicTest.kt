@@ -245,8 +245,8 @@ abstract class S3BasicTest {
             val prePutR = obj.prePut(
                 _root_ide_package_.live.lingting.framework.aws.policy.Acl.PRIVATE,
                 _root_ide_package_.live.lingting.framework.aws.s3.impl.S3Meta.empty().also {
-                it.put("pre", "true")
-            })
+                    it.put("pre", "true")
+                })
 
             log.info { "put url: ${prePutR.url}" }
 

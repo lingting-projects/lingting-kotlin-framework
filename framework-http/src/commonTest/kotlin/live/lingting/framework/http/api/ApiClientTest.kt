@@ -3,9 +3,11 @@ package live.lingting.framework.http.api
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
 import io.ktor.http.HeadersBuilder
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.ApplicationCall
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.request.header
@@ -18,6 +20,7 @@ import io.ktor.util.toMap
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
+import live.lingting.framework.http.body.MemoryBody
 import live.lingting.framework.json.JsonExtraUtils.jsonToObj
 import live.lingting.framework.json.JsonExtraUtils.toJson
 import kotlin.test.Test
@@ -47,10 +50,10 @@ class ApiClientTest {
         val server = embeddedServer(CIO, host = "127.0.0.1", port = 0) {
             routing {
                 // 鉴权逻辑：手动判断 Header
-                val checkAuth: suspend (io.ktor.server.application.ApplicationCall) -> Boolean = { call ->
+                val checkAuth: suspend (ApplicationCall) -> Boolean = { call ->
                     if (call.request.header("Authorization") != authValue) {
                         val errorJson = R(403, "Forbidden").toJson()
-                        call.respondText(errorJson, io.ktor.http.ContentType.Application.Json, HttpStatusCode.Forbidden)
+                        call.respondText(errorJson, ContentType.Application.Json, HttpStatusCode.Forbidden)
                         false
                     } else true
                 }
@@ -72,11 +75,11 @@ class ApiClientTest {
 
         try {
             val port = server.engine.resolvedConnectors().first().port
-            val host = "http://127.0.0.1:$port"
+            val host = "127.0.0.1:$port"
             val apiClient = TestApiClient(host)
 
             // --- 场景 1: 正确的 GET 请求 ---
-            val getReq = api.ApiSimpleRequest(HttpMethod.Get, "/get").apply {
+            val getReq = ApiSimpleRequest(HttpMethod.Get, "/get").apply {
                 params["name"] = "lingting"
             }
             val getResp = apiClient.request(getReq)
@@ -92,10 +95,10 @@ class ApiClientTest {
 
             // --- 场景 2: 正确的 POST 请求 ---
             val postContent = "hello-world"
-            val postReq = api.ApiSimpleRequest(
+            val postReq = ApiSimpleRequest(
                 HttpMethod.Post,
                 "/post",
-                body.MemoryBody(postContent)
+                MemoryBody(postContent)
             )
 
             val postResp = apiClient.request(postReq)
@@ -107,7 +110,7 @@ class ApiClientTest {
             assertEquals(postContent, postResult.data)
 
             // --- 场景 3: 异常请求 (鉴权失败) ---
-            val failReq = api.ApiSimpleRequest(HttpMethod.Get, "/get").apply {
+            val failReq = ApiSimpleRequest(HttpMethod.Get, "/get").apply {
                 params[noAuthKey] = ""
             }
             val exception = assertFailsWith<IllegalStateException> {
@@ -123,11 +126,11 @@ class ApiClientTest {
     }
 
     class TestApiClient(host: String) :
-        live.lingting.framework.http.api.ApiClient<live.lingting.framework.http.api.ApiSimpleRequest>(host) {
+        ApiClient<ApiSimpleRequest>(host) {
 
         // 在这里实现校验逻辑
         override suspend fun checkout(
-            r: live.lingting.framework.http.api.ApiSimpleRequest,
+            r: ApiSimpleRequest,
             request: HttpRequestBuilder,
             response: HttpResponse
         ) {
@@ -143,13 +146,13 @@ class ApiClientTest {
             }
         }
 
-        override fun onHeadersAfter(r: live.lingting.framework.http.api.ApiSimpleRequest, headers: HeadersBuilder) {
+        override fun onHeadersAfter(r: ApiSimpleRequest, headers: HeadersBuilder) {
             if (!r.params.hasKey(noAuthKey)) {
                 headers["Authorization"] = authValue
             }
         }
 
-        suspend fun request(r: live.lingting.framework.http.api.ApiSimpleRequest): HttpResponse {
+        suspend fun request(r: ApiSimpleRequest): HttpResponse {
             return call(r)
         }
 

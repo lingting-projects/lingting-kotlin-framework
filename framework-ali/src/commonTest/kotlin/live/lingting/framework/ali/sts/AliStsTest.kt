@@ -13,19 +13,19 @@ import kotlin.test.assertTrue
  */
 internal class AliStsTest {
 
-    var sts: live.lingting.framework.ali.sts.AliSts? = null
+    var sts: AliSts? = null
 
     @Test
     fun credential() = runTest {
         sts = AliBasic.sts()
-        val statement = live.lingting.framework.aws.policy.Statement(true)
+        val statement = Statement(true)
         statement.addAction("obs:*")
         statement.addResource("obs:*:*:bucket:*")
         val credential = sts!!.credential(statement)
         assertNotNull(credential)
-        assertTrue(_root_ide_package_.live.lingting.framework.util.StringUtils.hasText(credential.ak))
-        assertTrue(_root_ide_package_.live.lingting.framework.util.StringUtils.hasText(credential.sk))
-        assertTrue(_root_ide_package_.live.lingting.framework.util.StringUtils.hasText(credential.token))
+        assertTrue(StringUtils.hasText(credential.ak))
+        assertTrue(StringUtils.hasText(credential.sk))
+        assertTrue(StringUtils.hasText(credential.token))
         assertNotNull(credential.expire)
     }
 }

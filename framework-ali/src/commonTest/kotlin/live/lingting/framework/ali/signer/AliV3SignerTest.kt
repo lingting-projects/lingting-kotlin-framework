@@ -15,22 +15,22 @@ class AliV3SignerTest {
 
     @Test
     fun test() {
-        val headers = live.lingting.framework.http.header.HttpHeaders.empty()
+        val headers = HttpHeaders.empty()
         headers.put("x-acs-signature-nonce", "3156853299f313e23d1673dc12e1703d")
         headers.put("x-acs-action", "RunInstances")
         headers.put("x-acs-version", "2014-05-26")
         headers.put("host", "ecs.cn-shanghai.aliyuncs.com")
 
-        val time = live.lingting.framework.aws.AwsUtils.parse(
+        val time = AwsUtils.parse(
             "2023-10-26T10:22:32Z",
-            _root_ide_package_.live.lingting.framework.time.DateTimePattern.FORMATTER_ISO_8601
+            DateTimePattern.FORMATTER_ISO_8601
         )
 
-        val params = _root_ide_package_.live.lingting.framework.value.multi.StringMultiValue()
+        val params = StringMultiValue()
         params.add("ImageId", "win2019_1809_x64_dtc_zh-cn_40G_alibase_20230811.vhd")
         params.add("RegionId", "cn-shanghai")
 
-        val signer = _root_ide_package_.live.lingting.framework.ali.signer.AliV3Signer(
+        val signer = AliV3Signer(
             HttpMethod.Post,
             "/",
             headers,
