@@ -1,5 +1,6 @@
 package live.lingting.framework.aws.s3.response
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import nl.adaptivity.xmlutil.serialization.XmlElement
@@ -9,51 +10,55 @@ import nl.adaptivity.xmlutil.serialization.XmlSerialName
  * @author lingting 2025/1/14 20:07
  */
 @Serializable
-@XmlSerialName("ListBucketResult")
+@SerialName("ListBucketResult")
 data class AwsS3ListObjectsResponse(
     @XmlElement
-    @XmlSerialName("Name")
+    @SerialName("Name")
     val name: String,
     @XmlElement
-    @XmlSerialName("Prefix")
+    @SerialName("Prefix")
     val prefix: String? = null,
     @XmlElement
-    @XmlSerialName("Delimiter")
+    @SerialName("Delimiter")
     val delimiter: String? = null,
     @XmlElement
-    @XmlSerialName("MaxKeys")
+    @SerialName("MaxKeys")
     val maxKeys: Int,
     @XmlElement
-    @XmlSerialName("IsTruncated")
+    @SerialName("IsTruncated")
     val isTruncated: Boolean,
     @XmlElement
-    @XmlSerialName("ContinuationToken")
+    @SerialName("ContinuationToken")
     val continuationToken: String? = null,
     /**
      * v1参数
      */
     @XmlElement
-    @XmlSerialName("NextMarker")
+    @SerialName("NextMarker")
     val nextMarker: String? = null,
     /**
      * v2参数
      */
     @XmlElement
-    @XmlSerialName("NextContinuationToken")
+    @SerialName("NextContinuationToken")
     val nextContinuationToken: String? = null,
     @XmlElement
-    @XmlSerialName("KeyCount")
-    val keyCount: Int,
+    @SerialName("KeyCount")
+    private val count: Int? = null,
     @XmlElement
+    @SerialName("Contents")
     @XmlSerialName("Contents")
     val contents: List<Content> = emptyList(),
     @XmlElement
-    @XmlSerialName("CommonPrefixes")
+    @SerialName("CommonPrefixes")
     val commonPrefixes: List<CommonPrefix>? = null
 ) {
 
     @Transient
     var nextRequest: live.lingting.framework.aws.s3.request.AwsS3ListObjectsRequest? = null
+
+    val keyCount: Int
+        get() = count ?: contents.size
 
     fun buildNextRequest(source: live.lingting.framework.aws.s3.request.AwsS3ListObjectsRequest?): live.lingting.framework.aws.s3.request.AwsS3ListObjectsRequest? {
         if (source == null || !isTruncated || (nextContinuationToken.isNullOrBlank() && nextMarker.isNullOrBlank())) {
@@ -67,40 +72,40 @@ data class AwsS3ListObjectsResponse(
     @Serializable
     data class Content(
         @XmlElement
-        @XmlSerialName("Key")
+        @SerialName("Key")
         val key: String,
         @XmlElement
-        @XmlSerialName("LastModified")
+        @SerialName("LastModified")
         // 2023-10-27T10:00:00.000Z
         val lastModified: String,
         @XmlElement
-        @XmlSerialName("ETag")
+        @SerialName("ETag")
         val eTag: String,
         @XmlElement
-        @XmlSerialName("Size")
+        @SerialName("Size")
         val size: Long,
         @XmlElement
-        @XmlSerialName("StorageClass")
+        @SerialName("StorageClass")
         val storageClass: String,
         @XmlElement
-        @XmlSerialName("Owner")
+        @SerialName("Owner")
         val owner: Owner? = null
     )
 
     @Serializable
     data class Owner(
         @XmlElement
-        @XmlSerialName("ID")
+        @SerialName("ID")
         val id: String? = null,
         @XmlElement
-        @XmlSerialName("DisplayName")
+        @SerialName("DisplayName")
         val displayName: String? = null
     )
 
     @Serializable
     data class CommonPrefix(
         @XmlElement
-        @XmlSerialName("Prefix")
+        @SerialName("Prefix")
         val prefix: String
     )
 }

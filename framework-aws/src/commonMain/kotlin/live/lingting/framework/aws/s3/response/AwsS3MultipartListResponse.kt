@@ -1,5 +1,6 @@
 package live.lingting.framework.aws.s3.response
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import live.lingting.framework.aws.s3.multipart.AwsS3MultipartItem
 import nl.adaptivity.xmlutil.serialization.XmlElement
@@ -9,34 +10,35 @@ import nl.adaptivity.xmlutil.serialization.XmlSerialName
  * @author lingting 2026/3/3 11:43
  */
 @Serializable
-@XmlSerialName("ListMultipartUploadsResult")
+@SerialName("ListMultipartUploadsResult")
 data class AwsS3MultipartListResponse(
     @XmlElement
-    @XmlSerialName("Bucket")
+    @SerialName("Bucket")
     val bucket: String,
     @XmlElement
-    @XmlSerialName("KeyMarker")
+    @SerialName("KeyMarker")
     val keyMarker: String? = null,
     @XmlElement
-    @XmlSerialName("UploadIdMarker")
+    @SerialName("UploadIdMarker")
     val uploadIdMarker: String? = null,
     @XmlElement
-    @XmlSerialName("NextKeyMarker")
+    @SerialName("NextKeyMarker")
     val nextKeyMarker: String? = null,
     @XmlElement
-    @XmlSerialName("NextUploadIdMarker")
+    @SerialName("NextUploadIdMarker")
     val nextUploadIdMarker: String? = null,
     @XmlElement
-    @XmlSerialName("MaxUploads")
+    @SerialName("MaxUploads")
     val maxUploads: Int,
     @XmlElement
-    @XmlSerialName("IsTruncated")
+    @SerialName("IsTruncated")
     val isTruncated: Boolean,
     @XmlElement
+    @SerialName("Upload")
     @XmlSerialName("Upload")
     val uploads: List<MultipartUpload> = emptyList(),
     @XmlElement
-    @XmlSerialName("CommonPrefixes")
+    @SerialName("CommonPrefixes")
     val commonPrefixes: List<CommonPrefix>? = null
 ) {
 
@@ -54,39 +56,41 @@ data class AwsS3MultipartListResponse(
     @Serializable
     data class MultipartUpload(
         @XmlElement
-        @XmlSerialName("Key")
+        @SerialName("Key")
         val key: String,
         @XmlElement
-        @XmlSerialName("UploadId")
+        @SerialName("UploadId")
         val uploadId: String,
         @XmlElement
+        @SerialName("Initiator")
         @XmlSerialName("Initiator")
         val initiator: User? = null,
         @XmlElement
+        @SerialName("Owner")
         @XmlSerialName("Owner")
         val owner: User? = null,
         @XmlElement
-        @XmlSerialName("StorageClass")
+        @SerialName("StorageClass")
         val storageClass: String,
         @XmlElement
-        @XmlSerialName("Initiated")
+        @SerialName("Initiated")
         val initiated: String
     )
 
     @Serializable
     data class User(
         @XmlElement
-        @XmlSerialName("ID")
+        @SerialName("ID")
         val id: String? = null,
         @XmlElement
-        @XmlSerialName("DisplayName")
+        @SerialName("DisplayName")
         val displayName: String? = null
     )
 
     @Serializable
     data class CommonPrefix(
         @XmlElement
-        @XmlSerialName("Prefix")
+        @SerialName("Prefix")
         val prefix: String
     )
 }
