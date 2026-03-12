@@ -32,6 +32,12 @@ interface AwsS3BucketInterface {
 
     suspend fun listObjects(request: AwsS3ListObjectsRequest): AwsS3ListObjectsResponse
 
+
+    suspend fun cursorObjects(prefix: String) = cursorObjects(
+        AwsS3ListObjectsRequest().also {
+            it.prefix = prefix
+        })
+
     suspend fun cursorObjects(request: AwsS3ListObjectsRequest): Flow<AwsS3ListObjectsResponse.Content> {
         return flow {
             var currentRequest: AwsS3ListObjectsRequest? = request
