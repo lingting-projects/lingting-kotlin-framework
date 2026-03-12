@@ -8,6 +8,7 @@ build/
 local.properties
 .dependencies
 .env*
+*SensitiveTest.kt
 
 ### IntelliJ IDEA ###
 .idea
