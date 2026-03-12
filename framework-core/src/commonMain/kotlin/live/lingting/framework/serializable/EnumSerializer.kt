@@ -24,7 +24,7 @@ abstract class EnumSerializer<E : Enum<E>> : KSerializer<E> {
             val any = EnumUtils.getValue(first)
             requireNotNull(any) { "枚举值不允许为null!" }
             val cls = first::class
-            val serialName = if (name.isNullOrBlank()) cls.qualifiedName ?: "UnknownEnum" else name
+            val serialName = if (name.isNullOrBlank()) cls.simpleName ?: "UnknownEnum" else name
 
             val kind = when (any) {
                 is Boolean -> PrimitiveKind.BOOLEAN

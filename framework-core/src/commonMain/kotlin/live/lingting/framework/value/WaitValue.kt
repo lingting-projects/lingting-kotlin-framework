@@ -2,6 +2,7 @@ package live.lingting.framework.value
 
 import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.atomicfu.locks.withLock
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -92,21 +93,21 @@ open class WaitValue<T> @JvmOverloads constructor(v: T? = null) {
     }
 
     @JvmOverloads
-    @Throws(TimeoutException::class)
+    @Throws(TimeoutException::class, CancellationException::class)
     suspend fun notNull(duration: Duration? = null): T {
         val t = await(duration) { it != null }
         return t!!
     }
 
     @JvmOverloads
-    @Throws(TimeoutException::class)
+    @Throws(TimeoutException::class, CancellationException::class)
     suspend fun notEmpty(duration: Duration? = null): T {
         val t = await(duration) { ValueUtils.isPresent(it) }
         return t!!
     }
 
     @JvmOverloads
-    @Throws(TimeoutException::class)
+    @Throws(TimeoutException::class, CancellationException::class)
     suspend fun await(duration: Duration? = null, predicate: suspend (T?) -> Boolean): T? {
         val v = value
         if (predicate(v)) {

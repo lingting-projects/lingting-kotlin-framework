@@ -1,7 +1,9 @@
 package live.lingting.framework.async
 
+import kotlinx.coroutines.CancellationException
 import live.lingting.framework.concurrent.Await
 import live.lingting.framework.exception.TimeoutException
+import kotlin.jvm.JvmField
 import kotlin.time.Duration
 
 /**
@@ -11,7 +13,8 @@ interface Async {
 
     companion object {
 
-        const val UNLIMITED: Long = -1
+        @JvmField
+        val UNLIMITED: Long = -1
 
     }
 
@@ -45,19 +48,19 @@ interface Async {
 
     fun submit(name: String?, block: suspend (AsyncItem) -> Unit)
 
-    @Throws(TimeoutException::class)
+    @Throws(TimeoutException::class, CancellationException::class)
     suspend fun await() = await(null)
 
     /**
      * 等待结束
      * @param duration       超时时间
      */
-    @Throws(TimeoutException::class)
+    @Throws(TimeoutException::class, CancellationException::class)
     suspend fun await(duration: Duration? = null) {
         Await.waitTrue(duration) { running == 0L }
     }
 
-    @Throws(TimeoutException::class)
+    @Throws(TimeoutException::class, CancellationException::class)
     suspend fun awaitIdle(duration: Duration? = null) {
         if (!isUnlimited) {
             Await.waitTrue(duration) { notCompleted == 0L }

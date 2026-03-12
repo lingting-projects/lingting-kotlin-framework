@@ -1,5 +1,6 @@
 package live.lingting.framework.concurrent
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.delay
@@ -25,7 +26,7 @@ object Await {
 
     @JvmStatic
     @JvmOverloads
-    @Throws(TimeoutException::class)
+    @Throws(TimeoutException::class, CancellationException::class)
     suspend fun waitTrue(
         timeout: Duration?,
         name: String? = null,
@@ -50,7 +51,7 @@ object Await {
 
     @JvmStatic
     @JvmOverloads
-    @Throws(TimeoutException::class)
+    @Throws(TimeoutException::class, CancellationException::class)
     suspend fun waitFalse(
         timeout: Duration?,
         name: String? = null,
@@ -75,7 +76,7 @@ object Await {
 
     @JvmStatic
     @JvmOverloads
-    @Throws(TimeoutException::class)
+    @Throws(TimeoutException::class, CancellationException::class)
     suspend fun <T> waitNull(
         timeout: Duration?,
         name: String? = null,
@@ -100,7 +101,7 @@ object Await {
 
     @JvmStatic
     @JvmOverloads
-    @Throws(TimeoutException::class)
+    @Throws(TimeoutException::class, CancellationException::class)
     suspend fun <T> waitNotNull(
         timeout: Duration?,
         name: String? = null,
@@ -125,7 +126,7 @@ object Await {
 
     @JvmStatic
     @JvmOverloads
-    @Throws(TimeoutException::class)
+    @Throws(TimeoutException::class, CancellationException::class)
     suspend fun <T> waitPresent(
         timeout: Duration?,
         name: String? = null,
@@ -150,7 +151,7 @@ object Await {
 
     @JvmStatic
     @JvmOverloads
-    @Throws(TimeoutException::class)
+    @Throws(TimeoutException::class, CancellationException::class)
     suspend fun <T> wait(
         timeout: Duration?,
         name: String? = null,

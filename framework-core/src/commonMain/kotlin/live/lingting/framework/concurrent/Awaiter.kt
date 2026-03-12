@@ -45,7 +45,7 @@ open class Awaiter<R>(
 
     }
 
-    @Throws(TimeoutException::class)
+    @Throws(TimeoutException::class, CancellationException::class)
     suspend fun await(): R? {
         val combinedContext = if (!name.isNullOrBlank()) context + CoroutineName(name) else context
 
