@@ -1,4 +1,3 @@
-import gradle.kotlin.dsl.accessors._94a8446e5dc95e7c37c14d903979c335.implementation
 import org.gradle.kotlin.dsl.assign
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -41,11 +40,15 @@ kotlin {
 
     js {
         browser()
+        nodejs()
+        binaries.executable()
     }
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
+        nodejs()
+        binaries.executable()
     }
 
     targets.all {
