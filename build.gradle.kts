@@ -80,4 +80,8 @@ configure(allProjects) {
         }
     }
 
+    plugins.withId("org.jetbrains.kotlin.jvm") {
+        configureKotlin()
+    }
+
 }
