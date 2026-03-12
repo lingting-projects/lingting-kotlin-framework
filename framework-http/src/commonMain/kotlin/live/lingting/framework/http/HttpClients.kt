@@ -148,4 +148,4 @@ object HttpClients {
 
 }
 
-internal expect fun live.lingting.framework.http.HttpClients.Builder.internalDisableSsl(config: HttpClientConfig<CIOEngineConfig>)
+internal expect fun HttpClients.Builder.internalDisableSsl(config: HttpClientConfig<CIOEngineConfig>)

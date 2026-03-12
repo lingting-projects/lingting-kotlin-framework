@@ -152,12 +152,12 @@ mavenPublishing {
             nodes.mapNotNull { it as? Node }.forEach { dns ->
                 val dependencies = dns.value() as NodeList
                 dependencies.mapNotNull { it as? Node }.forEach { dn ->
-                    val nodes = dn.value() as NodeList
+                    val dNodes = dn.value() as NodeList
                     var group: String? = null
                     var module: String? = null
                     var version: String? = null
 
-                    nodes.mapNotNull { it as? Node }.forEach {
+                    dNodes.mapNotNull { it as? Node }.forEach {
                         val name = it.name() as QName
                         when (name.localPart) {
                             "groupId" -> group = it.text()
@@ -167,11 +167,11 @@ mavenPublishing {
                     }
                     // 添加版本号
                     if (version.isNullOrBlank()) {
-                        val version = versions?.get("$group:$module")
-                        if (version.isNullOrBlank()) {
+                        val dVersion = versions?.get("$group:$module")
+                        if (dVersion.isNullOrBlank()) {
                             println("Warning: [POM] 无法解析依赖版本: ${group}:${module}")
                         } else {
-                            dn.appendNode("version", version)
+                            dn.appendNode("version", dVersion)
                         }
                     }
                 }

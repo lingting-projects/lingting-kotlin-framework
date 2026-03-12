@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.assign
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -66,10 +65,20 @@ kotlin {
             dependsOn(commonMain.get())
         }
 
-        val targetSourceSets = listOf("nativeMain", "webMain")
+        val nonJvmTargetSourceSets = listOf("nativeMain", "webMain")
 
-        configure(targetSourceSets.mapNotNull { findByName(it) }) {
+        configure(nonJvmTargetSourceSets.mapNotNull { findByName(it) }) {
             dependsOn(nonJvmMain)
+        }
+
+        val jvmCommonMain by creating {
+            dependsOn(commonMain.get())
+        }
+
+        val jvmTargetSourceSets = listOf("jvmMain","androidMain")
+
+        configure(jvmTargetSourceSets.mapNotNull { findByName(it) }) {
+            dependsOn(jvmCommonMain)
         }
     }
 

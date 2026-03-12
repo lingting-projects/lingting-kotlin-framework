@@ -116,7 +116,7 @@ abstract class EnumSerializer<E : Enum<E>> : KSerializer<E> {
                     else -> enumValue.toString().equals(rawValue.toString(), ignoreCase)
                 }
             }
-        return e ?: throw SerializationException("未知枚举值 '$rawValue'. 类: ${cls.qualifiedName}")
+        return e ?: throw SerializationException("未知枚举值 '$rawValue'. 类: ${cls.simpleName}")
     }
 
 }
