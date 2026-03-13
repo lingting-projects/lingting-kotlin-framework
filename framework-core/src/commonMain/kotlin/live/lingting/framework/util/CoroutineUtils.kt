@@ -6,6 +6,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.jvm.JvmOverloads
@@ -44,3 +45,10 @@ object CoroutineUtils {
     ) = defaultScope.async(context, start, block)
 
 }
+
+suspend fun <T> withIO(
+    context: CoroutineContext = intervalIoContext,
+    block: suspend CoroutineScope.() -> T
+): T = withContext(context, block)
+
+internal expect val intervalIoContext: CoroutineContext
