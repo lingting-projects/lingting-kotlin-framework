@@ -19,8 +19,8 @@ expect abstract class ExpectPlatformSystem() {
 
 object SystemUtils : ExpectPlatformSystem() {
 
-    val tmpDirLingting = Path(tmpDir, "lingting")
+    val tmpDirLingting = Path(tmpDir, ".lingting")
 
-    val homeDirLingting = Path(homeDir, "lingting")
+    val homeDirLingting = Path(homeDir, ".lingting")
 
 }
