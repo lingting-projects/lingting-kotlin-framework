@@ -1,12 +1,12 @@
 package live.lingting.framework.crypto.mac
 
-import live.lingting.framework.util.Base64Utils.toBase64String
-import live.lingting.framework.util.StringUtils.toHexString
+import live.lingting.framework.crypto.basic.FinalBasic
+import live.lingting.framework.crypto.basic.IncrementBasic
 
 /**
  * @author lingting 2026/2/4 19:55
  */
-abstract class Mac<T : Mac<T>> {
+abstract class Mac<T : Mac<T>> : IncrementBasic, FinalBasic {
 
     open fun useKey(k: String): T {
         return useKey(k.encodeToByteArray())
@@ -14,22 +14,24 @@ abstract class Mac<T : Mac<T>> {
 
     abstract fun useKey(k: ByteArray): T
 
-    open fun calculate(v: String): ByteArray {
-        return calculate(v.encodeToByteArray())
+    protected val macer: org.kotlincrypto.core.mac.Mac by lazy { macer() }
+
+    protected abstract fun macer(): org.kotlincrypto.core.mac.Mac
+
+    override fun update(v: ByteArray, offset: Int, len: Int) {
+        macer.update(v, offset, len)
     }
 
-    abstract fun calculate(v: ByteArray): ByteArray
+    override fun calculate(): ByteArray {
+        return macer.doFinal()
+    }
 
-    open fun calculateString(v: String): String = calculate(v).toString()
-
-    open fun calculateString(v: ByteArray): String = calculate(v).toString()
-
-    open fun calculateBase64(v: String): String = calculate(v).toBase64String()
-
-    open fun calculateBase64(v: ByteArray): String = calculate(v).toBase64String()
-
-    open fun calculateHex(v: String): String = calculate(v).toHexString()
-
-    open fun calculateHex(v: ByteArray): String = calculate(v).toHexString()
+    override fun calculate(v: ByteArray, offset: Int, len: Int): ByteArray {
+        if (offset == 0 && len == v.size) {
+            return macer.doFinal(v)
+        }
+        macer.update(v, offset, len)
+        return macer.doFinal()
+    }
 
 }

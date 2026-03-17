@@ -1,6 +1,5 @@
 package live.lingting.framework.crypto.hmac
 
-import org.kotlincrypto.core.mac.Mac
 import org.kotlincrypto.macs.hmac.sha1.HmacSHA1
 
 /**
@@ -10,7 +9,7 @@ class HmacSha1(private val key: ByteArray) : Hmac<HmacSha1>() {
 
     constructor(key: String) : this(key.encodeToByteArray())
 
-    override fun macer(): Mac {
+    override fun macer(): org.kotlincrypto.macs.hmac.Hmac {
         return HmacSHA1(key)
     }
 
