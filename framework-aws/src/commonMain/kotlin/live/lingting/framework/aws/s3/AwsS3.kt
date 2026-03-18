@@ -5,6 +5,7 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.URLBuilder
 import io.ktor.http.URLProtocol
+import io.ktor.http.Url
 import io.ktor.utils.io.charsets.Charset
 import io.ktor.utils.io.charsets.Charsets
 import io.ktor.utils.io.core.toByteArray
@@ -13,6 +14,7 @@ import live.lingting.framework.aws.policy.Acl
 import live.lingting.framework.aws.properties.S3Properties
 import live.lingting.framework.aws.s3.impl.AwsS3DefaultListener
 import live.lingting.framework.aws.s3.interfaces.AwsS3Listener
+import live.lingting.framework.aws.s3.request.AwsS3PreRequest
 import live.lingting.framework.aws.s3.response.AwsS3PreSignedResponse
 import live.lingting.framework.aws.signer.AwsSigner
 import live.lingting.framework.http.DefaultHttpResponse
@@ -42,8 +44,10 @@ abstract class AwsS3 protected constructor(val properties: S3Properties) :
 
     var listener: AwsS3Listener = AwsS3DefaultListener(this)
 
-    override fun hostUrlBuilder(): URLBuilder {
-        return super.hostUrlBuilder().also {
+    protected val basicHost: Url by lazy { hostUrlBuilder(properties.secondHost()).build() }
+
+    override fun hostUrlBuilder(host: String): URLBuilder {
+        return super.hostUrlBuilder(host).also {
             it.protocol = if (properties.ssl) URLProtocol.HTTPS else URLProtocol.HTTP
         }
     }
@@ -55,6 +59,14 @@ abstract class AwsS3 protected constructor(val properties: S3Properties) :
     ) {
         if (!response.isOk) {
             listener.onFailed(r, request, response)
+        }
+    }
+
+    override fun buildUrl(r: AwsS3Request, builder: URLBuilder) {
+        if (r.useBasicHost) {
+            buildUrl(basicHost, r, builder)
+        } else {
+            super.buildUrl(r, builder)
         }
     }
 

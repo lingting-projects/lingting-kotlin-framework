@@ -60,7 +60,7 @@ class AliOssListener(client: AwsS3) : AwsS3DefaultListener(client) {
         }
 
         val url = builder.url
-        val path = if (properties.hostStyle != HostStyle.VIRTUAL) url.buildPath()
+        val path = if (properties.hostStyle != HostStyle.VIRTUAL || r.useBasicHost) url.buildPath()
         else "/${properties.bucket}${url.buildPath()}"
 
         return AliV4Signer(

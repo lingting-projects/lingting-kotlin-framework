@@ -63,11 +63,11 @@ abstract class S3BasicTest {
                 proxy(ProxyBuilder.http("http://127.0.0.1:9999"))
             }
         }
+        ApiClient.defaultClient = client
     }
 
     suspend fun CoroutineScope.run() {
         before()
-        ApiClient.defaultClient = client
         CoroutineUtils.switchScope(this)
         doTest()
         val domain = SystemUtils.getEnv("DOMAIN")

@@ -3,6 +3,7 @@ package live.lingting.framework.util
 import live.lingting.framework.util.ArrayUtils.isArray
 import live.lingting.framework.util.ArrayUtils.isEmpty
 import live.lingting.framework.value.MultiValue
+import kotlin.contracts.contract
 import kotlin.jvm.JvmStatic
 import kotlin.uuid.Uuid
 
@@ -18,6 +19,9 @@ object ValueUtils {
      */
     @JvmStatic
     fun isPresent(value: Any?): Boolean {
+        contract {
+            returns(true) implies (value != null)
+        }
         if (value == null) {
             return false
         }

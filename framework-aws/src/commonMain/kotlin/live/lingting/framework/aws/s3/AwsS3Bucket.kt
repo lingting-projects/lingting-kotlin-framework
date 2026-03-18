@@ -3,8 +3,10 @@ package live.lingting.framework.aws.s3
 import io.ktor.http.HttpMethod
 import live.lingting.framework.aws.properties.S3Properties
 import live.lingting.framework.aws.s3.interfaces.AwsS3BucketInterface
+import live.lingting.framework.aws.s3.request.AwsS3ListBucketsRequest
 import live.lingting.framework.aws.s3.request.AwsS3ListObjectsRequest
 import live.lingting.framework.aws.s3.request.AwsS3SimpleRequest
+import live.lingting.framework.aws.s3.response.AwsS3ListBucketsResponse
 import live.lingting.framework.aws.s3.response.AwsS3ListObjectsResponse
 import live.lingting.framework.aws.s3.response.AwsS3MultipartListResponse
 import live.lingting.framework.http.util.HttpExtraUtils.convert
@@ -17,6 +19,14 @@ class AwsS3Bucket(properties: S3Properties) : AwsS3(properties), AwsS3BucketInte
 
     override fun use(key: String): AwsS3Object {
         return AwsS3Object(properties, key)
+    }
+
+    override suspend fun listBuckets(request: AwsS3ListBucketsRequest): AwsS3ListBucketsResponse {
+        return call(request).convert {
+            val r = it.xmlToObj<AwsS3ListBucketsResponse>()
+            r.nextRequest = r.buildNextRequest(request)
+            r
+        }
     }
 
     override suspend fun multipartList(consumer: ((AwsS3SimpleRequest) -> Unit)?): AwsS3MultipartListResponse {

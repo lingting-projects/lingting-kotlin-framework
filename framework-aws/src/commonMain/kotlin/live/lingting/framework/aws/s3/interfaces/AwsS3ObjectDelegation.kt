@@ -3,6 +3,7 @@ package live.lingting.framework.aws.s3.interfaces
 import kotlinx.io.RawSource
 import kotlinx.io.Source
 import kotlinx.io.files.Path
+import live.lingting.framework.aws.s3.request.AwsS3PreRequest
 
 /**
  * @author lingting 2024-09-19 21:59
@@ -78,7 +79,7 @@ interface AwsS3ObjectDelegation : AwsS3ObjectInterface,
         delegation().multipartCancel(uploadId)
     }
 
-    override fun pre(r: live.lingting.framework.aws.s3.AwsS3PreRequest): live.lingting.framework.aws.s3.response.AwsS3PreSignedResponse {
+    override fun pre(r: AwsS3PreRequest): live.lingting.framework.aws.s3.response.AwsS3PreSignedResponse {
         return delegation().pre(r)
     }
 

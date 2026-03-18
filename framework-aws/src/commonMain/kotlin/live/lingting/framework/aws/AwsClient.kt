@@ -33,8 +33,8 @@ abstract class AwsClient<R : AwsRequest>(private val properties: AwsProperties) 
 
     protected val region = properties.region.let { it.ifBlank { AwsProperties.REGION } }
 
-    override fun hostUrlBuilder(): URLBuilder {
-        return super.hostUrlBuilder().also {
+    override fun hostUrlBuilder(host: String): URLBuilder {
+        return super.hostUrlBuilder(host).also {
             it.protocol = if (properties.ssl) URLProtocol.HTTPS else URLProtocol.HTTP
         }
     }

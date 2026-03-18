@@ -2,6 +2,7 @@ package live.lingting.framework.aws.s3.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import live.lingting.framework.aws.s3.AwsS3Owner
 import live.lingting.framework.aws.s3.multipart.AwsS3MultipartItem
 import nl.adaptivity.xmlutil.serialization.XmlElement
 import nl.adaptivity.xmlutil.serialization.XmlSerialName
@@ -64,27 +65,17 @@ data class AwsS3MultipartListResponse(
         @XmlElement
         @SerialName("Initiator")
         @XmlSerialName("Initiator")
-        val initiator: User? = null,
+        val initiator: AwsS3Owner? = null,
         @XmlElement
         @SerialName("Owner")
         @XmlSerialName("Owner")
-        val owner: User? = null,
+        val owner: AwsS3Owner? = null,
         @XmlElement
         @SerialName("StorageClass")
         val storageClass: String,
         @XmlElement
         @SerialName("Initiated")
         val initiated: String
-    )
-
-    @Serializable
-    data class User(
-        @XmlElement
-        @SerialName("ID")
-        val id: String? = null,
-        @XmlElement
-        @SerialName("DisplayName")
-        val displayName: String? = null
     )
 
     @Serializable

@@ -1,5 +1,7 @@
 package live.lingting.framework.value
 
+import live.lingting.framework.util.ValueUtils
+
 /**
  * @author lingting 2024-09-05 21:17
  */
@@ -30,6 +32,16 @@ interface MultiValue<K, V, C : Collection<V>> {
     fun putAll(value: MultiValue<K, V, out Collection<V>>)
 
     fun replace(oldKey: K, newKey: K)
+
+    // endregion
+
+    // region ifPresent
+
+    fun addIfPresent(key: K, value: V?) {
+        if (ValueUtils.isPresent(value)) {
+            add(key, value)
+        }
+    }
 
     // endregion
 

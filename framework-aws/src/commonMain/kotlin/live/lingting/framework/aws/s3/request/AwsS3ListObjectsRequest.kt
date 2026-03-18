@@ -3,7 +3,6 @@ package live.lingting.framework.aws.s3.request
 import io.ktor.http.HttpMethod
 import kotlinx.serialization.Serializable
 import live.lingting.framework.aws.s3.AwsS3Request
-import live.lingting.framework.util.BooleanUtils.ifTrue
 
 /**
  * @author lingting 2025/1/14 19:57
@@ -36,21 +35,10 @@ class AwsS3ListObjectsRequest : AwsS3Request() {
         if (v2) {
             params.add("list-type", "2")
         }
-        prefix?.run {
-            isNotBlank().ifTrue {
-                params.add("prefix", this)
-            }
-        }
-        token?.run {
-            isNotBlank().ifTrue {
-                if (v2) {
-                    params.add("continuation-token", this)
-                } else {
-                    params.add("marker", this)
-                }
-            }
-        }
-        delimiter?.run { isNotBlank().ifTrue { params.add("delimiter", this) } }
+
+        params.addIfPresent("prefix", prefix)
+        params.addIfPresent(if (v2) "continuation-token" else "marker", token)
+        params.addIfPresent("delimiter", delimiter)
         params.add("max-keys", maxKeys.toString())
     }
 

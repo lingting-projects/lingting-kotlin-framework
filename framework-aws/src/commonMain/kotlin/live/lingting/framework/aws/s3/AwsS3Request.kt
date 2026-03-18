@@ -4,6 +4,7 @@ import kotlinx.serialization.Transient
 import live.lingting.framework.aws.AwsUtils
 import live.lingting.framework.aws.AwsUtils.HEADER_MD5
 import live.lingting.framework.aws.policy.Acl
+import live.lingting.framework.aws.s3.enums.HostStyle
 import live.lingting.framework.aws.s3.impl.S3Meta
 import live.lingting.framework.http.api.ApiRequest
 import live.lingting.framework.http.body.Body
@@ -13,6 +14,14 @@ import live.lingting.framework.http.body.EmptyBody
  * @author lingting 2024-09-19 15:03
  */
 abstract class AwsS3Request : ApiRequest() {
+
+    /**
+     * 使用基础请求目标还是使用带桶的请求目标
+     * @see HostStyle.VIRTUAL 不在域名拼接桶名
+     * @see HostStyle.SECOND 不在url前面拼接桶名
+     */
+    @Transient
+    var useBasicHost = false
 
     @Transient
     var key: String = ""

@@ -3,6 +3,7 @@ package live.lingting.framework.aws.s3.response
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import live.lingting.framework.aws.s3.AwsS3Owner
 import nl.adaptivity.xmlutil.serialization.XmlElement
 import nl.adaptivity.xmlutil.serialization.XmlSerialName
 
@@ -89,17 +90,7 @@ data class AwsS3ListObjectsResponse(
         val storageClass: String,
         @XmlElement
         @SerialName("Owner")
-        val owner: Owner? = null
-    )
-
-    @Serializable
-    data class Owner(
-        @XmlElement
-        @SerialName("ID")
-        val id: String? = null,
-        @XmlElement
-        @SerialName("DisplayName")
-        val displayName: String? = null
+        val owner: AwsS3Owner? = null
     )
 
     @Serializable

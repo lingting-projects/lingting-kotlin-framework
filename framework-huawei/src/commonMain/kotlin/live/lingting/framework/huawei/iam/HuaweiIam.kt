@@ -45,8 +45,8 @@ open class HuaweiIam(@JvmField val properties: HuaweiIamProperties) : ApiClient<
     var tokenValue: WaitValue<HuaweiIamToken> = WaitValue.Companion.of()
         protected set
 
-    override fun hostUrlBuilder(): URLBuilder {
-        return super.hostUrlBuilder().also {
+    override fun hostUrlBuilder(host: String): URLBuilder {
+        return super.hostUrlBuilder(host).also {
             it.protocol = URLProtocol.HTTPS
         }
     }

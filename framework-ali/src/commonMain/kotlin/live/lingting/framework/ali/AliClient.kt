@@ -29,8 +29,8 @@ abstract class AliClient<R : AliRequest> protected constructor(private val prope
 
     protected val token: String? = properties.token
 
-    override fun hostUrlBuilder(): URLBuilder {
-        return super.hostUrlBuilder().also {
+    override fun hostUrlBuilder(host: String): URLBuilder {
+        return super.hostUrlBuilder(host).also {
             it.protocol = if (properties.ssl) URLProtocol.HTTPS else URLProtocol.HTTP
         }
     }

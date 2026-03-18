@@ -1,6 +1,7 @@
 package live.lingting.framework.aws.s3.request
 
 import io.ktor.http.HttpMethod
+import live.lingting.framework.aws.s3.AwsS3Request
 
 /**
  * @author lingting 2024-09-19 19:22
@@ -8,7 +9,7 @@ import io.ktor.http.HttpMethod
 open class AwsS3SimpleRequest(
     protected val method: HttpMethod,
     protected val body: live.lingting.framework.http.body.Body<*>? = null
-) : live.lingting.framework.aws.s3.AwsS3Request() {
+) : AwsS3Request() {
 
     override fun method(): HttpMethod {
         return method

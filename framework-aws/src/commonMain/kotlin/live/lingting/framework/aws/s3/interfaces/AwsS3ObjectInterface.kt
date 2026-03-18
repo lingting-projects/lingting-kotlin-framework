@@ -8,11 +8,11 @@ import live.lingting.framework.async.Async
 import live.lingting.framework.async.async
 import live.lingting.framework.aws.AwsUtils
 import live.lingting.framework.aws.policy.Acl
-import live.lingting.framework.aws.s3.AwsS3PreRequest
 import live.lingting.framework.aws.s3.impl.AwsS3PreSignedMultipart
 import live.lingting.framework.aws.s3.impl.S3Meta
 import live.lingting.framework.aws.s3.multipart.AwsS3MultipartUploadTask
 import live.lingting.framework.aws.s3.request.AwsS3ObjectPutRequest
+import live.lingting.framework.aws.s3.request.AwsS3PreRequest
 import live.lingting.framework.aws.s3.response.AwsS3PreSignedResponse
 import live.lingting.framework.data.DataSize
 import live.lingting.framework.http.HttpContentTypes

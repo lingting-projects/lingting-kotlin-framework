@@ -6,7 +6,9 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.encodedPath
 import live.lingting.framework.aws.exception.AwsS3Exception
+import live.lingting.framework.aws.s3.AwsS3
 import live.lingting.framework.aws.s3.AwsS3Request
+import live.lingting.framework.aws.s3.interfaces.AwsS3Listener
 import live.lingting.framework.aws.signer.AwsSigner
 import live.lingting.framework.aws.signer.AwsV4Signer
 import live.lingting.framework.http.util.HttpHeadersUtils.to
@@ -17,8 +19,7 @@ import kotlin.jvm.JvmField
 /**
  * @author lingting 2024/11/5 14:48
  */
-open class AwsS3DefaultListener(@JvmField protected val client: live.lingting.framework.aws.s3.AwsS3) :
-    live.lingting.framework.aws.s3.interfaces.AwsS3Listener {
+open class AwsS3DefaultListener(@JvmField protected val client: AwsS3) : AwsS3Listener {
 
     @JvmField
     protected val log = client.logger()

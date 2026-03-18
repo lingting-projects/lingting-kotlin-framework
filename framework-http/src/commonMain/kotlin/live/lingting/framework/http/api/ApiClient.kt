@@ -45,9 +45,9 @@ abstract class ApiClient<R : ApiRequest>(@JvmField protected val host: String) {
     @JvmField
     var client = defaultClient
 
-    protected val hostUrl: Url by lazy { hostUrlBuilder().build() }
+    protected val hostUrl: Url by lazy { hostUrlBuilder(host).build() }
 
-    protected open fun hostUrlBuilder(): URLBuilder {
+    protected open fun hostUrlBuilder(host: String): URLBuilder {
         val builder = URLBuilder()
         var str = host
         if (!host.contains("://")) {
@@ -71,6 +71,10 @@ abstract class ApiClient<R : ApiRequest>(@JvmField protected val host: String) {
     }
 
     protected open fun buildUrl(r: R, builder: URLBuilder) {
+        buildUrl(hostUrl, r, builder)
+    }
+
+    protected open fun buildUrl(hostUrl: Url, r: R, builder: URLBuilder) {
         builder.takeFrom(hostUrl)
         val path = r.path()
         builder.appendPathSegments(path.split("/"))
