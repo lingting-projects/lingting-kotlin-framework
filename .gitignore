@@ -9,6 +9,7 @@ local.properties
 .dependencies
 .env*
 *SensitiveTest.kt
+kotlin-js-store
 
 ### IntelliJ IDEA ###
 .idea
