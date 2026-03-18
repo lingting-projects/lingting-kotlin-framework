@@ -6,21 +6,22 @@ import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.usePinned
 import platform.CoreCrypto.CCKeyDerivationPBKDF
 import platform.CoreCrypto.kCCPBKDF2
+import platform.CoreCrypto.kCCPRFHmacAlgSHA1
 import platform.CoreCrypto.kCCPRFHmacAlgSHA256
 import platform.CoreCrypto.kCCPRFHmacAlgSHA512
 
 @OptIn(ExperimentalForeignApi::class)
 internal actual fun Pbkdf2.internalcalculate(
     v: CharArray,
-    salt: ByteArray?
+    salt: ByteArray
 ): ByteArray {
     val keyByteLength = keyLength / 8
     val output = ByteArray(keyByteLength)
 
-    val prf = when (this) {
-        is Pbkdf2Sha256 -> kCCPRFHmacAlgSHA256
-        is Pbkdf2Sha512 -> kCCPRFHmacAlgSHA512
-        else -> throw UnsupportedOperationException()
+    val prf = when (type) {
+        Pbkdf2.Type.SHA1 -> kCCPRFHmacAlgSHA1
+        Pbkdf2.Type.SHA256 -> kCCPRFHmacAlgSHA256
+        Pbkdf2.Type.SHA512 -> kCCPRFHmacAlgSHA512
     }
 
     val finalSalt = salt ?: byteArrayOf()

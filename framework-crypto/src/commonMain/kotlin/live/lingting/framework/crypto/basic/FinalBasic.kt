@@ -6,7 +6,7 @@ import live.lingting.framework.util.StringUtils.toHexString
 /**
  * @author lingting 2026/3/17 15:21
  */
-interface FinalBasic {
+interface FinalBasic : AutoCloseable {
 
     fun calculate(v: String): ByteArray {
         return calculate(v.encodeToByteArray())
@@ -29,5 +29,9 @@ interface FinalBasic {
     fun calculateHex(v: String): String = calculate(v).toHexString()
 
     fun calculateHex(v: ByteArray): String = calculate(v).toHexString()
+
+    override fun close() {
+        //
+    }
 
 }

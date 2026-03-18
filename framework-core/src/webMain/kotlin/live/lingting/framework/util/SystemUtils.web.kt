@@ -20,3 +20,11 @@ actual abstract class ExpectPlatformSystem actual constructor() {
     actual fun getEnv(key: String): String? = null
 
 }
+
+@OptIn(ExperimentalWasmJsInterop::class)
+fun isNode(): Boolean =
+    js("typeof process !== 'undefined' && process.versions != null && process.versions.node != null")
+
+inline val SystemUtils.isBrowser: Boolean get() = !isNode
+
+inline val SystemUtils.isNode: Boolean get() = isNode()

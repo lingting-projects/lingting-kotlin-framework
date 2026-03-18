@@ -4,9 +4,10 @@ import live.lingting.framework.util.Base64Utils.toBase64String
 import live.lingting.framework.util.StringUtils.toHexString
 
 /**
+ * 运算后内容清空
  * @author lingting 2026/3/17 15:21
  */
-interface IncrementBasic {
+interface IncrementBasic : AutoCloseable {
 
     fun update(v: String) {
         return update(v.encodeToByteArray())
@@ -25,5 +26,9 @@ interface IncrementBasic {
     fun calculateBase64(): String = calculate().toBase64String()
 
     fun calculateHex(): String = calculate().toHexString()
+
+    override fun close() {
+        //
+    }
 
 }

@@ -1,37 +1,34 @@
 package live.lingting.framework.crypto.mac
 
-import live.lingting.framework.crypto.basic.FinalBasic
-import live.lingting.framework.crypto.basic.IncrementBasic
+import live.lingting.framework.crypto.basic.MixinBasic
 
 /**
  * @author lingting 2026/2/4 19:55
  */
-abstract class Mac<T : Mac<T>> : IncrementBasic, FinalBasic {
+abstract class Mac(val key: ByteArray) : MixinBasic {
 
-    open fun useKey(k: String): T {
+    open fun useKey(k: String): Mac {
         return useKey(k.encodeToByteArray())
     }
 
-    abstract fun useKey(k: ByteArray): T
+    abstract fun useKey(k: ByteArray): Mac
 
-    protected val macer: org.kotlincrypto.core.mac.Mac by lazy { macer() }
+    internal val macer: Platform by lazy { macer() }
 
-    protected abstract fun macer(): org.kotlincrypto.core.mac.Mac
+    internal abstract fun macer(): Platform
 
     override fun update(v: ByteArray, offset: Int, len: Int) {
         macer.update(v, offset, len)
     }
 
     override fun calculate(): ByteArray {
-        return macer.doFinal()
+        return macer.calculate()
     }
 
-    override fun calculate(v: ByteArray, offset: Int, len: Int): ByteArray {
-        if (offset == 0 && len == v.size) {
-            return macer.doFinal(v)
-        }
-        macer.update(v, offset, len)
-        return macer.doFinal()
+    internal interface Platform : MixinBasic {
+
+        val key: ByteArray
+
     }
 
 }

@@ -77,6 +77,9 @@ configure(allProjects) {
             sourceSets.commonTest.dependencies {
                 implementation(catalogLibs.bundles.test)
             }
+            sourceSets.webMain.dependencies {
+                api(catalogLibs.kotlin.browser)
+            }
         }
     }
 
