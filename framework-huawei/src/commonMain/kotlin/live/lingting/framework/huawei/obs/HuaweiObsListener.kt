@@ -42,7 +42,7 @@ class HuaweiObsListener(val obs: HuaweiObs<*>) : AwsS3DefaultListener(obs.delega
         }
 
         val url = builder.url
-        val path = if (properties.hostStyle != HostStyle.VIRTUAL) url.buildPath()
+        val path = if (properties.hostStyle != HostStyle.VIRTUAL || r.useBasicHost) url.buildPath()
         else "/${properties.bucket}${url.buildPath()}"
 
         return HuaweiObsSigner(
