@@ -20,15 +20,6 @@ open class ScrollCursorValue<C, V> : CursorValue<V> {
         this.func = func
     }
 
-    @JvmOverloads
-    constructor(params: ScrollParams<C>? = null, func: (ScrollParams<C>) -> List<V>) {
-        this.params = params ?: ScrollParams()
-        this.func = {
-            val records = func(it)
-            ScrollResult(records)
-        }
-    }
-
     override fun nextBatchData(): List<V>? {
         val p = params ?: return null
         val r = func(p)

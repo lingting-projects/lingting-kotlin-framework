@@ -20,15 +20,6 @@ open class PaginationCursorValue<V> : CursorValue<V> {
         this.func = func
     }
 
-    @JvmOverloads
-    constructor(params: PaginationParams? = null, func: (PaginationParams) -> List<V>) {
-        this.params = params ?: PaginationParams()
-        this.func = {
-            val records = func(it)
-            PaginationResult(records)
-        }
-    }
-
     override fun nextBatchData(): List<V>? {
         val p = params ?: return null
         val r = func(p)
