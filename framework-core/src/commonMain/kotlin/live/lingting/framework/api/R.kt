@@ -1,6 +1,7 @@
 package live.lingting.framework.api
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 
@@ -56,5 +57,8 @@ data class R<T>(val code: Int, val data: T?, val message: String) {
         }
 
     }
+
+    @Transient
+    val isOk = code == ApiResultCode.SUCCESS.code
 
 }
