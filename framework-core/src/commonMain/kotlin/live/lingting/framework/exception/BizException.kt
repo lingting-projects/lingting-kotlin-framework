@@ -23,13 +23,16 @@ open class BizException : RuntimeException {
 
     val code: Int
 
-    constructor(result: ResultCode) : this(result, null as String?)
+    val rawMessage: String
+
+    constructor(result: ResultCode) : this(result, result.message)
 
     constructor(result: ResultCode, e: Exception? = null) : this(result, null, e)
 
     constructor(result: ResultCode, message: String?, e: Exception? = null) : super(format(result, message), e) {
         this.result = result
         this.code = result.code
+        this.rawMessage = message ?: result.message
     }
 
     override val message: String
