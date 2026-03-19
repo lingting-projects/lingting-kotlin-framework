@@ -5,9 +5,11 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import live.lingting.framework.exception.TimeoutException
+import live.lingting.framework.util.WaitValueUtils.waitTrue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -63,6 +65,17 @@ class WaitValueTest {
             (it ?: 0) > 8
         }
         assertEquals(10, result)
+
+        val bv = WaitValue(false)
+        launch {
+            delay(50.milliseconds)
+            bv.value = true
+        }
+        var b = false
+        bv.waitTrue(1.seconds) {
+            b = true
+        }
+        assertTrue(b)
     }
 
     @Test
