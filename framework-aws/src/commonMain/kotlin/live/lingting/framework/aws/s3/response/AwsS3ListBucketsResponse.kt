@@ -60,7 +60,7 @@ data class AwsS3ListBucketsResponse(
         @XmlElement
         @SerialName("CreationDate")
         // 2023-05-08T02:03:07.000Z
-        val createTimestamp: String,
+        val creationDate: String,
     )
 
 }
